@@ -9,6 +9,55 @@
   "
 >
   <div class="site-footer__inner">
+    {% if section.settings.show_newsletter %}
+      <div class="site-footer__newsletter">
+        <div class="site-footer__newsletter-copy">
+          {% if section.settings.newsletter_title != blank %}
+            <h2 class="site-footer__newsletter-title">{{ section.settings.newsletter_title }}</h2>
+          {% endif %}
+          {% if section.settings.newsletter_text != blank %}
+            <p class="site-footer__newsletter-text">{{ section.settings.newsletter_text }}</p>
+          {% endif %}
+        </div>
+
+        {% form 'customer', class: 'site-footer__newsletter-form' %}
+          <input type="hidden" name="contact[tags]" value="newsletter,footer">
+
+          {% if form.posted_successfully? %}
+            <p class="site-footer__newsletter-success">
+              {{ section.settings.newsletter_success | default: 'Tack! Du är nu anmäld.' }}
+            </p>
+          {% else %}
+            <div class="site-footer__newsletter-field">
+              <label class="visually-hidden" for="FooterNewsletter-{{ section.id }}">
+                {{ section.settings.newsletter_placeholder | default: 'E-post' }}
+              </label>
+              <input
+                id="FooterNewsletter-{{ section.id }}"
+                class="site-footer__newsletter-input"
+                type="email"
+                name="contact[email]"
+                value="{{ form.email }}"
+                placeholder="{{ section.settings.newsletter_placeholder | default: 'E-post' }}"
+                autocomplete="email"
+                required
+              >
+              <button
+                class="site-footer__newsletter-submit"
+                type="submit"
+                aria-label="{{ section.settings.newsletter_button | default: 'Prenumerera' }}"
+              >
+                {% render 'icon', name: 'arrow-right', size: 18 %}
+              </button>
+            </div>
+            {%- if form.errors -%}
+              <p class="site-footer__newsletter-error">{{ form.errors | default_errors }}</p>
+            {%- endif -%}
+          {% endif %}
+        {% endform %}
+      </div>
+    {% endif %}
+
     <div class="site-footer__top">
       <div class="site-footer__brand">
         {% if section.settings.logo != blank %}
@@ -18,7 +67,16 @@
             | image_tag: loading: 'lazy', class: 'site-footer__logo', alt: shop.name
           }}
         {% else %}
-          <span class="site-footer__name">{{ shop.name }}</span>
+          <a class="site-footer__logo-link" href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
+            <img
+              src="{{ 'pump-logo.png' | asset_url }}"
+              alt="{{ shop.name }}"
+              class="site-footer__logo-wordmark"
+              width="96"
+              height="28"
+              loading="lazy"
+            >
+          </a>
         {% endif %}
         {% if section.settings.tagline != blank %}
           <p class="site-footer__tagline">{{ section.settings.tagline }}</p>
@@ -105,6 +163,99 @@
     gap: 40px;
   }
 
+  .site-footer__newsletter {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid color-mix(in srgb, var(--ftr-text, #f6f7f2) 8%, transparent);
+  }
+
+  .site-footer__newsletter-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 48ch;
+  }
+
+  .site-footer__newsletter-title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .site-footer__newsletter-text {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--ftr-muted, #9aa8a2);
+  }
+
+  .site-footer__newsletter-field {
+    display: flex;
+    gap: 8px;
+    max-width: 420px;
+  }
+
+  .site-footer__newsletter-input {
+    flex: 1;
+    min-width: 0;
+    min-height: 46px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--ftr-text, #f6f7f2) 15%, transparent);
+    background-color: var(--ftr-surface, #14212a);
+    color: var(--ftr-text, #f6f7f2);
+  }
+
+  .site-footer__newsletter-input::placeholder {
+    color: var(--ftr-muted, #9aa8a2);
+  }
+
+  .site-footer__newsletter-submit {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--ftr-bg, #071014);
+    background-color: var(--ftr-accent, #2dd4bf);
+    transition: transform 0.15s ease;
+  }
+
+  .site-footer__newsletter-submit:hover {
+    transform: translateX(2px);
+  }
+
+  .site-footer__newsletter-success {
+    margin: 0;
+    font-weight: 600;
+    color: var(--ftr-accent, #2dd4bf);
+  }
+
+  .site-footer__newsletter-error {
+    margin: 8px 0 0;
+    font-size: 0.82rem;
+    color: #f59e0b;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   .site-footer__top {
     display: grid;
     grid-template-columns: 1fr;
@@ -119,6 +270,17 @@
   }
 
   .site-footer__logo {
+    height: 28px;
+    width: auto;
+  }
+
+  .site-footer__logo-link {
+    display: inline-block;
+    line-height: 0;
+  }
+
+  .site-footer__logo-wordmark {
+    display: block;
     height: 28px;
     width: auto;
   }
@@ -235,6 +397,17 @@
   }
 
   @media screen and (min-width: 750px) {
+    .site-footer__newsletter {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .site-footer__newsletter-field {
+      width: 420px;
+    }
+
     .site-footer__top {
       grid-template-columns: 1.5fr 1fr 1fr;
       gap: 48px;
@@ -246,12 +419,66 @@
       align-items: center;
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-footer__newsletter-submit {
+      transition: none;
+    }
+
+    .site-footer__newsletter-submit:hover {
+      transform: none;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.footer",
   "settings": [
+    {
+      "type": "header",
+      "content": "Newsletter signup"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Show newsletter signup",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_title",
+      "label": "Newsletter title",
+      "default": "Håll dig uppdaterad"
+    },
+    {
+      "type": "textarea",
+      "id": "newsletter_text",
+      "label": "Newsletter text",
+      "default": "Få tips och erbjudanden, vi hör bara av oss när något riktigt bra dyker upp."
+    },
+    {
+      "type": "text",
+      "id": "newsletter_placeholder",
+      "label": "Input placeholder",
+      "default": "E-post"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_button",
+      "label": "Button label (for screen readers)",
+      "default": "Prenumerera"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_success",
+      "label": "Success message",
+      "default": "Tack! Du är nu anmäld."
+    },
+    {
+      "type": "header",
+      "content": "Brand"
+    },
     {
       "type": "image_picker",
       "id": "logo",
@@ -346,3 +573,4 @@
   ]
 }
 {% endschema %}
+

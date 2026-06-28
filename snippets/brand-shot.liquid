@@ -1,0 +1,25 @@
+{% comment %}
+  A single framed "in action" image for the brand-promise galleries.
+  Params: block (a brand-promise image block).
+{% endcomment %}
+<figure class="brand-promise__shot" {{ block.shopify_attributes }}>
+  {% if block.settings.image != blank %}
+    {{
+      block.settings.image
+      | image_url: width: 480
+      | image_tag:
+        loading: 'lazy',
+        widths: '160, 240, 320, 480',
+        sizes: '(min-width: 990px) 180px, 40vw',
+        class: 'brand-promise__shot-img',
+        alt: block.settings.caption | default: 'pump in action'
+    }}
+  {% else %}
+    <div class="brand-promise__shot-ph">
+      {{ 'image' | placeholder_svg_tag: 'brand-promise__shot-svg' }}
+    </div>
+  {% endif %}
+  {% if block.settings.caption != blank %}
+    <figcaption class="brand-promise__shot-cap">{{ block.settings.caption }}</figcaption>
+  {% endif %}
+</figure>

@@ -1,0 +1,225 @@
+{% comment %}
+  Motion FX — lightweight, dependency-free page motion.
+  - Scroll-reveal: sections fade/slide in as they enter the viewport.
+  - Parallax: decorative [data-parallax] layers drift slower than scroll.
+  - Ripple: water-style ripple on pointer inside [data-ripple] areas.
+
+  Safety:
+  - All hidden states are applied by JS, so content stays visible without JS.
+  - Fully disabled when the visitor prefers reduced motion.
+{% endcomment %}
+
+{% stylesheet %}
+  .mfx-reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: opacity, transform;
+  }
+
+  .mfx-reveal.mfx-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  .mfx-reveal.mfx-instant {
+    transition: none;
+  }
+
+  [data-parallax] {
+    will-change: transform;
+  }
+
+  /* Keep a normal arrow cursor over interactive ripple surfaces,
+     so hovering hero text doesn't flip to the text I-beam.
+     (cursor is inherited; links/buttons re-assert pointer.) */
+  [data-ripple] {
+    cursor: default;
+  }
+
+  /* A drop landing in water: two concentric rings expand outward. */
+  .mfx-ripple {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    margin: -6px 0 0 -6px;
+    color: var(--hero-accent, #2dd4bf);
+    pointer-events: none;
+    transform: translate(var(--mfx-x, 0), var(--mfx-y, 0));
+    z-index: 1;
+  }
+
+  .mfx-ripple::before,
+  .mfx-ripple::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    border: 1.5px solid currentColor;
+    opacity: 0.5;
+    transform: scale(0.2);
+    animation: mfxDrop 1.15s ease-out forwards;
+  }
+
+  .mfx-ripple::after {
+    animation-delay: 0.16s;
+    opacity: 0.3;
+  }
+
+  @keyframes mfxDrop {
+    0% {
+      transform: scale(0.2);
+      opacity: 0.55;
+    }
+    70% {
+      opacity: 0.16;
+    }
+    100% {
+      transform: scale(3.6);
+      opacity: 0;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+
+    /* ---- Scroll reveal ---- */
+    function collectRevealTargets() {
+      var targets = [];
+      var explicit = document.querySelectorAll('[data-reveal]');
+      for (var i = 0; i < explicit.length; i++) targets.push(explicit[i]);
+
+      var sections = document.querySelectorAll('.shopify-section');
+      for (var s = 0; s < sections.length; s++) {
+        var sec = sections[s];
+        if (sec.querySelector('.site-header, .site-footer')) continue; // skip chrome
+        var child = sec.firstElementChild;
+        if (child && targets.indexOf(child) === -1) targets.push(child);
+      }
+      return targets;
+    }
+
+    var io = null;
+    if ('IntersectionObserver' in window) {
+      io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('mfx-in');
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: '0px 0px -10% 0px', threshold: 0.12 }
+      );
+    }
+
+    var revealTargets = collectRevealTargets();
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    revealTargets.forEach(function (el) {
+      el.classList.add('mfx-reveal');
+      var rect = el.getBoundingClientRect();
+      if (rect.top < vh * 0.9) {
+        /* Already in view at load: show instantly to protect LCP / avoid flash. */
+        el.classList.add('mfx-instant', 'mfx-in');
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            el.classList.remove('mfx-instant');
+          });
+        });
+      } else if (io) {
+        io.observe(el);
+      } else {
+        el.classList.add('mfx-in');
+      }
+    });
+
+    /* ---- Parallax ---- */
+    var parallaxEls = Array.prototype.slice.call(document.querySelectorAll('[data-parallax]'));
+    var ticking = false;
+
+    function updateParallax() {
+      var viewportH = window.innerHeight || document.documentElement.clientHeight;
+      var center = viewportH / 2;
+      for (var i = 0; i < parallaxEls.length; i++) {
+        var el = parallaxEls[i];
+        var speed = parseFloat(el.getAttribute('data-parallax')) || 0.15;
+        var rect = el.getBoundingClientRect();
+        var elCenter = rect.top + rect.height / 2;
+        var offset = (elCenter - center) * speed * -1;
+        el.style.transform = 'translate3d(0,' + offset.toFixed(1) + 'px,0)';
+      }
+      ticking = false;
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateParallax);
+      }
+    }
+
+    if (parallaxEls.length) {
+      updateParallax();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+    }
+
+    /* ---- Water ripple on pointer ---- */
+    var rippleAreas = document.querySelectorAll('[data-ripple]');
+    var MOVE_INTERVAL = 360; // ms between drops while moving
+    var MOVE_DISTANCE = 44; // px the pointer must travel before another drop
+
+    function spawnRipple(area, x, y) {
+      var r = document.createElement('span');
+      r.className = 'mfx-ripple';
+      r.style.setProperty('--mfx-x', x + 'px');
+      r.style.setProperty('--mfx-y', y + 'px');
+      area.appendChild(r);
+      setTimeout(function () {
+        if (r.parentNode) r.parentNode.removeChild(r);
+      }, 1350);
+    }
+
+    Array.prototype.forEach.call(rippleAreas, function (area) {
+      if (getComputedStyle(area).position === 'static') area.style.position = 'relative';
+      var lastTime = 0;
+      var lastX = null;
+      var lastY = null;
+
+      area.addEventListener('pointermove', function (e) {
+        var now = Date.now();
+        if (now - lastTime < MOVE_INTERVAL) return;
+        var rect = area.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        if (lastX !== null) {
+          var dx = x - lastX;
+          var dy = y - lastY;
+          if (dx * dx + dy * dy < MOVE_DISTANCE * MOVE_DISTANCE) return;
+        }
+        lastTime = now;
+        lastX = x;
+        lastY = y;
+        spawnRipple(area, x, y);
+      });
+
+      area.addEventListener('pointerdown', function (e) {
+        var rect = area.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        lastTime = Date.now();
+        lastX = x;
+        lastY = y;
+        spawnRipple(area, x, y);
+      });
+    });
+  })();
+</script>

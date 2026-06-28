@@ -37,7 +37,17 @@
           }}
         </a>
       {% else %}
-        <a class="site-header__title" href="{{ routes.root_url }}">{{ shop.name }}</a>
+        <a
+          class="site-header__logo-link site-header__logo-link--wave"
+          href="{{ routes.root_url }}"
+          aria-label="{{ shop.name }}"
+        >
+          <span
+            class="site-header__logo-wave"
+            style="--logo-mask: url('{{ 'pump-logo.png' | asset_url }}');"
+            aria-hidden="true"
+          ></span>
+        </a>
       {% endif %}
     </div>
 
@@ -158,6 +168,17 @@
   .site-header__logo {
     height: 32px;
     width: auto;
+  }
+
+  /* The "pump" wordmark stays pure brand white. The transparent PNG
+     is used as an alpha mask filled with solid white. */
+  .site-header__logo-wave {
+    display: block;
+    width: 92px;
+    height: 26px;
+    -webkit-mask: var(--logo-mask) center / contain no-repeat;
+    mask: var(--logo-mask) center / contain no-repeat;
+    background-color: #ffffff;
   }
 
   .site-header__nav {
@@ -359,6 +380,11 @@
     .site-header__logo {
       height: 36px;
     }
+
+    .site-header__logo-wave {
+      width: 106px;
+      height: 30px;
+    }
   }
 {% endstylesheet %}
 
@@ -440,3 +466,4 @@
   ]
 }
 {% endschema %}
+

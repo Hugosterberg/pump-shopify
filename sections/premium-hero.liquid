@@ -12,6 +12,7 @@
 
 <div
   class="premium-hero full-width"
+  data-ripple
   style="
     --hero-bg: {{ section.settings.background_color }};
     --hero-surface: {{ section.settings.surface_color }};
@@ -25,18 +26,33 @@
 >
   <div class="premium-hero__glow" aria-hidden="true"></div>
 
+  <div class="premium-hero__fx" aria-hidden="true">
+    <span class="premium-hero__aurora" data-parallax="0.08"></span>
+    <span class="premium-hero__caustics"></span>
+    <span class="premium-hero__mist" data-parallax="0.12"></span>
+    <span class="premium-hero__particles">
+      {% for i in (1..9) %}
+        <span class="premium-hero__particle"></span>
+      {% endfor %}
+    </span>
+  </div>
+
   <div class="premium-hero__inner">
     <div class="premium-hero__content">
       {% if section.settings.eyebrow != blank %}
-        <p class="premium-hero__eyebrow">{{ section.settings.eyebrow }}</p>
+        <p class="premium-hero__eyebrow">{{ section.settings.eyebrow | replace: 'pump', '<span class="brand-mark">pump</span>' }}</p>
       {% endif %}
 
-      {% if section.settings.heading != blank %}
-        <h1 class="premium-hero__heading">{{ section.settings.heading }}</h1>
-      {% endif %}
+      {% if section.settings.heading != blank or section.settings.subheading != blank %}
+        <div class="premium-hero__intro">
+          {% if section.settings.heading != blank %}
+            <h1 class="premium-hero__heading">{{ section.settings.heading }}</h1>
+          {% endif %}
 
-      {% if section.settings.subheading != blank %}
-        <div class="premium-hero__subheading">{{ section.settings.subheading }}</div>
+          {% if section.settings.subheading != blank %}
+            <div class="premium-hero__subheading">{{ section.settings.subheading }}</div>
+          {% endif %}
+        </div>
       {% endif %}
 
       {% if section.settings.primary_button_label != blank or section.settings.secondary_button_label != blank %}
@@ -155,6 +171,15 @@
     align-items: flex-start;
   }
 
+  .premium-hero__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-self: stretch;
+    width: 100%;
+    text-align: inherit;
+  }
+
   .premium-hero__eyebrow {
     margin: 0;
     font-size: 0.78rem;
@@ -183,10 +208,17 @@
 
   .premium-hero__subheading {
     margin: 0;
-    max-width: 50ch;
+    max-width: 52ch;
     font-size: clamp(1.02rem, 2.4vw, 1.2rem);
     line-height: 1.6;
     color: var(--hero-muted, #9aa8a2);
+    text-align: inherit;
+  }
+
+  /* Override the global [class$='__subheading'] centering so the hero
+     subtext stays flush-left, directly under the heading. */
+  .premium-hero .premium-hero__intro .premium-hero__subheading {
+    margin-inline: 0;
   }
 
   .premium-hero__subheading > * {
@@ -417,6 +449,106 @@
     }
   }
 
+  /* ---- Ambient nature backdrop (aurora + water caustics + mist + particles) ---- */
+  .premium-hero__fx {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .premium-hero__aurora {
+    position: absolute;
+    inset: -25%;
+    background-image:
+      radial-gradient(40% 60% at 20% 30%, color-mix(in srgb, var(--hero-accent, #2dd4bf) 32%, transparent), transparent 60%),
+      radial-gradient(45% 55% at 80% 22%, color-mix(in srgb, #6ee7ff 28%, transparent), transparent 60%),
+      radial-gradient(50% 60% at 60% 80%, color-mix(in srgb, #22c55e 20%, transparent), transparent 65%);
+    background-size: 200% 200%;
+    filter: blur(55px) saturate(120%);
+    opacity: 0.5;
+    animation: heroAurora 20s ease-in-out infinite alternate;
+  }
+
+  .premium-hero__caustics {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 30% 40%, color-mix(in srgb, #ffffff 8%, transparent) 0 7%, transparent 17%),
+      radial-gradient(circle at 70% 60%, color-mix(in srgb, #ffffff 6%, transparent) 0 6%, transparent 16%),
+      radial-gradient(circle at 50% 85%, color-mix(in srgb, #ffffff 5%, transparent) 0 5%, transparent 14%);
+    background-size: 340px 340px, 270px 270px, 210px 210px;
+    mix-blend-mode: screen;
+    opacity: 0.35;
+    animation: heroCaustics 16s linear infinite;
+  }
+
+  .premium-hero__mist {
+    position: absolute;
+    inset: auto -30% -12% -30%;
+    height: 60%;
+    background-repeat: no-repeat;
+    background-size: 140% 100%;
+    background-position: 0% 100%;
+    background-image:
+      radial-gradient(60% 100% at 30% 100%, color-mix(in srgb, #ffffff 7%, transparent), transparent 70%),
+      radial-gradient(50% 100% at 75% 100%, color-mix(in srgb, #ffffff 5%, transparent), transparent 70%);
+    filter: blur(22px);
+    opacity: 0.7;
+    animation: heroMist 24s ease-in-out infinite alternate;
+  }
+
+  .premium-hero__particles {
+    position: absolute;
+    inset: 0;
+  }
+
+  .premium-hero__particle {
+    position: absolute;
+    bottom: -12px;
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--hero-accent, #2dd4bf) 70%, #ffffff);
+    box-shadow: 0 0 6px color-mix(in srgb, var(--hero-accent, #2dd4bf) 60%, transparent);
+    opacity: 0;
+    animation: heroFloatUp linear infinite;
+  }
+
+  .premium-hero__particle:nth-child(1) { left: 8%;  width: 3px; height: 3px; animation-duration: 17s; animation-delay: 0s; }
+  .premium-hero__particle:nth-child(2) { left: 20%; animation-duration: 21s; animation-delay: 3s; }
+  .premium-hero__particle:nth-child(3) { left: 33%; width: 5px; height: 5px; animation-duration: 15s; animation-delay: 6s; }
+  .premium-hero__particle:nth-child(4) { left: 45%; width: 3px; height: 3px; animation-duration: 23s; animation-delay: 1.5s; }
+  .premium-hero__particle:nth-child(5) { left: 57%; animation-duration: 19s; animation-delay: 8s; }
+  .premium-hero__particle:nth-child(6) { left: 68%; width: 5px; height: 5px; animation-duration: 16s; animation-delay: 4.5s; }
+  .premium-hero__particle:nth-child(7) { left: 79%; width: 3px; height: 3px; animation-duration: 22s; animation-delay: 2s; }
+  .premium-hero__particle:nth-child(8) { left: 88%; animation-duration: 18s; animation-delay: 7s; }
+  .premium-hero__particle:nth-child(9) { left: 95%; width: 3px; height: 3px; animation-duration: 20s; animation-delay: 5s; }
+
+  @keyframes heroAurora {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 30% 100%; }
+  }
+
+  @keyframes heroCaustics {
+    0% { background-position: 0 0, 0 0, 0 0; }
+    100% { background-position: 340px 170px, -270px 210px, 190px -170px; }
+  }
+
+  @keyframes heroMist {
+    0% { background-position: 0% 100%; }
+    100% { background-position: 100% 100%; }
+  }
+
+  @keyframes heroFloatUp {
+    0% { transform: translateY(0) scale(1); opacity: 0; }
+    12% { opacity: 0.55; }
+    88% { opacity: 0.4; }
+    100% { transform: translateY(-88vh) scale(0.6); opacity: 0; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .premium-hero__btn {
       transition: none;
@@ -424,6 +556,10 @@
 
     .premium-hero__btn--primary:hover {
       transform: none;
+    }
+
+    .premium-hero__fx {
+      display: none;
     }
   }
 {% endstylesheet %}
@@ -441,7 +577,7 @@
       "type": "text",
       "id": "eyebrow",
       "label": "Eyebrow",
-      "default": "PUMP · The Portable Shower"
+      "default": "pump · The Portable Shower"
     },
     {
       "type": "text",
@@ -599,10 +735,11 @@
       "name": "Premium hero",
       "blocks": [
         { "type": "trust_badge", "settings": { "label": "USB-C laddning" } },
-        { "type": "trust_badge", "settings": { "label": "Upp till 150 min batteritid" } },
+        { "type": "trust_badge", "settings": { "label": "~150 min batteritid" } },
         { "type": "trust_badge", "settings": { "label": "Väger ca 1 kg" } }
       ]
     }
   ]
 }
 {% endschema %}
+

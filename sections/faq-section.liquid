@@ -45,20 +45,20 @@
 
 {% stylesheet %}
   .faq-section {
-    padding-block: 52px;
+    padding-block: 36px;
     padding-inline: var(--page-margin, 20px);
     background-color: var(--faq-bg, #071014);
     color: var(--faq-text, #f6f7f2);
   }
 
   .faq-section__inner {
-    max-width: 720px;
+    max-width: 680px;
     margin-inline: auto;
   }
 
   .faq-section__header {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
 
   .faq-section__eyebrow {
@@ -80,11 +80,11 @@
   .faq-section__list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
   }
 
   .faq-section__category {
-    margin: 22px 0 2px;
+    margin: 16px 0 2px;
     font-size: 0.82rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -118,12 +118,16 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 16px 20px;
+    padding: 9px 16px;
     font-weight: 600;
-    font-size: 0.98rem;
+    font-size: 0.9rem;
     cursor: pointer;
     list-style: none;
     user-select: none;
+  }
+
+  .faq-section__item[open] .faq-section__question {
+    padding-bottom: 8px;
   }
 
   .faq-section__question::-webkit-details-marker {
@@ -132,8 +136,8 @@
 
   .faq-section__icon {
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     position: relative;
   }
 
@@ -168,9 +172,9 @@
   }
 
   .faq-section__answer {
-    padding: 0 20px 18px;
-    font-size: 0.92rem;
-    line-height: 1.6;
+    padding: 0 16px 14px;
+    font-size: 0.9rem;
+    line-height: 1.55;
     color: var(--faq-muted, #9aa8a2);
   }
 
@@ -180,7 +184,7 @@
 
   @media screen and (min-width: 750px) {
     .faq-section {
-      padding-block: 68px;
+      padding-block: 48px;
     }
   }
 
@@ -260,7 +264,7 @@
           "type": "richtext",
           "id": "answer",
           "label": "Answer",
-          "default": "<p>Med full laddning får du upp till 150 minuters drift, beroende på flödesinställning.</p>"
+          "default": "<p>Med full laddning får du ~150 minuters drift, beroende på flödesinställning.</p>"
         }
       ]
     }
@@ -273,7 +277,7 @@
           "type": "faq",
           "settings": {
             "question": "Hur länge räcker batteriet?",
-            "answer": "<p>Med full laddning får du upp till 150 minuters drift, beroende på flödesinställning.</p>"
+            "answer": "<p>Med full laddning får du ~150 minuters drift, beroende på flödesinställning.</p>"
           }
         },
         {

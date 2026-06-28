@@ -147,3 +147,48 @@ body {
     white-space: nowrap;
   }
 }
+
+/* Brand wordmark: the name "pump" always renders lowercase in Alexandria. */
+.brand-mark {
+  font-family: var(--font-brand);
+  font-weight: 700;
+  text-transform: lowercase;
+}
+
+/* Cursor policy: show the normal arrow over text (no I-beam) site-wide,
+   while keeping the expected cursors on interactive and editable elements. */
+body {
+  cursor: default;
+}
+
+a[href],
+button,
+label,
+select,
+summary,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
+}
+
+input:not([type]),
+input[type="text"],
+input[type="email"],
+input[type="search"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+textarea,
+[contenteditable="true"] {
+  cursor: text;
+}
+
+:disabled {
+  cursor: not-allowed;
+}
+

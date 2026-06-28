@@ -22,7 +22,7 @@
         {% if section.settings.eyebrow != blank %}
           <p class="feature-highlights__eyebrow">{{ section.settings.eyebrow }}</p>
         {% endif %}
-        <h2 class="feature-highlights__heading">{{ section.settings.heading }}</h2>
+        <h2 class="feature-highlights__heading">{{ section.settings.heading | replace: 'pump', '<span class="brand-mark">pump</span>' }}</h2>
         {% if section.settings.subheading != blank %}
           <p class="feature-highlights__subheading">{{ section.settings.subheading }}</p>
         {% endif %}
@@ -324,7 +324,7 @@
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "Varför en portabel dusch från PUMP?"
+      "default": "Varför en portabel dusch från pump?"
     },
     {
       "type": "textarea",
@@ -412,10 +412,11 @@
         { "type": "spec", "settings": { "icon": "sliders", "label": "Justerbart tryck" } },
         { "type": "spec", "settings": { "icon": "droplets", "label": "2 olika munstycken" } },
         { "type": "feature", "settings": { "icon": "feather", "title": "Smart & portabel design", "text": "Duschen väger ca 1 kg och är enkel att ta med överallt. Fäst den med sugpropp på en vägg, häng upp den i en krok eller håll den i handen, perfekt för camping, bastu eller friluftsliv." } },
-        { "type": "feature", "settings": { "icon": "thermometer", "title": "Batteritid & display", "text": "Upp till 150 minuters drift per laddning. Den inbyggda displayen visar både vattentemperatur och batterinivå för total överblick. Laddas smidigt med USB-C." } },
+        { "type": "feature", "settings": { "icon": "thermometer", "title": "Batteritid & display", "text": "~150 minuters drift per laddning. Den inbyggda displayen visar både vattentemperatur och batterinivå för total överblick. Laddas smidigt med USB-C." } },
         { "type": "feature", "settings": { "icon": "sliders", "title": "Justerbart tryck & flexibla munstycken", "text": "Slå enkelt av/på vattnet genom duschmunstyckena eller justera trycket efter dina behov." } }
       ]
     }
   ]
 }
 {% endschema %}
+

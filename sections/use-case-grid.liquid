@@ -14,7 +14,7 @@
         {% if section.settings.eyebrow != blank %}
           <p class="use-case-grid__eyebrow">{{ section.settings.eyebrow }}</p>
         {% endif %}
-        <h2 class="use-case-grid__heading">{{ section.settings.heading }}</h2>
+        <h2 class="use-case-grid__heading">{{ section.settings.heading | replace: 'pump', '<span class="brand-mark">pump</span>' }}</h2>
         {% if section.settings.subheading != blank %}
           <p class="use-case-grid__subheading">{{ section.settings.subheading }}</p>
         {% endif %}
@@ -170,6 +170,19 @@
     color: var(--uc-muted, #9aa8a2);
   }
 
+  /* Mobile 2-col: if the last card is alone on its row, let it span the
+     full width and center its content so the grid stays even. */
+  @media screen and (max-width: 749px) {
+    .use-case-grid__card:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+
+    .use-case-grid__card:last-child:nth-child(odd) .use-case-grid__body {
+      align-items: center;
+      text-align: center;
+    }
+  }
+
   @media screen and (min-width: 750px) {
     .use-case-grid {
       padding-block: 68px;
@@ -239,7 +252,7 @@
       "type": "textarea",
       "id": "subheading",
       "label": "Subheading",
-      "default": "Från skärgården till fjällen, PUMP följer med."
+      "default": "Från skärgården till fjällen, pump följer med."
     },
     {
       "type": "color",
@@ -313,9 +326,9 @@
         { "type": "use_case", "settings": { "icon": "anchor", "title": "Båt & skärgård", "text": "Skölj av salt och svett direkt på däck." } },
         { "type": "use_case", "settings": { "icon": "sauna", "title": "Bastu", "text": "Svalkande dusch efter värmen." } },
         { "type": "use_case", "settings": { "icon": "umbrella", "title": "Strand", "text": "Skölj av sand innan du åker hem." } },
-        { "type": "use_case", "settings": { "icon": "van", "title": "Vanlife", "text": "Dusch frihet utan fast installation." } },
+        { "type": "use_case", "settings": { "icon": "van", "title": "Vanlife", "text": "Duschfrihet utan fast installation." } },
         { "type": "use_case", "settings": { "icon": "paw", "title": "Husdjur", "text": "Skölj av lera och sand efter promenaden." } },
-        { "type": "use_case", "settings": { "icon": "droplets", "title": "Prylar & utrustning", "text": "Spola av cyklar, redskap och ställen där slangen inte når." } },
+        { "type": "use_case", "settings": { "icon": "droplets", "title": "Prylar & utrustning", "text": "Spola av cyklar, redskap och ytor där slangen inte når." } },
         { "type": "use_case", "settings": { "icon": "utensils", "title": "Picknick & utflykt", "text": "Diska och skölj av direkt efter picknicken." } },
         { "type": "use_case", "settings": { "icon": "droplet", "title": "Till vad som helst", "text": "Bara fantasin sätter gränser, var som helst där du behöver vatten." } }
       ]
@@ -323,3 +336,4 @@
   ]
 }
 {% endschema %}
+

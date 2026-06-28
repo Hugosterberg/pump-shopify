@@ -22,7 +22,7 @@
         <p class="blog-posts__eyebrow">{{ section.settings.eyebrow }}</p>
       {% endif %}
       {% if section.settings.heading != blank %}
-        <h2 class="blog-posts__heading">{{ section.settings.heading }}</h2>
+        <h2 class="blog-posts__heading">{{ section.settings.heading | replace: 'pump', '<span class="brand-mark">pump</span>' }}</h2>
       {% endif %}
     </header>
 
@@ -257,7 +257,7 @@
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "Lär dig mer om PUMP"
+      "default": "Lär dig mer om pump"
     },
     {
       "type": "blog",
@@ -335,3 +335,4 @@
   ]
 }
 {% endschema %}
+

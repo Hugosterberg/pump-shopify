@@ -91,19 +91,17 @@
 {% stylesheet %}
   .scenes {
     padding-inline: var(--page-margin, 20px);
-    padding-block: 22px;
+    padding-block: 12px 22px;
     background-color: #060c11;
   }
 
   .scenes__stage {
     position: relative;
-    max-width: var(--page-width, 90rem);
+    max-width: min(40rem, 100%);
     margin-inline: auto;
-    min-height: var(--scn-min-height, 320px);
+    min-height: var(--scn-min-height, 260px);
     border-radius: 24px;
     overflow: hidden;
-    display: grid;
-    place-items: center;
     isolation: isolate;
   }
 
@@ -129,9 +127,12 @@
   }
 
   .scenes__product {
-    position: relative;
+    position: absolute;
     z-index: 1;
-    max-width: min(46%, 360px);
+    left: 50%;
+    bottom: 72px;
+    transform: translateX(-50%);
+    max-width: min(42%, 240px);
     height: auto;
     filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.55));
   }
@@ -141,7 +142,8 @@
     z-index: 2;
     left: 0;
     bottom: 0;
-    padding: 28px;
+    right: 0;
+    padding: 22px 24px;
     text-align: left;
     color: var(--scn-text, #f6f7f2);
   }
@@ -184,11 +186,16 @@
 
   @media screen and (min-width: 750px) {
     .scenes {
-      padding-block: 30px;
+      padding-block: 16px 28px;
+    }
+
+    .scenes__product {
+      bottom: 88px;
+      max-width: min(36%, 260px);
     }
 
     .scenes__content {
-      padding: 44px;
+      padding: 28px 32px;
     }
   }
 
@@ -237,11 +244,11 @@
       "type": "range",
       "id": "min_height",
       "label": "Minimum height",
-      "min": 280,
+      "min": 200,
       "max": 720,
       "step": 20,
       "unit": "px",
-      "default": 320
+      "default": 240
     },
     { "type": "header", "content": "Colors" },
     { "type": "color", "id": "text_color", "label": "Text", "default": "#F6F7F2" },

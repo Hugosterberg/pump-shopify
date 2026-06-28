@@ -3,7 +3,7 @@
     "faq": {
       "type": "faq-section",
       "blocks": {
-        "q-1": { "type": "faq", "settings": { "question": "Hur länge räcker batteriet?", "answer": "<p>Med full laddning får du upp till 150 minuters drift, beroende på flödesinställning.</p>" } },
+        "q-1": { "type": "faq", "settings": { "question": "Hur länge räcker batteriet?", "answer": "<p>Med full laddning får du ~150 minuters drift, beroende på flödesinställning.</p>" } },
         "q-2": { "type": "faq", "settings": { "question": "Hur laddar jag The Portable Shower?", "answer": "<p>Enkelt via USB-C. En full laddning tar cirka 4–5 timmar.</p>" } },
         "q-3": { "type": "faq", "settings": { "question": "Fungerar den med varmt vatten?", "answer": "<p>Ja, den fungerar med både kallt och varmt vatten upp till 60°C.</p>" } },
         "q-4": { "type": "faq", "settings": { "question": "Kan jag använda den med havsvatten?", "answer": "<p>Ja, den fungerar med både sötvatten och havsvatten för en snabb sköljning.</p>" } },

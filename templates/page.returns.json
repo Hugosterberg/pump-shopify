@@ -57,9 +57,10 @@
       "settings": {
         "eyebrow": "Kundservice",
         "heading": "Returer & avbokningar",
-        "intro": "<p>Vi vill att du ska vara nöjd med ditt köp hos PUMP. Om något inte blev som du tänkt dig erbjuder vi 14 dagars ångerrätt enligt distansavtalslagen.</p>"
+        "intro": "<p>Vi vill att du ska vara nöjd med ditt köp hos pump. Om något inte blev som du tänkt dig erbjuder vi 14 dagars ångerrätt enligt distansavtalslagen.</p>"
       }
     }
   },
   "order": ["returns"]
 }
+

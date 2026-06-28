@@ -1,0 +1,70 @@
+{% comment %}
+  A single framed image / clip for the instruction-video side galleries.
+  Params: block (an instruction-video "clip" block).
+  If the block has a video link, it renders as a button that plays the clip
+  in the main player; otherwise it's a framed decorative image.
+{% endcomment %}
+{%- liquid
+  assign b_url = block.settings.video_url
+  assign b_embed = ''
+  if b_url != blank
+    if b_url.type == 'youtube'
+      assign b_embed = 'https://www.youtube.com/embed/' | append: b_url.id | append: '?autoplay=1&rel=0&playsinline=1'
+    elsif b_url.type == 'vimeo'
+      assign b_embed = 'https://player.vimeo.com/video/' | append: b_url.id | append: '?autoplay=1'
+    endif
+  endif
+-%}
+
+{% if b_embed != blank %}
+  <button
+    type="button"
+    class="instruction-video__thumb instruction-video__thumb--clip"
+    data-embed="{{ b_embed }}"
+    aria-label="{{ block.settings.caption | default: 'Spela upp klipp' | escape }}"
+    {{ block.shopify_attributes }}
+  >
+    {% if block.settings.image != blank %}
+      {{
+        block.settings.image
+        | image_url: width: 480
+        | image_tag:
+          loading: 'lazy',
+          widths: '160, 240, 320, 480',
+          sizes: '(min-width: 990px) 170px, 40vw',
+          class: 'instruction-video__thumb-img',
+          alt: block.settings.caption | default: 'pump-klipp'
+      }}
+    {% else %}
+      <span class="instruction-video__thumb-fallback" aria-hidden="true"></span>
+    {% endif %}
+    <span class="instruction-video__thumb-play" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+        <path d="M8 5v14l11-7z" />
+      </svg>
+    </span>
+    {% if block.settings.caption != blank %}
+      <span class="instruction-video__thumb-cap">{{ block.settings.caption }}</span>
+    {% endif %}
+  </button>
+{% else %}
+  <figure class="instruction-video__thumb" {{ block.shopify_attributes }}>
+    {% if block.settings.image != blank %}
+      {{
+        block.settings.image
+        | image_url: width: 480
+        | image_tag:
+          loading: 'lazy',
+          widths: '160, 240, 320, 480',
+          sizes: '(min-width: 990px) 170px, 40vw',
+          class: 'instruction-video__thumb-img',
+          alt: block.settings.caption | default: 'pump i aktion'
+      }}
+    {% else %}
+      <span class="instruction-video__thumb-fallback" aria-hidden="true"></span>
+    {% endif %}
+    {% if block.settings.caption != blank %}
+      <figcaption class="instruction-video__thumb-cap">{{ block.settings.caption }}</figcaption>
+    {% endif %}
+  </figure>
+{% endif %}

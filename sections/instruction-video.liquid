@@ -27,7 +27,7 @@
     --iv-max: {{ section.settings.max_width }}px;
   "
 >
-  <div class="instruction-video__inner">
+  <div class="instruction-video__inner{% if section.blocks.size > 0 %} instruction-video__inner--with-rail{% endif %}">
     {% if section.settings.heading != blank or section.settings.eyebrow != blank %}
       <header class="instruction-video__header">
         {% if section.settings.eyebrow != blank %}
@@ -42,47 +42,87 @@
       </header>
     {% endif %}
 
-    <div class="instruction-video__frame">
-      {% if section.settings.video != blank %}
-        {{
-          section.settings.video
-          | video_tag: image_size: '1200x', controls: true, class: 'instruction-video__media'
-        }}
-      {% elsif embed_src != blank %}
-        <button
-          type="button"
-          class="instruction-video__poster"
-          data-embed="{{ embed_src }}"
-          aria-label="{{ 'Spela upp video' }}"
-        >
-          {% if section.settings.poster != blank %}
-            {{
-              section.settings.poster
-              | image_url: width: 1400
-              | image_tag:
-                loading: 'lazy',
-                sizes: '(min-width: 750px) 70vw, 100vw',
-                widths: '600, 900, 1400',
-                class: 'instruction-video__poster-img',
-                alt: section.settings.heading | default: 'Instruktionsvideo'
-            }}
-          {% else %}
-            <span class="instruction-video__poster-fallback" aria-hidden="true"></span>
-          {% endif %}
-          <span class="instruction-video__play" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </span>
-        </button>
-      {% else %}
-        <div class="instruction-video__placeholder">
-          <span class="instruction-video__play" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </span>
-          <p>Lägg till en YouTube/Vimeo-länk eller ladda upp en video i temaredigeraren.</p>
+    <div class="instruction-video__stage{% if section.blocks.size > 0 %} instruction-video__stage--with-rail{% endif %}">
+      {% if section.blocks.size > 0 %}
+        <div class="instruction-video__gallery instruction-video__gallery--left">
+          {% for block in section.blocks %}
+            {%- liquid
+              assign side = block.settings.side
+              if side == blank or side == 'auto'
+                assign parity = forloop.index0 | modulo: 2
+                if parity == 0
+                  assign side = 'left'
+                else
+                  assign side = 'right'
+                endif
+              endif
+            -%}
+            {% if side == 'left' %}{% render 'instruction-shot', block: block %}{% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="instruction-video__frame" data-video-frame>
+        {% if section.settings.video != blank %}
+          {{
+            section.settings.video
+            | video_tag: image_size: '1200x', controls: true, class: 'instruction-video__media'
+          }}
+        {% elsif embed_src != blank %}
+          <button
+            type="button"
+            class="instruction-video__poster"
+            data-embed="{{ embed_src }}"
+            aria-label="{{ 'Spela upp video' }}"
+          >
+            {% if section.settings.poster != blank %}
+              {{
+                section.settings.poster
+                | image_url: width: 1400
+                | image_tag:
+                  loading: 'lazy',
+                  sizes: '(min-width: 750px) 70vw, 100vw',
+                  widths: '600, 900, 1400',
+                  class: 'instruction-video__poster-img',
+                  alt: section.settings.heading | default: 'Instruktionsvideo'
+              }}
+            {% else %}
+              <span class="instruction-video__poster-fallback" aria-hidden="true"></span>
+            {% endif %}
+            <span class="instruction-video__play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </span>
+          </button>
+        {% else %}
+          <div class="instruction-video__placeholder">
+            <span class="instruction-video__play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </span>
+            <p>Lägg till en YouTube/Vimeo-länk eller ladda upp en video i temaredigeraren.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if section.blocks.size > 0 %}
+        <div class="instruction-video__gallery instruction-video__gallery--right">
+          {% for block in section.blocks %}
+            {%- liquid
+              assign side = block.settings.side
+              if side == blank or side == 'auto'
+                assign parity = forloop.index0 | modulo: 2
+                if parity == 0
+                  assign side = 'left'
+                else
+                  assign side = 'right'
+                endif
+              endif
+            -%}
+            {% if side == 'right' %}{% render 'instruction-shot', block: block %}{% endif %}
+          {% endfor %}
         </div>
       {% endif %}
     </div>
@@ -128,6 +168,11 @@
     line-height: 1.55;
   }
 
+  .instruction-video__stage {
+    display: grid;
+    gap: 16px;
+  }
+
   .instruction-video__frame {
     position: relative;
     aspect-ratio: 16 / 9;
@@ -135,6 +180,98 @@
     overflow: hidden;
     background-color: #0b1218;
     border: 1px solid color-mix(in srgb, var(--iv-text, #f6f7f2) 10%, transparent);
+  }
+
+  /* ---- Framed images / clips flanking the video (same style as P.U.M.P.) ---- */
+  .instruction-video__gallery {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .instruction-video__thumb {
+    flex: 0 0 auto;
+    width: clamp(118px, 38vw, 160px);
+    position: relative;
+    display: block;
+    margin: 0;
+    padding: 5px;
+    border: 1px solid color-mix(in srgb, var(--iv-text, #f6f7f2) 12%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--iv-text, #f6f7f2) 5%, transparent);
+    box-shadow: 0 14px 32px -22px rgba(0, 0, 0, 0.85);
+    cursor: default;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.28s ease, box-shadow 0.28s ease;
+  }
+
+  .instruction-video__thumb--clip {
+    cursor: pointer;
+  }
+
+  .instruction-video__thumb-img,
+  .instruction-video__thumb-fallback {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 9px;
+  }
+
+  .instruction-video__thumb-fallback {
+    background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--iv-accent, #2dd4bf) 22%, transparent), transparent 60%), #0b1218;
+  }
+
+  .instruction-video__thumb-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    color: #06231f;
+    background-color: var(--iv-accent, #2dd4bf);
+    box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--iv-accent, #2dd4bf) 85%, #000);
+    transition: transform 0.2s ease;
+  }
+
+  .instruction-video__thumb-cap {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    padding: 5px 8px;
+    border-radius: 9px;
+    background: color-mix(in srgb, #000000 55%, transparent);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--iv-text, #f6f7f2);
+    text-align: left;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.24s ease, transform 0.24s ease;
+  }
+
+  .instruction-video__thumb--clip:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--iv-accent, #2dd4bf) 45%, transparent);
+    box-shadow: 0 22px 44px -20px color-mix(in srgb, var(--iv-accent, #2dd4bf) 60%, #000);
+  }
+
+  .instruction-video__thumb:hover .instruction-video__thumb-cap {
+    opacity: 1;
+    transform: none;
+  }
+
+  .instruction-video__thumb--clip:hover .instruction-video__thumb-play {
+    transform: translate(-50%, -50%) scale(1.1);
   }
 
   .instruction-video__media,
@@ -221,10 +358,46 @@
     .instruction-video {
       padding-block: 60px;
     }
+
+    .instruction-video__subheading {
+      white-space: nowrap;
+    }
+  }
+
+  /* Desktop: framed images flank the centered video, video stays in the middle. */
+  @media screen and (min-width: 990px) {
+    .instruction-video__inner--with-rail {
+      max-width: min(1240px, 100%);
+    }
+
+    .instruction-video__stage--with-rail {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .instruction-video__stage--with-rail .instruction-video__gallery {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .instruction-video__stage--with-rail .instruction-video__thumb {
+      width: clamp(140px, 13vw, 180px);
+    }
+  }
+
+  /* Touch devices have no hover: keep captions visible so the labels read. */
+  @media (hover: none) {
+    .instruction-video__thumb-cap {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .instruction-video__play {
+    .instruction-video__play,
+    .instruction-video__thumb,
+    .instruction-video__thumb-play {
       transition: none;
     }
   }
@@ -232,18 +405,39 @@
 
 <script>
   (function () {
-    var poster = document.querySelector('#shopify-section-{{ section.id }} .instruction-video__poster');
-    if (!poster) return;
+    var root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root) return;
 
-    poster.addEventListener('click', function () {
-      var src = poster.getAttribute('data-embed');
-      if (!src) return;
+    var frame = root.querySelector('[data-video-frame]');
+    var title = '{{ section.settings.heading | default: "Instruktionsvideo" | escape }}';
+
+    function makeIframe(src) {
       var iframe = document.createElement('iframe');
       iframe.setAttribute('src', src);
       iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
       iframe.setAttribute('allowfullscreen', '');
-      iframe.setAttribute('title', '{{ section.settings.heading | default: "Instruktionsvideo" | escape }}');
-      poster.replaceWith(iframe);
+      iframe.setAttribute('title', title);
+      return iframe;
+    }
+
+    // Main poster: load its embed in place.
+    var poster = root.querySelector('.instruction-video__poster');
+    if (poster) {
+      poster.addEventListener('click', function () {
+        var src = poster.getAttribute('data-embed');
+        if (src) poster.replaceWith(makeIframe(src));
+      });
+    }
+
+    // Rail clips: load the chosen clip into the big frame.
+    var clips = root.querySelectorAll('.instruction-video__thumb--clip');
+    Array.prototype.forEach.call(clips, function (clip) {
+      clip.addEventListener('click', function () {
+        var src = clip.getAttribute('data-embed');
+        if (!src || !frame) return;
+        frame.textContent = '';
+        frame.appendChild(makeIframe(src));
+      });
     });
   })();
 </script>
@@ -255,7 +449,7 @@
   "settings": [
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Så funkar den" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Se hur enkelt det är" },
-    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "En kort instruktionsvideo, från påfyllning till färdig dusch." },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "En kort instruktionsvideo, från lösa delar till färdig dusch på sekundrar." },
     {
       "type": "video_url",
       "id": "video_url",
@@ -280,9 +474,44 @@
     { "type": "color", "id": "muted_text_color", "label": "Muted text", "default": "#9AA8A2" },
     { "type": "color", "id": "accent_color", "label": "Accent", "default": "#2DD4BF" }
   ],
+  "blocks": [
+    {
+      "type": "clip",
+      "name": "Framed image / clip",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image / poster" },
+        {
+          "type": "video_url",
+          "id": "video_url",
+          "label": "Clip link (YouTube/Vimeo)",
+          "info": "Optional. If set, clicking plays this clip in the big player.",
+          "accept": ["youtube", "vimeo"]
+        },
+        { "type": "text", "id": "caption", "label": "Caption" },
+        {
+          "type": "select",
+          "id": "side",
+          "label": "Side",
+          "default": "auto",
+          "options": [
+            { "value": "auto", "label": "Auto (alternate)" },
+            { "value": "left", "label": "Left" },
+            { "value": "right", "label": "Right" }
+          ]
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
   "presets": [
     {
-      "name": "Instruction video"
+      "name": "Instruction video",
+      "blocks": [
+        { "type": "clip", "settings": { "side": "left", "caption": "Fyll på" } },
+        { "type": "clip", "settings": { "side": "left", "caption": "Sätt fast" } },
+        { "type": "clip", "settings": { "side": "right", "caption": "Duscha" } },
+        { "type": "clip", "settings": { "side": "right", "caption": "Klar" } }
+      ]
     }
   ]
 }
