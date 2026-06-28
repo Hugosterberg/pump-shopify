@@ -1,0 +1,82 @@
+---
+description: Rules for working on the Pump Portable Shopify theme
+globs:
+  - "**/*.liquid"
+  - "**/*.json"
+  - "**/*.css"
+  - "**/*.js"
+alwaysApply: true
+---
+
+# Pump Portable Shopify Theme Rules
+
+You are editing a Shopify Online Store 2.0 theme.
+
+## Do not treat this as React
+
+Do not suggest:
+- React components
+- Next.js routing
+- shadcn/ui
+- TypeScript components
+- client-side ecommerce state
+- custom checkout
+
+unless the user explicitly asks for Hydrogen/headless.
+
+## Preserve Shopify Commerce Logic
+
+Never casually remove or rewrite:
+- product forms
+- cart forms
+- variant picker logic
+- Shopify app blocks
+- theme schemas
+- Liquid objects
+- dynamic checkout buttons
+- localization/currency selectors
+- customer account links
+- structured data
+
+## Editing Rules
+
+When editing Liquid:
+
+- preserve existing Shopify objects
+- preserve schema settings
+- preserve block support
+- preserve app block rendering
+- use semantic HTML
+- avoid hardcoded product data
+- avoid hardcoded URLs where Shopify routes exist
+- avoid unnecessary JavaScript
+
+## Design Direction
+
+Pump Portable should feel:
+- premium
+- modern
+- clean
+- high-converting
+- trustworthy
+- mobile-first
+
+Use strong sections:
+- hero
+- product benefits
+- product showcase
+- reviews
+- comparison
+- FAQ
+- CTA
+
+## Response Style
+
+Before changing code, briefly state:
+- what file you will edit
+- what Shopify logic is protected
+- what visual/UX improvement you are making
+
+After changing code, state:
+- changed files
+- what to test in Shopify preview
