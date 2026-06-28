@@ -1,59 +1,364 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+<header
+  class="site-header full-width"
+  style="
+    --hdr-bg: {{ section.settings.background_color }};
+    --hdr-text: {{ section.settings.text_color }};
+    --hdr-muted: {{ section.settings.muted_text_color }};
+    --hdr-accent: {{ section.settings.accent_color }};
+    --hdr-border: {{ section.settings.border_color }};
+  "
+>
+  <div class="site-header__inner">
+    <div class="site-header__brand">
+      {% if section.settings.logo != blank %}
+        <a class="site-header__logo-link" href="{{ routes.root_url }}">
+          {{
+            section.settings.logo
+            | image_url: width: 300
+            | image_tag:
+              loading: 'eager',
+              widths: '120, 180, 240, 300',
+              sizes: '140px',
+              class: 'site-header__logo',
+              alt: shop.name
+          }}
+        </a>
+      {% elsif settings.logo != blank %}
+        <a class="site-header__logo-link" href="{{ routes.root_url }}">
+          {{
+            settings.logo
+            | image_url: width: 300
+            | image_tag:
+              loading: 'eager',
+              widths: '120, 180, 240, 300',
+              sizes: '140px',
+              class: 'site-header__logo',
+              alt: shop.name
+          }}
+        </a>
+      {% else %}
+        <a class="site-header__title" href="{{ routes.root_url }}">{{ shop.name }}</a>
+      {% endif %}
+    </div>
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
-
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      <shopify-account menu="{{ section.settings.customer_account_menu }}">
-        {{ 'icon-account.svg' | inline_asset_content }}
-      </shopify-account>
+    {% if section.settings.menu != blank %}
+      <nav class="site-header__nav" aria-label="Huvudmeny">
+        <ul class="site-header__menu" role="list">
+          {% for link in section.settings.menu.links %}
+            <li>
+              <a
+                class="site-header__link{% if link.active %} site-header__link--active{% endif %}"
+                href="{{ link.url }}"
+                {% if link.current %}
+                  aria-current="page"
+                {% endif %}
+              >
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
     {% endif %}
 
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
+    <div class="site-header__actions">
+      {% if section.settings.show_cta and section.settings.cta_label != blank %}
+        <a class="site-header__cta" href="{{ section.settings.cta_link | default: '#product-showcase' }}">
+          {{ section.settings.cta_label }}
+        </a>
       {% endif %}
 
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
+      {% if shop.customer_accounts_enabled %}
+        <a class="site-header__icon-btn" href="{{ routes.account_url }}" aria-label="Konto">
+          <shopify-account menu="{{ section.settings.customer_account_menu }}">
+            {{ 'icon-account.svg' | inline_asset_content }}
+          </shopify-account>
+        </a>
+      {% endif %}
+
+      <a class="site-header__icon-btn site-header__cart" href="{{ routes.cart_url }}" aria-label="Varukorg">
+        {{ 'icon-cart.svg' | inline_asset_content }}
+        {% if cart.item_count > 0 %}
+          <span class="site-header__cart-count">{{ cart.item_count }}</span>
+        {% endif %}
+      </a>
+
+      {% if section.settings.menu != blank %}
+        <details class="site-header__drawer">
+          <summary class="site-header__menu-toggle" aria-label="Öppna meny">
+            <span class="site-header__menu-icon" aria-hidden="true"></span>
+          </summary>
+          <nav class="site-header__drawer-nav" aria-label="Mobilmeny">
+            <ul role="list">
+              {% for link in section.settings.menu.links %}
+                <li>
+                  <a
+                    class="site-header__drawer-link"
+                    href="{{ link.url }}"
+                    {% if link.current %}
+                      aria-current="page"
+                    {% endif %}
+                  >
+                    {{ link.title }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+            {% if section.settings.show_cta and section.settings.cta_label != blank %}
+              <a class="site-header__drawer-cta" href="{{ section.settings.cta_link | default: '#product-showcase' }}">
+                {{ section.settings.cta_label }}
+              </a>
+            {% endif %}
+          </nav>
+        </details>
+      {% endif %}
+    </div>
   </div>
 </header>
 
 {% stylesheet %}
-  header {
-    height: 5rem;
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background-color: color-mix(in srgb, var(--hdr-bg, #071014) 92%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--hdr-border, rgba(255, 255, 255, 0.08));
+    color: var(--hdr-text, #f6f7f2);
+  }
+
+  .site-header__inner {
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+    padding-inline: var(--page-margin, 20px);
+    min-height: 64px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 20px;
   }
-  header a {
-    position: relative;
+
+  .site-header__brand {
+    flex-shrink: 0;
+  }
+
+  .site-header__title {
+    font-size: 1.1rem;
+    font-weight: 700;
     text-decoration: none;
-    color: var(--color-foreground);
+    color: var(--hdr-text, #f6f7f2);
+    letter-spacing: -0.02em;
+  }
+
+  .site-header__logo-link {
+    display: block;
+    line-height: 0;
+  }
+
+  .site-header__logo {
+    height: 32px;
+    width: auto;
+  }
+
+  .site-header__nav {
+    display: none;
+  }
+
+  .site-header__menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 28px;
+  }
+
+  .site-header__link {
+    font-size: 0.92rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--hdr-muted, #9aa8a2);
+    transition: color 0.15s ease;
+  }
+
+  .site-header__link:hover,
+  .site-header__link--active {
+    color: var(--hdr-text, #f6f7f2);
+  }
+
+  .site-header__actions {
     display: flex;
     align-items: center;
+    gap: 10px;
+    margin-left: auto;
+  }
+
+  .site-header__cta {
+    display: none;
+    min-height: 40px;
+    padding-inline: 20px;
+    align-items: center;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--hdr-bg, #071014);
+    background-color: var(--hdr-accent, #2dd4bf);
+  }
+
+  .site-header__icon-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    color: var(--hdr-text, #f6f7f2);
+    text-decoration: none;
+    transition: background-color 0.15s ease;
   }
-  header a sup {
+
+  .site-header__icon-btn:hover {
+    background-color: color-mix(in srgb, var(--hdr-text, #f6f7f2) 8%, transparent);
+  }
+
+  .site-header__icon-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .site-header__cart-count {
     position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
+    top: 4px;
+    right: 4px;
+    min-width: 18px;
+    height: 18px;
+    padding-inline: 4px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    color: var(--hdr-bg, #071014);
+    background-color: var(--hdr-accent, #2dd4bf);
   }
-  header svg {
-    width: 2rem;
+
+  .site-header__drawer {
+    position: relative;
   }
-  header .header__menu,
-  header .header__icons {
+
+  .site-header__menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .site-header__menu-toggle::-webkit-details-marker {
+    display: none;
+  }
+
+  .site-header__menu-icon,
+  .site-header__menu-icon::before,
+  .site-header__menu-icon::after {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background-color: var(--hdr-text, #f6f7f2);
+    border-radius: 1px;
+    position: relative;
+  }
+
+  .site-header__menu-icon::before,
+  .site-header__menu-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .site-header__menu-icon::before {
+    top: -6px;
+  }
+
+  .site-header__menu-icon::after {
+    top: 6px;
+  }
+
+  .site-header__drawer-nav {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 240px;
+    padding: 16px;
+    border-radius: 14px;
+    background-color: var(--hdr-bg, #071014);
+    border: 1px solid var(--hdr-border, rgba(255, 255, 255, 0.08));
+    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.6);
+  }
+
+  .site-header__drawer:not([open]) .site-header__drawer-nav {
+    display: none;
+  }
+
+  .site-header__drawer-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .site-header__drawer-link {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--hdr-text, #f6f7f2);
+  }
+
+  .site-header__drawer-link:hover {
+    background-color: color-mix(in srgb, var(--hdr-text, #f6f7f2) 6%, transparent);
+  }
+
+  .site-header__drawer-cta {
+    display: block;
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: 999px;
+    text-align: center;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--hdr-bg, #071014);
+    background-color: var(--hdr-accent, #2dd4bf);
+  }
+
+  @media screen and (min-width: 990px) {
+    .site-header__inner {
+      min-height: 72px;
+    }
+
+    .site-header__nav {
+      display: block;
+    }
+
+    .site-header__cta {
+      display: inline-flex;
+    }
+
+    .site-header__drawer {
+      display: none;
+    }
+
+    .site-header__logo {
+      height: 36px;
+    }
   }
 {% endstylesheet %}
 
@@ -61,6 +366,11 @@
 {
   "name": "t:general.header",
   "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
     {
       "type": "link_list",
       "id": "menu",
@@ -71,6 +381,61 @@
       "id": "customer_account_menu",
       "label": "t:labels.customer_account_menu",
       "default": "customer-account-main-menu"
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show CTA button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "Köp nu"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#071014"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "rgba(255,255,255,0.08)"
     }
   ]
 }

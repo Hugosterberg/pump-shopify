@@ -1,0 +1,81 @@
+{% comment %}
+  Aurora background — softly drifting gradient blobs that feel like
+  light reflecting on water. Absolutely positioned; place inside a
+  position:relative section. Pure CSS, no JavaScript.
+
+  Usage: {% render 'aurora', color: '#2dd4bf', color_2: '#1e6f6a' %}
+{% endcomment %}
+
+{%- liquid
+  assign aur_1 = color | default: '#2dd4bf'
+  assign aur_2 = color_2 | default: aur_1
+-%}
+
+<div class="aurora" aria-hidden="true" style="--aur-1: {{ aur_1 }}; --aur-2: {{ aur_2 }};">
+  <span class="aurora__blob aurora__blob--1"></span>
+  <span class="aurora__blob aurora__blob--2"></span>
+  <span class="aurora__blob aurora__blob--3"></span>
+</div>
+
+{% stylesheet %}
+  .aurora {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .aurora__blob {
+    position: absolute;
+    width: clamp(280px, 48vw, 620px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.32;
+    will-change: transform;
+  }
+
+  .aurora__blob--1 {
+    top: -12%;
+    left: -8%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--aur-1, #2dd4bf) 75%, transparent), transparent 68%);
+    animation: aurora-1 22s ease-in-out infinite;
+  }
+
+  .aurora__blob--2 {
+    bottom: -18%;
+    right: -6%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--aur-2, #2dd4bf) 70%, transparent), transparent 68%);
+    animation: aurora-2 26s ease-in-out infinite;
+  }
+
+  .aurora__blob--3 {
+    top: 30%;
+    left: 45%;
+    opacity: 0.22;
+    background: radial-gradient(circle, color-mix(in srgb, var(--aur-1, #2dd4bf) 60%, transparent), transparent 70%);
+    animation: aurora-3 19s ease-in-out infinite;
+  }
+
+  @keyframes aurora-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(12%, 10%) scale(1.12); }
+  }
+
+  @keyframes aurora-2 {
+    0%, 100% { transform: translate(0, 0) scale(1.05); }
+    50% { transform: translate(-10%, -8%) scale(0.92); }
+  }
+
+  @keyframes aurora-3 {
+    0%, 100% { transform: translate(-50%, 0) scale(1); }
+    50% { transform: translate(-42%, -12%) scale(1.15); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aurora__blob {
+      animation: none;
+    }
+  }
+{% endstylesheet %}

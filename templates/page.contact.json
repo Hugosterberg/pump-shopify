@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "contact": {
+      "type": "contact-form",
+      "settings": {
+        "instagram_url": "https://www.instagram.com/pumpportable_"
+      }
+    }
+  },
+  "order": ["contact"]
+}

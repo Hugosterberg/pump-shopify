@@ -1,0 +1,390 @@
+<div
+  class="problem-solution full-width"
+  style="
+    --ps-bg: {{ section.settings.background_color }};
+    --ps-surface: {{ section.settings.surface_color }};
+    --ps-text: {{ section.settings.text_color }};
+    --ps-muted: {{ section.settings.muted_text_color }};
+    --ps-accent: {{ section.settings.accent_color }};
+    --ps-problem: {{ section.settings.problem_color }};
+    --ps-problem-accent: {{ section.settings.problem_accent_color }};
+  "
+>
+  <div class="problem-solution__inner">
+    <div class="problem-solution__grid">
+      <div class="problem-solution__col problem-solution__col--problem">
+        <span class="problem-solution__icon problem-solution__icon--problem" aria-hidden="true">
+          {% render 'icon', name: 'droplet-off', size: 24 %}
+        </span>
+        {% if section.settings.problem_eyebrow != blank %}
+          <p class="problem-solution__eyebrow">{{ section.settings.problem_eyebrow }}</p>
+        {% endif %}
+        {% if section.settings.problem_heading != blank %}
+          <h2 class="problem-solution__heading">{{ section.settings.problem_heading }}</h2>
+        {% endif %}
+        {% if section.settings.problem_text != blank %}
+          <div class="problem-solution__text">{{ section.settings.problem_text }}</div>
+        {% endif %}
+      </div>
+
+      <div class="problem-solution__connector" aria-hidden="true">
+        <span class="problem-solution__connector-dot">
+          {% render 'icon', name: 'arrow-right', size: 22 %}
+        </span>
+      </div>
+
+      <div class="problem-solution__col problem-solution__col--solution">
+        <span class="problem-solution__glow" aria-hidden="true"></span>
+        <span class="problem-solution__icon problem-solution__icon--solution" aria-hidden="true">
+          {% render 'icon', name: 'droplet', size: 24 %}
+        </span>
+        {% if section.settings.solution_eyebrow != blank %}
+          <p class="problem-solution__eyebrow problem-solution__eyebrow--accent">{{ section.settings.solution_eyebrow }}</p>
+        {% endif %}
+        {% if section.settings.solution_heading != blank %}
+          <h2 class="problem-solution__heading">{{ section.settings.solution_heading }}</h2>
+        {% endif %}
+        {% if section.settings.solution_text != blank %}
+          <div class="problem-solution__text">{{ section.settings.solution_text }}</div>
+        {% endif %}
+        {% if section.settings.button_label != blank %}
+          <a class="problem-solution__btn" href="{{ section.settings.button_link | default: '#product-showcase' }}">
+            {{ section.settings.button_label }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .problem-solution {
+    padding-block: 52px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--ps-bg, #071014);
+    color: var(--ps-text, #f6f7f2);
+  }
+
+  .problem-solution__inner {
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+  }
+
+  .problem-solution__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .problem-solution__col {
+    position: relative;
+    overflow: hidden;
+    padding: 30px 28px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .problem-solution__col--problem {
+    background:
+      radial-gradient(120% 80% at 0% 0%, color-mix(in srgb, var(--ps-problem-accent, #f87171) 12%, transparent), transparent 60%),
+      color-mix(in srgb, var(--ps-problem, #1d2b35) 80%, var(--ps-bg, #071014));
+    border: 1px solid color-mix(in srgb, var(--ps-problem-accent, #f87171) 22%, transparent);
+  }
+
+  .problem-solution__col--solution {
+    background:
+      radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--ps-accent, #2dd4bf) 16%, transparent), transparent 60%),
+      var(--ps-surface, #14212a);
+    border: 1px solid color-mix(in srgb, var(--ps-accent, #2dd4bf) 40%, transparent);
+    box-shadow: 0 24px 60px -34px color-mix(in srgb, var(--ps-accent, #2dd4bf) 90%, #000);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .problem-solution__col--solution:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 70px -30px color-mix(in srgb, var(--ps-accent, #2dd4bf) 95%, #000);
+  }
+
+  .problem-solution__glow {
+    position: absolute;
+    top: -40%;
+    right: -20%;
+    width: 60%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--ps-accent, #2dd4bf) 30%, transparent), transparent 65%);
+    filter: blur(50px);
+    pointer-events: none;
+  }
+
+  .problem-solution__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .problem-solution__icon--problem {
+    color: var(--ps-problem-accent, #f87171);
+    background-color: color-mix(in srgb, var(--ps-problem-accent, #f87171) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ps-problem-accent, #f87171) 35%, transparent);
+  }
+
+  .problem-solution__icon--solution {
+    color: var(--ps-accent, #2dd4bf);
+    background-color: color-mix(in srgb, var(--ps-accent, #2dd4bf) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ps-accent, #2dd4bf) 40%, transparent);
+    box-shadow: 0 8px 22px -10px color-mix(in srgb, var(--ps-accent, #2dd4bf) 90%, #000);
+  }
+
+  .problem-solution__connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 0;
+  }
+
+  .problem-solution__connector-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: var(--ps-bg, #071014);
+    background-color: var(--ps-accent, #2dd4bf);
+    box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--ps-accent, #2dd4bf) 90%, #000);
+    transform: rotate(90deg);
+  }
+
+  .problem-solution__eyebrow {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ps-problem-accent, #f87171);
+    position: relative;
+    z-index: 1;
+  }
+
+  .problem-solution__eyebrow--accent {
+    color: var(--ps-accent, #2dd4bf);
+  }
+
+  .problem-solution__heading {
+    margin: 0;
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 1;
+  }
+
+  .problem-solution__text {
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--ps-muted, #9aa8a2);
+    position: relative;
+    z-index: 1;
+  }
+
+  .problem-solution__text > * {
+    margin: 0;
+  }
+
+  .problem-solution__btn {
+    display: inline-flex;
+    align-self: flex-start;
+    margin-top: 8px;
+    min-height: 48px;
+    padding-inline: 26px;
+    align-items: center;
+    border-radius: 999px;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ps-bg, #071014);
+    background-color: var(--ps-accent, #2dd4bf);
+    transition: transform 0.15s ease;
+  }
+
+  .problem-solution__btn:hover {
+    transform: translateY(-2px);
+  }
+
+  @media screen and (min-width: 750px) {
+    .problem-solution {
+      padding-block: 68px;
+    }
+
+    .problem-solution__grid {
+      grid-template-columns: 1fr auto 1fr;
+      gap: 16px;
+    }
+
+    .problem-solution__connector-dot {
+      transform: rotate(0deg);
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) and (min-width: 750px) {
+      .problem-solution__col--problem {
+        animation: ps-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 26%;
+      }
+
+      .problem-solution__col--solution {
+        animation: ps-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 6% cover 32%;
+      }
+    }
+  }
+
+  @keyframes ps-rise {
+    from {
+      opacity: 0;
+      transform: translateY(26px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .problem-solution__col--solution,
+    .problem-solution__btn {
+      transition: none;
+    }
+
+    .problem-solution__col--solution:hover,
+    .problem-solution__btn:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Problem / solution",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Problem"
+    },
+    {
+      "type": "text",
+      "id": "problem_eyebrow",
+      "label": "Problem eyebrow",
+      "default": "Problemet"
+    },
+    {
+      "type": "text",
+      "id": "problem_heading",
+      "label": "Problem heading",
+      "default": "Inget vatten där du behöver det"
+    },
+    {
+      "type": "richtext",
+      "id": "problem_text",
+      "label": "Problem text",
+      "default": "<p>Efter en dag på båten, i skogen eller på stranden vill du bara skölja av dig. Och i stugan, husbilen eller andra ställen utan rinnande vatten blir vardagen snabbt omständlig, salt, sand, svett och lera hänger kvar.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Solution"
+    },
+    {
+      "type": "text",
+      "id": "solution_eyebrow",
+      "label": "Solution eyebrow",
+      "default": "Lösningen"
+    },
+    {
+      "type": "text",
+      "id": "solution_heading",
+      "label": "Solution heading",
+      "default": "The Portable Shower ger dig duschen tillbaka"
+    },
+    {
+      "type": "richtext",
+      "id": "solution_text",
+      "label": "Solution text",
+      "default": "<p>En kompakt, laddningsbar dusch som följer med överallt. Fyll på, häng upp och duscha, var du än är, även där det saknas rinnande vatten. Mer frihet utan att kompromissa med komfort.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Se produkten"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#071014"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "Surface",
+      "default": "#14212A"
+    },
+    {
+      "type": "color",
+      "id": "problem_color",
+      "label": "Problem surface",
+      "default": "#1D2B35"
+    },
+    {
+      "type": "color",
+      "id": "problem_accent_color",
+      "label": "Problem accent",
+      "default": "#F87171"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Problem / solution"
+    }
+  ]
+}
+{% endschema %}

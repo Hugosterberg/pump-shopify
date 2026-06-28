@@ -1,31 +1,173 @@
 {% comment %}
-  This section is used in the blog template to render the blog page listing all
-  articles within a blog.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/blog
+  Blog listing page.
 {% endcomment %}
 
-<h1>{{ blog.title }}</h1>
+<div class="main-blog full-width">
+  <div class="main-blog__inner">
+    {% render 'breadcrumbs' %}
 
-{% paginate blog.articles by 5 %}
-  {% for article in blog.articles %}
-    <div>
-      {% if article.image %}
-        {{ article.image | image_url: width: 1000 | image_tag }}
+    <header class="main-blog__header">
+      <h1 class="main-blog__title">{{ blog.title }}</h1>
+    </header>
+
+    {% paginate blog.articles by 6 %}
+      {% if blog.articles.size > 0 %}
+        <ul class="main-blog__list" role="list">
+          {% for article in blog.articles %}
+            <li class="main-blog__card">
+              <article class="main-blog__article">
+                <a class="main-blog__link" href="{{ article.url }}">
+                  {% if article.image %}
+                    <div class="main-blog__media">
+                      {{
+                        article.image
+                        | image_url: width: 800
+                        | image_tag:
+                          loading: 'lazy',
+                          widths: '400, 800',
+                          sizes: '(min-width: 750px) 50vw, 100vw',
+                          alt: article.image.alt | default: article.title
+                      }}
+                    </div>
+                  {% endif %}
+                  <div class="main-blog__body">
+                    <h2 class="main-blog__name">{{ article.title }}</h2>
+                    <p class="main-blog__meta">
+                      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                        {{ article.published_at | date: '%-d %B %Y' }}
+                      </time>
+                    </p>
+                    {% if article.excerpt != blank %}
+                      <p class="main-blog__excerpt">{{ article.excerpt | strip_html | truncate: 120 }}</p>
+                    {% endif %}
+                  </div>
+                </a>
+              </article>
+            </li>
+          {% endfor %}
+        </ul>
       {% endif %}
-      <h2>
-        {{ article.title | link_to: article.url }}
-      </h2>
-      {% assign date = article.published_at | time_tag: format: 'date' %}
-      <p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
-      <p>{{ article.excerpt }}</p>
-    </div>
-  {% endfor %}
 
-  {%- if paginate.pages > 1 -%}
-    {{- paginate | default_pagination -}}
-  {%- endif -%}
-{% endpaginate %}
+      {% if paginate.pages > 1 %}
+        <nav class="main-blog__pagination" aria-label="Sidnavigering">
+          {{ paginate | default_pagination }}
+        </nav>
+      {% endif %}
+    {% endpaginate %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .main-blog {
+    padding-block: 48px 72px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--pp-bg-deep, #071014);
+    color: var(--pp-text, #f6f7f2);
+    min-height: 50vh;
+  }
+
+  .main-blog__inner {
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+  }
+
+  .main-blog__header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .main-blog__title {
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    letter-spacing: -0.02em;
+  }
+
+  .main-blog__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .main-blog__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: var(--pp-surface, #14212a);
+    border: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+    transition: transform 0.15s ease;
+  }
+
+  .main-blog__link:hover {
+    transform: translateY(-3px);
+  }
+
+  .main-blog__media {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .main-blog__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .main-blog__body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .main-blog__name {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .main-blog__meta {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .main-blog__excerpt {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .main-blog__pagination {
+    margin-top: 40px;
+    text-align: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .main-blog__list {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .main-blog__link {
+      transition: none;
+    }
+
+    .main-blog__link:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {

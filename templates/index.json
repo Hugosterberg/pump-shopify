@@ -9,12 +9,267 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
+    "premium_hero": {
+      "type": "premium-hero",
+      "blocks": {
+        "badge-1": { "type": "trust_badge", "settings": { "label": "USB-C laddning" } },
+        "badge-2": { "type": "trust_badge", "settings": { "label": "Upp till 150 min batteritid" } },
+        "badge-3": { "type": "trust_badge", "settings": { "label": "Väger ca 1 kg" } }
+      },
+      "block_order": ["badge-1", "badge-2", "badge-3"],
+      "settings": {}
+    },
+    "brand_promise": {
+      "type": "brand-promise",
+      "settings": {}
+    },
+    "trust_strip": {
+      "type": "trust-strip",
+      "blocks": {
+        "t-1": { "type": "trust_item", "settings": { "icon": "truck", "text": "Fri frakt över 999 kr" } },
+        "t-2": { "type": "trust_item", "settings": { "icon": "shield", "text": "1 års garanti" } },
+        "t-3": { "type": "trust_item", "settings": { "icon": "check", "text": "30 dagars öppet köp" } },
+        "t-4": { "type": "trust_item", "settings": { "icon": "card", "text": "Säker betalning" } }
+      },
+      "block_order": ["t-1", "t-2", "t-3", "t-4"],
+      "settings": {}
+    },
+    "instruction_video": {
+      "type": "instruction-video",
+      "settings": {}
+    },
+    "product_cards": {
+      "type": "product-cards",
+      "blocks": {
+        "p-1": { "type": "product", "settings": { "description": "Allt du behöver för att duscha var du vill, dusch + vikbar hink." } },
+        "p-2": { "type": "product", "settings": { "description": "Kompakt och kraftfull laddningsbar dusch. Liten i storlek, stor i funktion." } },
+        "p-3": { "type": "product", "settings": { "description": "Vikbar hink som rymmer 20 liter. Perfekt komplement till duschen." } }
+      },
+      "block_order": ["p-1", "p-2", "p-3"],
+      "settings": {}
+    },
+    "use_cases": {
+      "type": "use-case-grid",
+      "blocks": {
+        "uc-1": { "type": "use_case", "settings": { "icon": "tent", "title": "Camping", "text": "Fräsch känsla efter en dag i naturen." } },
+        "uc-2": { "type": "use_case", "settings": { "icon": "anchor", "title": "Båt & skärgård", "text": "Skölj av salt och svett direkt på däck." } },
+        "uc-3": { "type": "use_case", "settings": { "icon": "sauna", "title": "Bastu", "text": "Svalkande dusch efter värmen." } },
+        "uc-4": { "type": "use_case", "settings": { "icon": "umbrella", "title": "Strand", "text": "Skölj av sand innan du åker hem." } },
+        "uc-5": { "type": "use_case", "settings": { "icon": "van", "title": "Vanlife", "text": "Dusch frihet utan fast installation." } },
+        "uc-6": { "type": "use_case", "settings": { "icon": "paw", "title": "Husdjur", "text": "Skölj av lera och sand efter promenaden." } },
+        "uc-7": { "type": "use_case", "settings": { "icon": "droplets", "title": "Prylar & utrustning", "text": "Spola av cyklar, redskap och ställen där slangen inte når." } },
+        "uc-8": { "type": "use_case", "settings": { "icon": "utensils", "title": "Picknick & utflykt", "text": "Diska och skölj av direkt efter picknicken." } },
+        "uc-9": { "type": "use_case", "settings": { "icon": "daydream", "title": "Till vad som helst", "text": "Bara fantasin sätter gränser, var som helst där du behöver vatten." } }
+      },
+      "block_order": ["uc-1", "uc-2", "uc-3", "uc-4", "uc-5", "uc-6", "uc-7", "uc-8", "uc-9"],
+      "settings": {}
+    },
+    "feature_highlights": {
+      "type": "feature-highlights",
+      "blocks": {
+        "sp-1": { "type": "spec", "settings": { "icon": "battery", "label": "Lång batteritid" } },
+        "sp-2": { "type": "spec", "settings": { "icon": "bolt", "label": "Snabbladdning via USB-C" } },
+        "sp-3": { "type": "spec", "settings": { "icon": "thermometer", "label": "Digital display för temperatur & batteri" } },
+        "sp-4": { "type": "spec", "settings": { "icon": "sliders", "label": "Justerbart tryck" } },
+        "sp-5": { "type": "spec", "settings": { "icon": "droplets", "label": "2 olika munstycken" } },
+        "ft-1": { "type": "feature", "settings": { "icon": "feather", "title": "Smart & portabel design", "text": "Duschen väger ca 1 kg och är enkel att ta med överallt. Fäst den med sugpropp på en vägg, häng upp den i en krok eller håll den i handen, perfekt för camping, bastu eller friluftsliv." } },
+        "ft-2": { "type": "feature", "settings": { "icon": "thermometer", "title": "Batteritid & display", "text": "Upp till 150 minuters drift per laddning. Den inbyggda displayen visar både vattentemperatur och batterinivå för total överblick. Laddas smidigt med USB-C." } },
+        "ft-3": { "type": "feature", "settings": { "icon": "sliders", "title": "Justerbart tryck & flexibla munstycken", "text": "Slå enkelt av/på vattnet genom duschmunstyckena eller justera trycket efter dina behov." } }
+      },
+      "block_order": ["sp-1", "sp-2", "sp-3", "sp-4", "sp-5", "ft-1", "ft-2", "ft-3"],
+      "settings": {}
+    },
+    "stat_counters": {
+      "type": "stat-counters",
+      "blocks": {
+        "st-1": { "type": "stat", "settings": { "icon": "battery", "value": "150", "suffix": " min", "label": "Batteritid per laddning" } },
+        "st-2": { "type": "stat", "settings": { "icon": "feather", "value": "1", "suffix": " kg", "label": "Lätt att bära med sig" } },
+        "st-3": { "type": "stat", "settings": { "icon": "droplets", "prefix": "Upp till", "value": "8", "suffix": " L/min", "label": "Kraftfullt vattenflöde", "note": "(något lägre med slang)" } },
+        "st-4": { "type": "stat", "settings": { "icon": "usb", "value": "USB-C", "suffix": "", "label": "Laddas var du än är" } }
+      },
+      "block_order": ["st-1", "st-2", "st-3", "st-4"],
+      "settings": {}
+    },
+    "how_it_works": {
+      "type": "how-it-works",
+      "blocks": {
+        "s-1": { "type": "step", "settings": { "icon": "droplets", "title": "Fyll på vatten", "text": "Använd den vikbara hinken, en dunk eller valfri vattenkälla." } },
+        "s-2": { "type": "step", "settings": { "icon": "submerge", "title": "Sänk ner pumpen", "text": "Placera pumpen i vattnet och häng upp duschmunstycket." } },
+        "s-3": { "type": "step", "settings": { "icon": "shower", "title": "Slå på pumpen & duscha", "text": "Sänk först ner pumpen i vattnet, slå sedan på den och njut av ett kraftfullt, justerbart vattenflöde." } }
+      },
+      "block_order": ["s-1", "s-2", "s-3"],
+      "settings": {}
+    },
+    "scene_switcher": {
+      "type": "scene-switcher",
+      "blocks": {
+        "scn-1": { "type": "scene", "settings": { "label": "för camping" } },
+        "scn-2": { "type": "scene", "settings": { "label": "för båten" } },
+        "scn-3": { "type": "scene", "settings": { "label": "för bastun" } },
+        "scn-4": { "type": "scene", "settings": { "label": "för stranden" } },
+        "scn-5": { "type": "scene", "settings": { "label": "för husbilen" } },
+        "scn-6": { "type": "scene", "settings": { "label": "för hunden" } },
+        "scn-7": { "type": "scene", "settings": { "label": "på festivalen" } },
+        "scn-8": { "type": "scene", "settings": { "label": "efter träningen" } },
+        "scn-9": { "type": "scene", "settings": { "label": "i trädgården" } },
+        "scn-10": { "type": "scene", "settings": { "label": "på fjället" } },
+        "scn-11": { "type": "scene", "settings": { "label": "på fisket" } },
+        "scn-12": { "type": "scene", "settings": { "label": "för barnen" } }
+      },
+      "block_order": ["scn-1", "scn-2", "scn-3", "scn-4", "scn-5", "scn-6", "scn-7", "scn-8", "scn-9", "scn-10", "scn-11", "scn-12"],
+      "settings": {
+        "min_height": 320
+      }
+    },
+    "problem_solution": {
+      "type": "problem-solution",
+      "settings": {}
+    },
+    "product_showcase": {
+      "type": "product-showcase",
+      "blocks": {
+        "t-1": { "type": "trust_point", "settings": { "text": "Fri frakt" } },
+        "t-2": { "type": "trust_point", "settings": { "text": "30 dagars öppet köp" } },
+        "t-3": { "type": "trust_point", "settings": { "text": "Säker betalning" } }
+      },
+      "block_order": ["t-1", "t-2", "t-3"],
+      "settings": {}
+    },
+    "product_hotspots": {
+      "type": "product-hotspots",
+      "blocks": {
+        "hp-1": { "type": "hotspot", "settings": { "x": 50, "y": 28, "align": "center", "title": "Digital display", "text": "Visar vattentemperatur och batterinivå i realtid." } },
+        "hp-2": { "type": "hotspot", "settings": { "x": 30, "y": 60, "align": "right", "title": "Justerbart munstycke", "text": "Två munstycken och justerbart tryck efter behov." } },
+        "hp-3": { "type": "hotspot", "settings": { "x": 70, "y": 70, "align": "left", "title": "USB-C laddning", "text": "Laddas smidigt med samma kabel som dina andra prylar." } }
+      },
+      "block_order": ["hp-1", "hp-2", "hp-3"],
+      "settings": {}
+    },
+    "comparison": {
+      "type": "comparison-section",
+      "blocks": {
+        "c-1": { "type": "row", "settings": { "feature": "Portabel & laddningsbar", "us_has": true, "them_has": false } },
+        "c-2": { "type": "row", "settings": { "feature": "Digital temperaturdisplay", "us_has": true, "them_has": false } },
+        "c-3": { "type": "row", "settings": { "feature": "Upp till 150 min batteritid", "us_has": true, "them_has": false, "them_note": "Kräver eluttag" } },
+        "c-4": { "type": "row", "settings": { "feature": "Ingen installation", "us_has": true, "them_has": false } },
+        "c-6": { "type": "row", "settings": { "feature": "Väger ca 1 kg", "us_has": true, "them_has": false } }
+      },
+      "block_order": ["c-1", "c-2", "c-3", "c-4", "c-6"],
+      "settings": {}
+    },
+    "pump_ecosystem": {
+      "type": "pump-ecosystem",
+      "blocks": {
+        "ec-1": { "type": "product", "settings": { "fallback_title": "The Portable Shower" } },
+        "ec-2": { "type": "product", "settings": { "fallback_title": "The Portable Bucket" } },
+        "ec-3": { "type": "product", "settings": { "fallback_title": "The Perfect Combo" } },
+        "ec-4": { "type": "coming", "settings": { "badge": "Snart", "title": "Nästa portabla pryl", "text": "Fler smarta lösningar är på väg." } }
+      },
+      "block_order": ["ec-1", "ec-2", "ec-3", "ec-4"],
+      "settings": {}
+    },
+    "brand_mission": {
+      "type": "brand-mission",
+      "settings": {}
+    },
+    "instagram": {
+      "type": "instagram-feed",
+      "blocks": {
+        "ig-1": { "type": "image", "settings": {} },
+        "ig-2": { "type": "image", "settings": {} },
+        "ig-3": { "type": "image", "settings": {} },
+        "ig-4": { "type": "image", "settings": {} },
+        "ig-5": { "type": "image", "settings": {} }
+      },
+      "block_order": ["ig-1", "ig-2", "ig-3", "ig-4", "ig-5"],
+      "settings": {
+        "handle": "@pumpportable_",
+        "profile_url": "https://www.instagram.com/pumpportable_/"
+      }
+    },
+    "reviews": {
+      "type": "review-cards",
+      "blocks": {
+        "r-1": { "type": "review", "settings": { "quote": "Smidig att ta med sig och fungerar perfekt efter en varm sommardag på fjället.", "author": "Anna", "context": "Camping" } },
+        "r-2": { "type": "review", "settings": { "quote": "Toppen att ha i bastun i vår stuga ute i skärgården!", "author": "Erik", "context": "Bastu" } },
+        "r-3": { "type": "review", "settings": { "quote": "Perfekt på båten, sköljer av salt och svett direkt på däck.", "author": "Maria", "context": "Båt" } }
+      },
+      "block_order": ["r-1", "r-2", "r-3"],
+      "settings": {
+        "heading": "Det här säger våra kunder",
+        "subheading": "Lägg till Judge.me-appblock i temaredigeraren för att visa riktiga omdömen. Placeholder-korten nedan kan tas bort när appen är aktiv."
+      }
+    },
+    "blog_posts": {
+      "type": "blog-posts",
+      "settings": {
+        "blog": "nyheter"
+      }
+    },
+    "faq": {
+      "type": "faq-section",
+      "blocks": {
+        "f-1": { "type": "faq", "settings": { "category": "Användning & tips", "question": "Hur fungerar den portabla duschen?", "answer": "<p>Duschen drar vatten från valfri behållare eller vattenkälla, till exempel en hink, dunk eller sjö, via en inbyggd elpump och pumpar ut det genom duschmunstycket med jämnt och justerbart tryck. Allt drivs av ett laddningsbart batteri, så du behöver varken eluttag eller fast installation. Perfekt för camping, stranden, träning eller ute i trädgården.</p>" } },
+        "f-2": { "type": "faq", "settings": { "category": "Användning & tips", "question": "Behöver jag el eller batterier?", "answer": "<p>Nej, inget extra behövs. Det laddningsbara batteriet (6000 mAh) är inbyggt i pumpen och laddas via USB-C, samma typ av kabel som till dina andra prylar. En full laddning ger upp till 150 minuters drift.</p>" } },
+        "f-3": { "type": "faq", "settings": { "category": "Användning & tips", "question": "Hur länge räcker batteriet?", "answer": "<p>Med full laddning får du upp till 150 minuters drift, beroende på flödesinställning. Den inbyggda displayen visar batterinivån i realtid så du har full koll, och du laddar enkelt upp igen via USB-C på cirka 4–5 timmar.</p>" } },
+        "f-4": { "type": "faq", "settings": { "category": "Användning & tips", "question": "Kan jag använda den med varmt vatten?", "answer": "<p>Ja, upp till 50°C fungerar bra. Varmare än så kan skada pumpen. Den digitala displayen visar vattentemperaturen så du alltid har koll på hur varmt det är.</p>" } },
+        "f-5": { "type": "faq", "settings": { "category": "Användning & tips", "question": "Kan jag använda den med havsvatten?", "answer": "<p>Ja, den fungerar med både sötvatten och havsvatten, perfekt för en snabb avsköljning efter havsbadet. Skölj gärna pumpen i sötvatten efteråt så håller den längre.</p>" } },
+        "f-6": { "type": "faq", "settings": { "category": "Användning & tips", "question": "Är den vattentålig?", "answer": "<p>Ja! Alla delar är vattentåliga, inklusive pumpen och elektroniken. Pumpen är gjord för att sänkas ned i vattnet du duschar med.</p>" } },
+        "f-7": { "type": "faq", "settings": { "category": "Användning & tips", "question": "Hur mycket vatten går åt per dusch?", "answer": "<p>En 10-litersdunk räcker oftast till en dusch på 6–8 minuter, beroende på flöde. Med justerbart tryck och ett flöde på upp till 8 L/min bestämmer du själv hur snålt eller kraftfullt du duschar (något lägre flöde med slang).</p>" } },
+        "f-8": { "type": "faq", "settings": { "category": "Användning & tips", "question": "Var kan jag använda duschen?", "answer": "<p>Var som helst där du har tillgång till vatten:</p><ul><li>På stranden eller i naturen</li><li>På campingen</li><li>I vanlife, husbilen eller stugan</li><li>Efter träning</li><li>För att skölja av barn, husdjur eller redskap</li><li>Hemma på balkongen eller i trädgården</li></ul><p>Fäst den med sugproppen på en vägg, häng den i en krok eller håll den i handen.</p>" } },
+        "f-9": { "type": "faq", "settings": { "category": "Användning & tips", "question": "Fungerar den inomhus?", "answer": "<p>Absolut, så länge du har en behållare med vatten, till exempel en hink eller dunk. Fäst duschen med sugproppen på en kakelvägg, häng den i en krok eller håll den i handen.</p>" } },
+        "f-10": { "type": "faq", "settings": { "category": "Användning & tips", "question": "Vad ingår i The Perfect Combo?", "answer": "<p>Den portabla duschen, den vikbara 20-litershinken och allt tillbehör du behöver, inklusive USB-C-laddkabel och munstycken, för att komma igång direkt.</p>" } },
+        "f-11": { "type": "faq", "settings": { "category": "Frakt & leverans", "question": "Hur lång är leveranstiden?", "answer": "<p>2–5 arbetsdagar inom Sverige och normalt något längre inom övriga EU.</p>" } },
+        "f-12": { "type": "faq", "settings": { "category": "Frakt & leverans", "question": "Vilka fraktalternativ erbjuder ni?", "answer": "<p>Du väljer själv i kassan om du vill ha hemleverans eller hämta hos ombud.</p>" } },
+        "f-13": { "type": "faq", "settings": { "category": "Frakt & leverans", "question": "Vad kostar frakten?", "answer": "<p>Fri frakt inom Sverige vid köp över 999 kr, annars tillkommer en fraktkostnad på 69 kr. För leveranser inom övriga EU räknas frakten ut automatiskt i kassan.</p>" } },
+        "f-14": { "type": "faq", "settings": { "category": "Frakt & leverans", "question": "Kan jag spåra mitt paket?", "answer": "<p>Ja! Så fort din order har skickats får du ett spårningsnummer via e-post eller sms, så att du kan följa paketet hela vägen hem.</p>" } },
+        "f-15": { "type": "faq", "settings": { "category": "Frakt & leverans", "question": "Levererar ni utanför Sverige?", "answer": "<p>Ja, vi levererar inom hela EU. Leveranstiden är vanligtvis något längre än inom Sverige och frakten räknas ut automatiskt i kassan.</p>" } },
+        "f-16": { "type": "faq", "settings": { "category": "Returer & garanti", "question": "Kan jag returnera produkten om jag ångrar mig?", "answer": "<p>Självklart. Du har 14 dagar från det att du tagit emot produkten att ångra ditt köp. Produkten ska vara i samma skick som när du fick den: oanvänd, komplett med etiketter och i originalförpackning. Kontakta oss på info@pumpportable.com så hjälper vi dig!</p>" } },
+        "f-17": { "type": "faq", "settings": { "category": "Returer & garanti", "question": "Hur fungerar garantin?", "answer": "<p>Vi erbjuder 1 års garanti på alla våra produkter mot tillverkningsfel. Om något är fel med duschen, hör av dig så löser vi det, med en reparation, en reservdel eller en ersättningsprodukt.</p>" } },
+        "f-18": { "type": "faq", "settings": { "category": "Returer & garanti", "question": "Vad händer om något går sönder efter garantin?", "answer": "<p>Vi vill att våra produkter ska hålla länge. Kontakta oss på info@pumpportable.com även efter garantitiden så försöker vi hjälpa till, ibland räcker det med en enkel reservdel.</p>" } },
+        "f-19": { "type": "faq", "settings": { "category": "Företag & kontakt", "question": "Vilka står bakom varumärket?", "answer": "<p>Vi är ett svenskt team bakom varumärket PUMP, som står för Portable Utilities Made Perfect. Vi brinner för smarta, portabla produkter som gör livet enklare och har fler lösningar på väg. Alla produkter testas noggrant av oss själva innan vi säljer dem.</p>" } },
+        "f-20": { "type": "faq", "settings": { "category": "Företag & kontakt", "question": "Erbjuder ni samarbeten eller återförsäljning?", "answer": "<p>Ja! Hör gärna av dig på info@pumpportable.com om du är influencer, återförsäljare eller vill samarbeta. Vi är alltid öppna för nya idéer.</p>" } },
+        "f-21": { "type": "faq", "settings": { "category": "Företag & kontakt", "question": "Har ni sociala medier?", "answer": "<p>Ja, följ gärna vår resa på Instagram @pumpportable_ och på Facebook för uppdateringar, tips och behind-the-scenes!</p>" } }
+      },
+      "block_order": ["f-1", "f-2", "f-3", "f-4", "f-5", "f-6", "f-7", "f-8", "f-9", "f-10", "f-11", "f-12", "f-13", "f-14", "f-15", "f-16", "f-17", "f-18", "f-19", "f-20", "f-21"],
+      "settings": {}
+    },
+    "final_cta": {
+      "type": "final-cta",
+      "settings": {}
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {}
+    },
+    "sticky_atc": {
+      "type": "sticky-mobile-atc",
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "premium_hero",
+    "brand_promise",
+    "trust_strip",
+    "instruction_video",
+    "product_cards",
+    "use_cases",
+    "feature_highlights",
+    "stat_counters",
+    "how_it_works",
+    "scene_switcher",
+    "problem_solution",
+    "product_showcase",
+    "product_hotspots",
+    "comparison",
+    "pump_ecosystem",
+    "brand_mission",
+    "instagram",
+    "reviews",
+    "blog_posts",
+    "faq",
+    "newsletter",
+    "final_cta",
+    "sticky_atc"
   ]
 }

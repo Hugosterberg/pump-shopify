@@ -1,52 +1,52 @@
 {
   "404": {
     "title": "404",
-    "not_found": "Page not found.",
-    "back_to_shopping": "Back to shopping"
+    "not_found": "Sidan hittades inte.",
+    "back_to_shopping": "Fortsätt handla"
   },
   "blog": {
-    "article_comments": "Comments",
-    "article_metadata_html": "{{ date }} by {{ author }}",
-    "comment_form_body": "Comment",
-    "comment_form_email": "Email",
-    "comment_form_name": "Name",
-    "comment_form_submit": "Post",
-    "comment_form_title": "Add a comment"
+    "article_comments": "Kommentarer",
+    "article_metadata_html": "{{ date }} av {{ author }}",
+    "comment_form_body": "Kommentar",
+    "comment_form_email": "E-post",
+    "comment_form_name": "Namn",
+    "comment_form_submit": "Skicka",
+    "comment_form_title": "Lämna en kommentar"
   },
   "cart": {
-    "checkout": "Checkout",
-    "title": "Cart",
-    "update": "Update",
-    "remove": "Remove"
+    "checkout": "Till kassan",
+    "title": "Varukorg",
+    "update": "Uppdatera",
+    "remove": "Ta bort"
   },
   "customers": {
     "login": {
-      "email": "Email",
-      "password": "Password",
-      "submit": "Sign in",
-      "title": "Login"
+      "email": "E-post",
+      "password": "Lösenord",
+      "submit": "Logga in",
+      "title": "Logga in"
     }
   },
   "collections": {
-    "title": "Collections"
+    "title": "Kollektioner"
   },
   "gift_card": {
-    "add_to_apple_wallet": "Add to Apple Wallet",
-    "card": "Gift card",
-    "expired": "This gift card has expired",
-    "expires_on": "Expires on {{ expires_on }}",
-    "use_at_checkout": "Use this gift card at checkout"
+    "add_to_apple_wallet": "Lägg till i Apple Wallet",
+    "card": "Presentkort",
+    "expired": "Detta presentkort har gått ut",
+    "expires_on": "Går ut {{ expires_on }}",
+    "use_at_checkout": "Använd presentkortet i kassan"
   },
   "password": {
-    "title": "This shop is private",
-    "password": "Password",
-    "enter": "Enter"
+    "title": "Butiken är lösenordsskyddad",
+    "password": "Lösenord",
+    "enter": "Gå in"
   },
   "search": {
-    "title": "Search",
-    "placeholder": "Search articles, pages, or products",
-    "submit": "Search",
-    "no_results_html": "No results found for {{ terms }}",
-    "results_for_html": "{{ count }} results found for {{ terms }}"
+    "title": "Sök",
+    "placeholder": "Sök produkter, sidor eller artiklar",
+    "submit": "Sök",
+    "no_results_html": "Inga resultat för {{ terms }}",
+    "results_for_html": "{{ count }} resultat för {{ terms }}"
   }
 }

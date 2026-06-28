@@ -1,13 +1,71 @@
 {% comment %}
-  This section is used in the page template to render store pages like About us
-  or Contact us.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/page
+  Content page template section.
 {% endcomment %}
 
-<h1>{{ page.title }}</h1>
+<article class="main-page full-width">
+  <div class="main-page__inner">
+    <header class="main-page__header">
+      <h1 class="main-page__title">{{ page.title }}</h1>
+    </header>
+    <div class="main-page__content rte">
+      {{ page.content }}
+    </div>
+  </div>
+</article>
 
-{{ page.content }}
+{% stylesheet %}
+  .main-page {
+    padding-block: 48px 72px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--pp-bg-deep, #071014);
+    color: var(--pp-text, #f6f7f2);
+    min-height: 50vh;
+  }
+
+  .main-page__inner {
+    max-width: 720px;
+    margin-inline: auto;
+  }
+
+  .main-page__title {
+    margin: 0 0 32px;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .main-page__content {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: color-mix(in srgb, var(--pp-text, #f6f7f2) 88%, transparent);
+  }
+
+  .main-page__content h2,
+  .main-page__content h3 {
+    margin-block: 1.5em 0.5em;
+    color: var(--pp-text, #f6f7f2);
+  }
+
+  .main-page__content p {
+    margin-block: 0 1em;
+  }
+
+  .main-page__content a {
+    color: var(--pp-accent, #2dd4bf);
+  }
+
+  .main-page__content ul,
+  .main-page__content ol {
+    margin-block: 0 1em;
+    padding-left: 1.25em;
+  }
+
+  @media screen and (min-width: 750px) {
+    .main-page {
+      padding-block: 64px 96px;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {

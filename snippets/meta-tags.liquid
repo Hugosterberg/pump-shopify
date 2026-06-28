@@ -2,6 +2,14 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
+{% if settings.favicon != blank %}
+  <link
+    rel="icon"
+    type="image/png"
+    href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
+  >
+{% endif %}
+
 {%- liquid
   assign og_title = page_title | default: shop.name
   assign og_url = canonical_url | default: request.origin
@@ -71,6 +79,42 @@
     content="{{ cart.currency.iso_code }}"
   >
 {%- endif -%}
+
+{%- if request.page_type == 'article' -%}
+  <script type="application/ld+json">
+    {{ article | structured_data }}
+  </script>
+
+  <meta property="article:published_time" content="{{ article.published_at | date: '%Y-%m-%dT%H:%M:%SZ' }}">
+  {%- if article.author != blank -%}
+    <meta property="article:author" content="{{ article.author | escape }}">
+  {%- endif -%}
+{%- endif -%}
+
+{%- if request.page_type == 'blog' and blog != blank -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": {{ blog.title | json }},
+      "url": {{ shop.url | append: blog.url | json }},
+      "publisher": {
+        "@type": "Organization",
+        "name": {{ shop.name | json }},
+        "url": {{ shop.url | json }}
+      }
+    }
+  </script>
+{%- endif -%}
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": {{ shop.name | json }},
+    "url": {{ shop.url | json }}
+  }
+</script>
 
 <meta
   name="twitter:card"

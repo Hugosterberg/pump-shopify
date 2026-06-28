@@ -1,0 +1,319 @@
+<div
+  class="review-cards full-width"
+  style="
+    --rc-bg: {{ section.settings.background_color }};
+    --rc-surface: {{ section.settings.surface_color }};
+    --rc-text: {{ section.settings.text_color }};
+    --rc-muted: {{ section.settings.muted_text_color }};
+    --rc-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="review-cards__inner">
+    {% if section.settings.heading != blank %}
+      <header class="review-cards__header">
+        {% if section.settings.eyebrow != blank %}
+          <p class="review-cards__eyebrow">{{ section.settings.eyebrow }}</p>
+        {% endif %}
+        <h2 class="review-cards__heading">{{ section.settings.heading }}</h2>
+        {% if section.settings.subheading != blank %}
+          <p class="review-cards__subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {% assign review_blocks = section.blocks | where: 'type', 'review' %}
+
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when '@app' %}
+          <div class="review-cards__app" {{ block.shopify_attributes }}>
+            {% render block %}
+          </div>
+      {% endcase %}
+    {% endfor %}
+
+    {% if review_blocks.size > 0 %}
+      <ul class="review-cards__list" role="list">
+        {% for block in section.blocks %}
+          {% if block.type == 'review' %}
+            <li class="review-cards__card" {{ block.shopify_attributes }}>
+              {% if block.settings.rating > 0 %}
+                <div class="review-cards__stars" role="img" aria-label="{{ block.settings.rating }} av 5 stjärnor">
+                  {% for i in (1..5) %}
+                    <span class="review-cards__star{% if i > block.settings.rating %} review-cards__star--empty{% endif %}" aria-hidden="true">★</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+              {% if block.settings.quote != blank %}
+                <blockquote class="review-cards__quote">{{ block.settings.quote }}</blockquote>
+              {% endif %}
+              <footer class="review-cards__footer">
+                {% if block.settings.author != blank %}
+                  <cite class="review-cards__author">{{ block.settings.author }}</cite>
+                {% endif %}
+                {% if block.settings.context != blank %}
+                  <span class="review-cards__context">{{ block.settings.context }}</span>
+                {% endif %}
+              </footer>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .review-cards {
+    padding-block: 52px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--rc-bg, #071014);
+    color: var(--rc-text, #f6f7f2);
+  }
+
+  .review-cards__inner {
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+  }
+
+  .review-cards__header {
+    text-align: center;
+    margin-inline: auto;
+    margin-bottom: 24px;
+  }
+
+  .review-cards__eyebrow {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rc-accent, #2dd4bf);
+  }
+
+  .review-cards__heading {
+    margin: 0 0 12px;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .review-cards__subheading {
+    margin: 0;
+    color: var(--rc-muted, #9aa8a2);
+    line-height: 1.6;
+  }
+
+  .review-cards__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .review-cards__card {
+    padding: 22px 22px;
+    border-radius: 16px;
+    background-color: var(--rc-surface, #14212a);
+    border: 1px solid color-mix(in srgb, var(--rc-text, #f6f7f2) 8%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .review-cards__card:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--rc-accent, #2dd4bf) 40%, transparent);
+  }
+
+  .review-cards__stars {
+    display: flex;
+    gap: 2px;
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .review-cards__star {
+    color: var(--rc-accent, #2dd4bf);
+  }
+
+  .review-cards__star--empty {
+    color: color-mix(in srgb, var(--rc-text, #f6f7f2) 20%, transparent);
+  }
+
+  .review-cards__quote {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.65;
+    font-style: normal;
+    color: var(--rc-text, #f6f7f2);
+  }
+
+  .review-cards__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: auto;
+  }
+
+  .review-cards__author {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .review-cards__context {
+    font-size: 0.82rem;
+    color: var(--rc-muted, #9aa8a2);
+  }
+
+  @media screen and (min-width: 750px) {
+    .review-cards {
+      padding-block: 56px;
+    }
+
+    .review-cards__list {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .review-cards__card {
+      transition: none;
+    }
+
+    .review-cards__card:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Review cards",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Omdömen"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Det här säger våra kunder"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Ersätt med riktiga omdömen från era kunder."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#071014"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "Surface",
+      "default": "#14212A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Skriv kundens omdöme här."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author",
+          "default": "Kundnamn"
+        },
+        {
+          "type": "text",
+          "id": "context",
+          "label": "Context",
+          "default": "Verifierad köpare"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Review cards",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Smidig att ta med sig och fungerar perfekt efter en varm sommardag på fjället.",
+            "author": "Anna",
+            "context": "Camping"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Toppen att ha i bastun i vår stuga ute i skärgården!",
+            "author": "Erik",
+            "context": "Bastu"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Perfekt på båten, sköljer av salt och svett direkt på däck.",
+            "author": "Maria",
+            "context": "Båt"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

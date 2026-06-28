@@ -1,0 +1,193 @@
+{% comment %}
+  Use case marquee — animated scrolling strip of use cases.
+  Mirrors the live site copy: "för båten, för stugan, för hunden...".
+{% endcomment %}
+
+<div
+  class="uc-marquee full-width"
+  style="
+    --ucm-bg: {{ section.settings.background_color }};
+    --ucm-text: {{ section.settings.text_color }};
+    --ucm-accent: {{ section.settings.accent_color }};
+    --ucm-speed: {{ section.settings.speed }}s;
+  "
+>
+  {% if section.settings.intro != blank %}
+    <p class="uc-marquee__intro">{{ section.settings.intro }}</p>
+  {% endif %}
+
+  {% if section.blocks.size > 0 %}
+    <div class="uc-marquee__viewport" aria-label="Användningsområden">
+      <div class="uc-marquee__track">
+        {% comment %} Render twice for a seamless loop. {% endcomment %}
+        {% for repeat in (1..2) %}
+          <ul class="uc-marquee__list" role="list" {% if repeat == 2 %}aria-hidden="true"{% endif %}>
+            {% for block in section.blocks %}
+              <li class="uc-marquee__item" {{ block.shopify_attributes }}>
+                <span class="uc-marquee__dot" aria-hidden="true"></span>
+                {{ block.settings.label }}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .uc-marquee {
+    padding-block: 40px;
+    background-color: var(--ucm-bg, #0b1117);
+    color: var(--ucm-text, #f6f7f2);
+    overflow: hidden;
+  }
+
+  .uc-marquee__intro {
+    margin: 0 0 18px;
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ucm-accent, #2dd4bf);
+  }
+
+  .uc-marquee__viewport {
+    position: relative;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .uc-marquee__track {
+    display: flex;
+    width: max-content;
+    animation: uc-marquee-scroll var(--ucm-speed, 40s) linear infinite;
+  }
+
+  .uc-marquee__list {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .uc-marquee__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    padding-inline: 16px;
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  .uc-marquee__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--ucm-accent, #2dd4bf);
+  }
+
+  @keyframes uc-marquee-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .uc-marquee__viewport:hover .uc-marquee__track {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .uc-marquee__track {
+      animation: none;
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .uc-marquee__list[aria-hidden='true'] {
+      display: none;
+    }
+
+    .uc-marquee__list {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Use case marquee",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "intro",
+      "label": "Intro label",
+      "default": "Pump följer med"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Scroll duration (seconds)",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "s",
+      "default": 40
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#0B1117"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Use case",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "för båten" }
+      ]
+    }
+  ],
+  "max_blocks": 20,
+  "presets": [
+    {
+      "name": "Use case marquee",
+      "blocks": [
+        { "type": "item", "settings": { "label": "för dig" } },
+        { "type": "item", "settings": { "label": "för båten" } },
+        { "type": "item", "settings": { "label": "för stugan" } },
+        { "type": "item", "settings": { "label": "för landet" } },
+        { "type": "item", "settings": { "label": "för hunden" } },
+        { "type": "item", "settings": { "label": "för vännen" } },
+        { "type": "item", "settings": { "label": "för bastun" } },
+        { "type": "item", "settings": { "label": "för stallet" } },
+        { "type": "item", "settings": { "label": "för campingen" } },
+        { "type": "item", "settings": { "label": "för stranden" } },
+        { "type": "item", "settings": { "label": "för semestern" } },
+        { "type": "item", "settings": { "label": "för äventyret" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,19 +1,110 @@
 {% comment %}
-  This section is used in the 404 template to render page shown when customers
-  enter an invalid store URL.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/404
+  404 page — shown for invalid store URLs.
 {% endcomment %}
 
-<h1>{{ '404.title' | t }}</h1>
+<div class="main-404 full-width">
+  <div class="main-404__inner">
+    <p class="main-404__code">{{ '404.title' | t }}</p>
+    <h1 class="main-404__title">{{ '404.not_found' | t }}</h1>
+    <p class="main-404__text">Sidan du letar efter finns inte eller har flyttats.</p>
+    <div class="main-404__actions">
+      <a class="main-404__btn main-404__btn--primary" href="{{ routes.root_url }}">
+        Till startsidan
+      </a>
+      <a class="main-404__btn main-404__btn--secondary" href="{{ routes.all_products_collection_url }}">
+        {{ '404.back_to_shopping' | t }}
+      </a>
+    </div>
+  </div>
+</div>
 
-<p>
-  {{ '404.not_found' | t }}
-</p>
+{% stylesheet %}
+  .main-404 {
+    padding-block: 96px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--pp-bg-deep, #071014);
+    color: var(--pp-text, #f6f7f2);
+    min-height: 60vh;
+    display: grid;
+    place-items: center;
+    text-align: center;
+  }
 
-<a href="{{ routes.all_products_collection_url }}">
-  {{ '404.back_to_shopping' | t }}
-</a>
+  .main-404__inner {
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .main-404__code {
+    margin: 0;
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--pp-accent, #2dd4bf);
+    opacity: 0.6;
+  }
+
+  .main-404__title {
+    margin: 0;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    letter-spacing: -0.02em;
+  }
+
+  .main-404__text {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .main-404__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 12px;
+  }
+
+  .main-404__btn {
+    display: inline-flex;
+    min-height: 48px;
+    padding-inline: 24px;
+    align-items: center;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: transform 0.15s ease;
+  }
+
+  .main-404__btn--primary {
+    color: var(--pp-bg-deep, #071014);
+    background-color: var(--pp-accent, #2dd4bf);
+  }
+
+  .main-404__btn--secondary {
+    color: var(--pp-text, #f6f7f2);
+    border: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+  }
+
+  .main-404__btn:hover {
+    transform: translateY(-2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .main-404__btn {
+      transition: none;
+    }
+
+    .main-404__btn:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {

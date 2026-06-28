@@ -1,0 +1,186 @@
+<div
+  class="product-specs full-width"
+  style="
+    --pspec-bg: {{ section.settings.background_color }};
+    --pspec-surface: {{ section.settings.surface_color }};
+    --pspec-text: {{ section.settings.text_color }};
+    --pspec-muted: {{ section.settings.muted_text_color }};
+    --pspec-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="product-specs__inner">
+    {% if section.settings.heading != blank %}
+      <header class="product-specs__header">
+        {% if section.settings.eyebrow != blank %}
+          <p class="product-specs__eyebrow">{{ section.settings.eyebrow }}</p>
+        {% endif %}
+        <h2 class="product-specs__heading">{{ section.settings.heading }}</h2>
+      </header>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <dl class="product-specs__list">
+        {% for block in section.blocks %}
+          <div class="product-specs__row" {{ block.shopify_attributes }}>
+            <dt class="product-specs__label">{{ block.settings.label }}</dt>
+            <dd class="product-specs__value">{{ block.settings.value }}</dd>
+          </div>
+        {% endfor %}
+      </dl>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .product-specs {
+    padding-block: 72px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--pspec-bg, #101820);
+    color: var(--pspec-text, #f6f7f2);
+  }
+
+  .product-specs__inner {
+    max-width: 640px;
+    margin-inline: auto;
+  }
+
+  .product-specs__header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .product-specs__eyebrow {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pspec-accent, #2dd4bf);
+  }
+
+  .product-specs__heading {
+    margin: 0;
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    letter-spacing: -0.02em;
+  }
+
+  .product-specs__list {
+    margin: 0;
+    padding: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: var(--pspec-surface, #14212a);
+    border: 1px solid color-mix(in srgb, var(--pspec-text, #f6f7f2) 8%, transparent);
+  }
+
+  .product-specs__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid color-mix(in srgb, var(--pspec-text, #f6f7f2) 6%, transparent);
+  }
+
+  .product-specs__row:last-child {
+    border-bottom: none;
+  }
+
+  .product-specs__label {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--pspec-muted, #9aa8a2);
+  }
+
+  .product-specs__value {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-specs {
+      padding-block: 96px;
+    }
+
+    .product-specs__row {
+      padding: 18px 24px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product specs",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Specifikationer"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Tekniska detaljer"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#101820"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "Surface",
+      "default": "#14212A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "spec",
+      "name": "Spec row",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Batteritid" },
+        { "type": "text", "id": "value", "label": "Value", "default": "120–150 min" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product specs",
+      "blocks": [
+        { "type": "spec", "settings": { "label": "Batterikapacitet", "value": "6000 mAh" } },
+        { "type": "spec", "settings": { "label": "Drifttid", "value": "120–150 min" } },
+        { "type": "spec", "settings": { "label": "Flöde", "value": "Upp till 8 L/min" } },
+        { "type": "spec", "settings": { "label": "Laddning", "value": "USB-C, 4–5 tim" } },
+        { "type": "spec", "settings": { "label": "Vattentemperatur", "value": "Upp till 60°C" } },
+        { "type": "spec", "settings": { "label": "Vikt", "value": "Ca 1 kg" } },
+        { "type": "spec", "settings": { "label": "Hink", "value": "20 liter, vikbar" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -72,6 +72,16 @@ p:empty {
 }
 
 /** Theme styles below */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   font-family: var(--font-primary--family);
   background-color: var(--color-background);
@@ -114,4 +124,26 @@ body {
 /* Child elements that use the full-width utility class span the entire viewport. */
 .shopify-section > .full-width {
   grid-column: 1 / -1;
+}
+
+/* Subtle rhythm: hairline separator between stacked sections */
+.shopify-section:not(:first-child) > .full-width {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Compact section headers: full-width headings on one line (desktop), subtext constrained */
+.shopify-section [class$='__header'] {
+  max-width: none;
+  margin-bottom: 28px;
+}
+
+.shopify-section [class$='__subheading'] {
+  max-width: 52ch;
+  margin-inline: auto;
+}
+
+@media screen and (min-width: 750px) {
+  .shopify-section [class$='__header'] > [class$='__heading'] {
+    white-space: nowrap;
+  }
 }

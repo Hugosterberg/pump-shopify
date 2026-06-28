@@ -1,0 +1,309 @@
+{% comment %}
+  Product hotspots — an image with pulsing points. Hover or focus a point
+  to reveal a feature tooltip. Keyboard- and touch-accessible via <button>.
+{% endcomment %}
+
+<div
+  class="hotspots full-width"
+  style="
+    --hs-bg: {{ section.settings.background_color }};
+    --hs-surface: {{ section.settings.surface_color }};
+    --hs-text: {{ section.settings.text_color }};
+    --hs-muted: {{ section.settings.muted_text_color }};
+    --hs-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="hotspots__inner">
+    <header class="hotspots__header">
+      {% if section.settings.eyebrow != blank %}
+        <p class="hotspots__eyebrow">{{ section.settings.eyebrow }}</p>
+      {% endif %}
+      {% if section.settings.heading != blank %}
+        <h2 class="hotspots__heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+      {% if section.settings.subheading != blank %}
+        <p class="hotspots__subheading">{{ section.settings.subheading }}</p>
+      {% endif %}
+    </header>
+
+    <div class="hotspots__stage">
+      {% if section.settings.image != blank %}
+        {{
+          section.settings.image
+          | image_url: width: 1400
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 750px) 60vw, 100vw',
+            widths: '500, 800, 1100, 1400',
+            class: 'hotspots__image',
+            alt: section.settings.image.alt | default: section.settings.heading
+        }}
+      {% else %}
+        <div class="hotspots__placeholder">{{ 'product-1' | placeholder_svg_tag }}</div>
+      {% endif %}
+
+      {% for block in section.blocks %}
+        <div
+          class="hotspots__point"
+          style="left: {{ block.settings.x }}%; top: {{ block.settings.y }}%;"
+          {{ block.shopify_attributes }}
+        >
+          <button
+            type="button"
+            class="hotspots__dot"
+            aria-label="{{ block.settings.title | escape }}"
+          >
+            <span class="hotspots__dot-pulse" aria-hidden="true"></span>
+          </button>
+          <span class="hotspots__tip hotspots__tip--{{ block.settings.align }}">
+            {% if block.settings.title != blank %}
+              <span class="hotspots__tip-title">{{ block.settings.title }}</span>
+            {% endif %}
+            {% if block.settings.text != blank %}
+              <span class="hotspots__tip-text">{{ block.settings.text }}</span>
+            {% endif %}
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .hotspots {
+    padding-block: 52px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--hs-bg, #071014);
+    color: var(--hs-text, #f6f7f2);
+  }
+
+  .hotspots__inner {
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+  }
+
+  .hotspots__header {
+    text-align: center;
+    margin-inline: auto;
+    margin-bottom: 28px;
+  }
+
+  .hotspots__eyebrow {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--hs-accent, #2dd4bf);
+  }
+
+  .hotspots__heading {
+    margin: 0 0 12px;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    letter-spacing: -0.02em;
+  }
+
+  .hotspots__subheading {
+    margin: 0;
+    color: var(--hs-muted, #9aa8a2);
+    line-height: 1.6;
+  }
+
+  .hotspots__stage {
+    position: relative;
+    max-width: 900px;
+    margin-inline: auto;
+    border-radius: 24px;
+    overflow: hidden;
+    background-color: var(--hs-surface, #111c24);
+    border: 1px solid color-mix(in srgb, var(--hs-text, #f6f7f2) 8%, transparent);
+  }
+
+  .hotspots__image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .hotspots__placeholder {
+    aspect-ratio: 4 / 3;
+    display: grid;
+    place-items: center;
+    color: color-mix(in srgb, var(--hs-text, #f6f7f2) 18%, transparent);
+  }
+
+  .hotspots__point {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+  }
+
+  .hotspots__point:hover,
+  .hotspots__point:focus-within {
+    z-index: 3;
+  }
+
+  .hotspots__dot {
+    position: relative;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.25);
+    background-color: #fff;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  .hotspots__dot-pulse {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    animation: hotspot-pulse 2.2s ease-out infinite;
+  }
+
+  .hotspots__dot:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+  }
+
+  @keyframes hotspot-pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(2.1);
+      opacity: 0;
+    }
+  }
+
+  .hotspots__tip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 14px);
+    transform: translate(-50%, 8px);
+    width: max-content;
+    max-width: 240px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background-color: color-mix(in srgb, #000 78%, var(--hs-surface, #111c24));
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+  }
+
+  .hotspots__tip--left {
+    left: auto;
+    right: 50%;
+    transform: translate(8px, 8px);
+  }
+
+  .hotspots__tip--right {
+    left: 50%;
+    right: auto;
+    transform: translate(-8px, 8px);
+  }
+
+  .hotspots__point:hover .hotspots__tip,
+  .hotspots__point:focus-within .hotspots__tip {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+
+  .hotspots__point:hover .hotspots__tip--left,
+  .hotspots__point:focus-within .hotspots__tip--left,
+  .hotspots__point:hover .hotspots__tip--right,
+  .hotspots__point:focus-within .hotspots__tip--right {
+    transform: translate(0, 0);
+  }
+
+  .hotspots__tip-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .hotspots__tip-text {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--hs-muted, #9aa8a2);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hotspots {
+      padding-block: 68px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hotspots__dot-pulse {
+      animation: none;
+    }
+
+    .hotspots__tip {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product hotspots",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Närmare titt" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Genomtänkt in i minsta detalj" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Tryck på punkterna för att utforska funktionerna." },
+    { "type": "image_picker", "id": "image", "label": "Product image" },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#071014" },
+    { "type": "color", "id": "surface_color", "label": "Surface", "default": "#111C24" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#F6F7F2" },
+    { "type": "color", "id": "muted_text_color", "label": "Muted text", "default": "#9AA8A2" },
+    { "type": "color", "id": "accent_color", "label": "Accent", "default": "#2DD4BF" }
+  ],
+  "blocks": [
+    {
+      "type": "hotspot",
+      "name": "Hotspot",
+      "settings": [
+        { "type": "range", "id": "x", "label": "Horizontal position", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
+        { "type": "range", "id": "y", "label": "Vertical position", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
+        {
+          "type": "select",
+          "id": "align",
+          "label": "Tooltip alignment",
+          "options": [
+            { "value": "center", "label": "Center" },
+            { "value": "left", "label": "Left" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "center"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Digital display" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Visar vattentemperatur och batterinivå i realtid." }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Product hotspots",
+      "blocks": [
+        { "type": "hotspot", "settings": { "x": 50, "y": 28, "align": "center", "title": "Digital display", "text": "Visar vattentemperatur och batterinivå i realtid." } },
+        { "type": "hotspot", "settings": { "x": 30, "y": 60, "align": "right", "title": "Justerbart munstycke", "text": "Två munstycken och justerbart tryck efter behov." } },
+        { "type": "hotspot", "settings": { "x": 70, "y": 70, "align": "left", "title": "USB-C laddning", "text": "Laddas smidigt med samma kabel som dina andra prylar." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

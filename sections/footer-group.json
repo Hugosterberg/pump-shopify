@@ -14,8 +14,11 @@
     "footer": {
       "type": "footer",
       "settings": {
-        "menu": "",
-        "show_payment_icons": true
+        "show_payment_icons": true,
+        "tagline": "Portabel komfort överallt. Smarta lösningar för livet utomhus.",
+        "contact_email": "info@pumpportable.com",
+        "instagram_url": "https://www.instagram.com/pumpportable_",
+        "facebook_url": "https://www.facebook.com/pumpportable1"
       }
     }
   },

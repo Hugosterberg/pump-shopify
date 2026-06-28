@@ -1,0 +1,325 @@
+<div
+  class="use-case-grid full-width"
+  style="
+    --uc-bg: {{ section.settings.background_color }};
+    --uc-surface: {{ section.settings.surface_color }};
+    --uc-text: {{ section.settings.text_color }};
+    --uc-muted: {{ section.settings.muted_text_color }};
+    --uc-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="use-case-grid__inner">
+    {% if section.settings.heading != blank %}
+      <header class="use-case-grid__header">
+        {% if section.settings.eyebrow != blank %}
+          <p class="use-case-grid__eyebrow">{{ section.settings.eyebrow }}</p>
+        {% endif %}
+        <h2 class="use-case-grid__heading">{{ section.settings.heading }}</h2>
+        {% if section.settings.subheading != blank %}
+          <p class="use-case-grid__subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <ul class="use-case-grid__list" role="list">
+        {% for block in section.blocks %}
+          <li class="use-case-grid__card" {{ block.shopify_attributes }}>
+            {% if block.settings.image != blank %}
+              <div class="use-case-grid__media">
+                {{
+                  block.settings.image
+                  | image_url: width: 800
+                  | image_tag:
+                    loading: 'lazy',
+                    sizes: '(min-width: 750px) 33vw, 50vw',
+                    widths: '300, 500, 800',
+                    alt: block.settings.title
+                }}
+              </div>
+            {% endif %}
+            <div class="use-case-grid__body">
+              {% if block.settings.icon != blank and block.settings.icon != 'none' %}
+                <span class="use-case-grid__icon">{% render 'icon', name: block.settings.icon, size: 26 %}</span>
+              {% endif %}
+              {% if block.settings.title != blank %}
+                <h3 class="use-case-grid__title">{{ block.settings.title }}</h3>
+              {% endif %}
+              {% if block.settings.text != blank %}
+                <p class="use-case-grid__text">{{ block.settings.text }}</p>
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .use-case-grid {
+    padding-block: 52px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--uc-bg, #101820);
+    color: var(--uc-text, #f6f7f2);
+  }
+
+  .use-case-grid__inner {
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+  }
+
+  .use-case-grid__header {
+    text-align: center;
+    margin-inline: auto;
+    margin-bottom: 24px;
+  }
+
+  .use-case-grid__eyebrow {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--uc-accent, #2dd4bf);
+  }
+
+  .use-case-grid__heading {
+    margin: 0 0 12px;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .use-case-grid__subheading {
+    margin: 0;
+    color: var(--uc-muted, #9aa8a2);
+    line-height: 1.6;
+  }
+
+  .use-case-grid__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .use-case-grid__card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: var(--uc-surface, #14212a);
+    border: 1px solid color-mix(in srgb, var(--uc-text, #f6f7f2) 8%, transparent);
+    transition: transform 0.15s ease;
+  }
+
+  .use-case-grid__card:hover {
+    transform: translateY(-3px);
+  }
+
+  .use-case-grid__media {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+
+  .use-case-grid__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .use-case-grid__body {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .use-case-grid__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 6px;
+    border-radius: 14px;
+    color: var(--uc-accent, #2dd4bf);
+    background-color: color-mix(in srgb, var(--uc-accent, #2dd4bf) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--uc-accent, #2dd4bf) 30%, transparent);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .use-case-grid__card:hover .use-case-grid__icon {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--uc-accent, #2dd4bf) 80%, #000);
+  }
+
+  .use-case-grid__title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .use-case-grid__text {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--uc-muted, #9aa8a2);
+  }
+
+  @media screen and (min-width: 750px) {
+    .use-case-grid {
+      padding-block: 68px;
+    }
+
+    .use-case-grid__list {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .use-case-grid__card,
+    .use-case-grid__icon {
+      transition: none;
+    }
+
+    .use-case-grid__card:hover {
+      transform: none;
+    }
+
+    .use-case-grid__card:hover .use-case-grid__icon {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) and (min-width: 750px) {
+      .use-case-grid__card {
+        animation: uc-reveal linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 26%;
+      }
+    }
+  }
+
+  @keyframes uc-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Use case grid",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Användningsområden"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Perfekt överallt där duschen saknas"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Från skärgården till fjällen, PUMP följer med."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#101820"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "Surface",
+      "default": "#14212A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "use_case",
+      "name": "Use case",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "tent", "label": "Tält (camping)" },
+            { "value": "umbrella", "label": "Parasoll (strand)" },
+            { "value": "anchor", "label": "Ankare (båt & skärgård)" },
+            { "value": "van", "label": "Van (vanlife)" },
+            { "value": "sauna", "label": "Bastu (ånga)" },
+            { "value": "paw", "label": "Tass (husdjur)" },
+            { "value": "droplets", "label": "Vattenstänk (prylar & utrustning)" },
+            { "value": "spray", "label": "Sprayflaska (rengöring)" },
+            { "value": "utensils", "label": "Bestick (picknick & diska)" },
+            { "value": "droplet", "label": "Droppe" },
+            { "value": "daydream", "label": "Tankbubbla (drömma sig bort)" },
+            { "value": "leaf", "label": "Löv (natur)" }
+          ],
+          "default": "tent"
+        },
+        { "type": "image_picker", "id": "image", "label": "Image (optional)" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Camping" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Fräsch känsla efter en dag i naturen." }
+      ]
+    }
+  ],
+  "max_blocks": 9,
+  "presets": [
+    {
+      "name": "Use case grid",
+      "blocks": [
+        { "type": "use_case", "settings": { "icon": "tent", "title": "Camping", "text": "Fräsch känsla efter en dag i naturen." } },
+        { "type": "use_case", "settings": { "icon": "anchor", "title": "Båt & skärgård", "text": "Skölj av salt och svett direkt på däck." } },
+        { "type": "use_case", "settings": { "icon": "sauna", "title": "Bastu", "text": "Svalkande dusch efter värmen." } },
+        { "type": "use_case", "settings": { "icon": "umbrella", "title": "Strand", "text": "Skölj av sand innan du åker hem." } },
+        { "type": "use_case", "settings": { "icon": "van", "title": "Vanlife", "text": "Dusch frihet utan fast installation." } },
+        { "type": "use_case", "settings": { "icon": "paw", "title": "Husdjur", "text": "Skölj av lera och sand efter promenaden." } },
+        { "type": "use_case", "settings": { "icon": "droplets", "title": "Prylar & utrustning", "text": "Spola av cyklar, redskap och ställen där slangen inte når." } },
+        { "type": "use_case", "settings": { "icon": "utensils", "title": "Picknick & utflykt", "text": "Diska och skölj av direkt efter picknicken." } },
+        { "type": "use_case", "settings": { "icon": "droplet", "title": "Till vad som helst", "text": "Bara fantasin sätter gränser, var som helst där du behöver vatten." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

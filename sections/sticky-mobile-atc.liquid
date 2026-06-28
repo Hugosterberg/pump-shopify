@@ -1,0 +1,192 @@
+{% liquid
+  assign sticky_product = section.settings.product
+  if sticky_product == blank and product != blank
+    assign sticky_product = product
+  endif
+
+  assign target_id = 'product-showcase'
+  if request.page_type == 'product'
+    assign target_id = 'main-product'
+  elsif section.settings.target_id != blank
+    assign target_id = section.settings.target_id
+  endif
+%}
+
+{% if sticky_product != blank %}
+  <div
+    class="sticky-mobile-atc full-width"
+    style="
+      --satc-bg: {{ section.settings.background_color }};
+      --satc-text: {{ section.settings.text_color }};
+      --satc-accent: {{ section.settings.accent_color }};
+      --satc-accent-ink: {{ section.settings.accent_text_color }};
+    "
+    data-sticky-atc
+    data-target-id="{{ target_id }}"
+  >
+    <div class="sticky-mobile-atc__inner">
+      <div class="sticky-mobile-atc__info">
+        <span class="sticky-mobile-atc__title">{{ sticky_product.title }}</span>
+        <span class="sticky-mobile-atc__price">{{ sticky_product.price | money }}</span>
+      </div>
+      <a class="sticky-mobile-atc__btn" href="#{{ target_id }}">
+        {{ section.settings.button_label | default: 'Köp nu' }}
+      </a>
+    </div>
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .sticky-mobile-atc {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 12px var(--page-margin, 16px);
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    background-color: color-mix(in srgb, var(--satc-bg, #071014) 92%, transparent);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid color-mix(in srgb, var(--satc-text, #f6f7f2) 10%, transparent);
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+  }
+
+  .sticky-mobile-atc.is-visible {
+    transform: translateY(0);
+  }
+
+  .sticky-mobile-atc__inner {
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .sticky-mobile-atc__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .sticky-mobile-atc__title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--satc-text, #f6f7f2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sticky-mobile-atc__price {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--satc-accent, #2dd4bf);
+  }
+
+  .sticky-mobile-atc__btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding-inline: 24px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    color: var(--satc-accent-ink, #071014);
+    background-color: var(--satc-accent, #2dd4bf);
+  }
+
+  @media screen and (max-width: 749px) {
+    .sticky-mobile-atc {
+      display: block;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sticky-mobile-atc {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    const bar = document.querySelector('[data-sticky-atc]');
+    if (!bar) return;
+
+    const targetId = bar.dataset.targetId || 'product-showcase';
+    const target = document.getElementById(targetId);
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        bar.classList.toggle('is-visible', !entry.isIntersecting);
+      },
+      { threshold: 0, rootMargin: '0px 0px -80px 0px' }
+    );
+
+    observer.observe(target);
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Sticky mobile ATC",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Köp nu"
+    },
+    {
+      "type": "text",
+      "id": "target_id",
+      "label": "Scroll target ID",
+      "info": "HTML id without #. Leave empty for auto (product-showcase on homepage, main-product on product pages)."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#071014"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    },
+    {
+      "type": "color",
+      "id": "accent_text_color",
+      "label": "Accent text",
+      "default": "#071014"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sticky mobile ATC"
+    }
+  ]
+}
+{% endschema %}

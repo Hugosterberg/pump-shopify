@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "about": {
+      "type": "about-section",
+      "blocks": {
+        "v-1": { "type": "value", "settings": { "icon": "shield", "title": "1 års garanti", "text": "Vi strävar efter att erbjuda saker som håller." } },
+        "v-2": { "type": "value", "settings": { "icon": "truck", "title": "Fri frakt", "text": "Fri frakt på order över 999 kr inom Sverige." } },
+        "v-3": { "type": "value", "settings": { "icon": "feather", "title": "Smart & portabelt", "text": "Genomtänkt design som följer med överallt." } }
+      },
+      "block_order": ["v-1", "v-2", "v-3"],
+      "settings": {}
+    }
+  },
+  "order": ["about"]
+}

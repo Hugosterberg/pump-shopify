@@ -1,0 +1,65 @@
+{
+  "sections": {
+    "returns": {
+      "type": "policy-content",
+      "blocks": {
+        "b-1": {
+          "type": "item",
+          "settings": {
+            "title": "Avbokning",
+            "body": "<p>Du kan avboka din beställning kostnadsfritt så länge den inte har skickats. Kontakta oss på <a href=\"mailto:info@pumpportable.com\">info@pumpportable.com</a> så snart som möjligt om du vill avboka.</p>"
+          }
+        },
+        "b-2": {
+          "type": "item",
+          "settings": {
+            "title": "Så fungerar ångerrätten",
+            "body": "<ul><li>Du har 14 dagar på dig från det att du mottagit den sista varan i din beställning att ångra ditt köp.</li><li>Produkten måste vara i samma skick som när du fick den: oanvänd, komplett med etiketter och i originalförpackning.</li></ul>"
+          }
+        },
+        "b-3": {
+          "type": "item",
+          "settings": {
+            "title": "Så gör du en retur",
+            "body": "<ul><li>Kontakta oss på <a href=\"mailto:info@pumpportable.com\">info@pumpportable.com</a> och meddela att du vill returnera en vara.</li><li>Vi skickar returinformation samt returadress.</li><li>Kunden står för returfrakten om inte varan är felaktig eller skadad vid leverans. Returer utan föregående kontakt accepteras inte.</li></ul>"
+          }
+        },
+        "b-4": {
+          "type": "item",
+          "settings": {
+            "title": "Skador och felaktiga varor",
+            "body": "<p>Kontrollera alltid din beställning vid mottagandet. Om en vara är skadad, defekt eller felaktig kontaktar du oss direkt så löser vi det kostnadsfritt.</p>"
+          }
+        },
+        "b-5": {
+          "type": "item",
+          "settings": {
+            "title": "Undantag från returrätt",
+            "body": "<p>Vi tar inte emot returer av:</p><ul><li>Specialbeställda eller personligt anpassade produkter</li><li>Presentkort</li></ul>"
+          }
+        },
+        "b-6": {
+          "type": "item",
+          "settings": {
+            "title": "Byten",
+            "body": "<p>Vill du byta en produkt? Returnera först den du köpt, och gör därefter en ny beställning.</p>"
+          }
+        },
+        "b-7": {
+          "type": "item",
+          "settings": {
+            "title": "Återbetalning",
+            "body": "<p>När vi mottagit och kontrollerat returen återbetalar vi beloppet till din ursprungliga betalningsmetod inom 30 arbetsdagar. Observera att det kan ta upp till 30 arbetsdagar för banken/kortutgivaren att behandla återbetalningen.</p>"
+          }
+        }
+      },
+      "block_order": ["b-1", "b-2", "b-3", "b-4", "b-5", "b-6", "b-7"],
+      "settings": {
+        "eyebrow": "Kundservice",
+        "heading": "Returer & avbokningar",
+        "intro": "<p>Vi vill att du ska vara nöjd med ditt köp hos PUMP. Om något inte blev som du tänkt dig erbjuder vi 14 dagars ångerrätt enligt distansavtalslagen.</p>"
+      }
+    }
+  },
+  "order": ["returns"]
+}

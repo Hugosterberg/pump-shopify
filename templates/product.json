@@ -12,9 +12,95 @@
     "main": {
       "type": "product",
       "settings": {}
+    },
+    "benefits": {
+      "type": "benefit-cards",
+      "blocks": {
+        "b-1": { "type": "benefit", "settings": { "title": "Lång batteritid", "text": "Upp till 150 min per laddning." } },
+        "b-2": { "type": "benefit", "settings": { "title": "Digital display", "text": "Temperatur och batteri i realtid." } },
+        "b-3": { "type": "benefit", "settings": { "title": "Kraftfullt flöde", "text": "Upp till 8 liter per minut." } },
+        "b-4": { "type": "benefit", "settings": { "title": "Lätt & portabel", "text": "Väger ca 1 kg." } }
+      },
+      "block_order": ["b-1", "b-2", "b-3", "b-4"],
+      "settings": {
+        "heading": "Varför The Portable Shower?"
+      }
+    },
+    "specs": {
+      "type": "product-specs",
+      "blocks": {
+        "sp-1": { "type": "spec", "settings": { "label": "Batterikapacitet", "value": "6000 mAh" } },
+        "sp-2": { "type": "spec", "settings": { "label": "Drifttid", "value": "120–150 min" } },
+        "sp-3": { "type": "spec", "settings": { "label": "Flöde", "value": "Upp till 8 L/min" } },
+        "sp-4": { "type": "spec", "settings": { "label": "Laddning", "value": "USB-C, 4–5 tim" } },
+        "sp-5": { "type": "spec", "settings": { "label": "Vattentemperatur", "value": "Upp till 60°C" } },
+        "sp-6": { "type": "spec", "settings": { "label": "Vikt", "value": "Ca 1 kg" } }
+      },
+      "block_order": ["sp-1", "sp-2", "sp-3", "sp-4", "sp-5", "sp-6"],
+      "settings": {}
+    },
+    "included": {
+      "type": "whats-included",
+      "blocks": {
+        "i-1": { "type": "item", "settings": { "item": "1× portabel dusch med digital display" } },
+        "i-2": { "type": "item", "settings": { "item": "1× duschmunstycke" } },
+        "i-3": { "type": "item", "settings": { "item": "1× spolmunstycke" } },
+        "i-4": { "type": "item", "settings": { "item": "1× vattenslang (2 m)" } },
+        "i-5": { "type": "item", "settings": { "item": "1× USB-C laddkabel" } },
+        "i-6": { "type": "item", "settings": { "item": "1× 3-i-1 multikrok" } },
+        "i-7": { "type": "item", "settings": { "item": "1× nätverkspåse" } },
+        "i-8": { "type": "item", "settings": { "item": "1× vikbar hink (20 liter)" } }
+      },
+      "block_order": ["i-1", "i-2", "i-3", "i-4", "i-5", "i-6", "i-7", "i-8"],
+      "settings": {}
+    },
+    "how_it_works": {
+      "type": "how-it-works",
+      "blocks": {
+        "s-1": { "type": "step", "settings": { "title": "Fyll på vatten", "text": "Använd hinken eller valfri vattenkälla." } },
+        "s-2": { "type": "step", "settings": { "title": "Sänk ner pumpen", "text": "Placera pumpen i vattnet och häng upp duschmunstycket." } },
+        "s-3": { "type": "step", "settings": { "title": "Duscha", "text": "Njut av ett kraftfullt, justerbart vattenflöde." } }
+      },
+      "block_order": ["s-1", "s-2", "s-3"],
+      "settings": {}
+    },
+    "reviews": {
+      "type": "review-cards",
+      "blocks": {
+        "r-1": { "type": "review", "settings": { "quote": "Smidig att ta med sig och fungerar perfekt efter en varm sommardag på fjället.", "author": "Anna", "context": "Camping" } },
+        "r-2": { "type": "review", "settings": { "quote": "Toppen att ha i bastun i vår stuga ute i skärgården!", "author": "Erik", "context": "Bastu" } }
+      },
+      "block_order": ["r-1", "r-2"],
+      "settings": {}
+    },
+    "related": {
+      "type": "related-products",
+      "settings": {}
+    },
+    "faq": {
+      "type": "faq-section",
+      "blocks": {
+        "f-1": { "type": "faq", "settings": { "question": "Hur länge räcker batteriet?", "answer": "<p>Med full laddning får du upp till 150 minuters drift.</p>" } },
+        "f-2": { "type": "faq", "settings": { "question": "Fungerar den med varmt vatten?", "answer": "<p>Ja, upp till 60°C.</p>" } },
+        "f-3": { "type": "faq", "settings": { "question": "Vad ingår?", "answer": "<p>Dusch, hink, munstycke, slang, laddkabel och tillbehör.</p>" } }
+      },
+      "block_order": ["f-1", "f-2", "f-3"],
+      "settings": {}
+    },
+    "sticky_atc": {
+      "type": "sticky-mobile-atc",
+      "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "benefits",
+    "specs",
+    "included",
+    "how_it_works",
+    "reviews",
+    "related",
+    "faq",
+    "sticky_atc"
   ]
 }

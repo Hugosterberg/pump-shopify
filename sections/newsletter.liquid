@@ -1,0 +1,231 @@
+{% comment %}
+  Newsletter signup — uses Shopify's customer form to capture email subscribers.
+{% endcomment %}
+
+<div
+  class="newsletter full-width"
+  style="
+    --nl-bg: {{ section.settings.background_color }};
+    --nl-surface: {{ section.settings.surface_color }};
+    --nl-text: {{ section.settings.text_color }};
+    --nl-muted: {{ section.settings.muted_text_color }};
+    --nl-accent: {{ section.settings.accent_color }};
+    --nl-accent-ink: {{ section.settings.accent_text_color }};
+  "
+>
+  <div class="newsletter__inner">
+    <span class="newsletter__icon" aria-hidden="true">
+      {% render 'icon', name: 'mail', size: 24 %}
+    </span>
+    {% if section.settings.heading != blank %}
+      <h2 class="newsletter__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+    {% if section.settings.subheading != blank %}
+      <p class="newsletter__subheading">{{ section.settings.subheading }}</p>
+    {% endif %}
+
+    {% form 'customer', class: 'newsletter__form' %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+
+      {% if form.posted_successfully? %}
+        <p class="newsletter__success">{{ section.settings.success_text | default: 'Tack! Du är nu anmäld.' }}</p>
+      {% else %}
+        <div class="newsletter__field">
+          <label class="visually-hidden" for="NewsletterEmail-{{ section.id }}">
+            {{ section.settings.placeholder | default: 'E-post' }}
+          </label>
+          <input
+            id="NewsletterEmail-{{ section.id }}"
+            class="newsletter__input"
+            type="email"
+            name="contact[email]"
+            value="{{ form.email }}"
+            placeholder="{{ section.settings.placeholder | default: 'E-post' }}"
+            autocomplete="email"
+            required
+          >
+          <button class="newsletter__submit" type="submit">
+            {{ section.settings.button_label | default: 'Prenumerera' }}
+          </button>
+        </div>
+        {%- if form.errors -%}
+          <p class="newsletter__error">{{ form.errors | default_errors }}</p>
+        {%- endif -%}
+      {% endif %}
+    {% endform %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .newsletter {
+    padding-block: 44px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--nl-bg, #14212a);
+    color: var(--nl-text, #f6f7f2);
+    text-align: center;
+  }
+
+  .newsletter__inner {
+    max-width: 520px;
+    margin-inline: auto;
+  }
+
+  .newsletter__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 14px;
+    border-radius: 999px;
+    color: var(--nl-accent, #2dd4bf);
+    background-color: color-mix(in srgb, var(--nl-accent, #2dd4bf) 14%, transparent);
+  }
+
+  .newsletter__heading {
+    margin: 0 0 10px;
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    letter-spacing: -0.02em;
+  }
+
+  .newsletter__subheading {
+    margin: 0 0 24px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--nl-muted, #9aa8a2);
+  }
+
+  .newsletter__field {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .newsletter__input {
+    flex: 1;
+    min-width: 200px;
+    min-height: 52px;
+    padding: 0 18px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--nl-text, #f6f7f2) 15%, transparent);
+    background-color: var(--nl-surface, #071014);
+    color: var(--nl-text, #f6f7f2);
+  }
+
+  .newsletter__submit {
+    flex-shrink: 0;
+    min-height: 52px;
+    padding-inline: 28px;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--nl-accent-ink, #071014);
+    background-color: var(--nl-accent, #2dd4bf);
+  }
+
+  .newsletter__success {
+    margin: 0;
+    font-weight: 600;
+    color: var(--nl-accent, #2dd4bf);
+  }
+
+  .newsletter__error {
+    margin: 12px 0 0;
+    font-size: 0.85rem;
+    color: #f59e0b;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Håll dig uppdaterad"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Få tips och erbjudanden, vi hör bara av oss när något riktigt bra dyker upp."
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Input placeholder",
+      "default": "E-post"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Prenumerera"
+    },
+    {
+      "type": "text",
+      "id": "success_text",
+      "label": "Success message",
+      "default": "Tack! Du är nu anmäld."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#14212A"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "Input background",
+      "default": "#071014"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    },
+    {
+      "type": "color",
+      "id": "accent_text_color",
+      "label": "Accent text",
+      "default": "#071014"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter"
+    }
+  ]
+}
+{% endschema %}

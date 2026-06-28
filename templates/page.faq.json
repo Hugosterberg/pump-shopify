@@ -1,0 +1,23 @@
+{
+  "sections": {
+    "faq": {
+      "type": "faq-section",
+      "blocks": {
+        "q-1": { "type": "faq", "settings": { "question": "Hur länge räcker batteriet?", "answer": "<p>Med full laddning får du upp till 150 minuters drift, beroende på flödesinställning.</p>" } },
+        "q-2": { "type": "faq", "settings": { "question": "Hur laddar jag The Portable Shower?", "answer": "<p>Enkelt via USB-C. En full laddning tar cirka 4–5 timmar.</p>" } },
+        "q-3": { "type": "faq", "settings": { "question": "Fungerar den med varmt vatten?", "answer": "<p>Ja, den fungerar med både kallt och varmt vatten upp till 60°C.</p>" } },
+        "q-4": { "type": "faq", "settings": { "question": "Kan jag använda den med havsvatten?", "answer": "<p>Ja, den fungerar med både sötvatten och havsvatten för en snabb sköljning.</p>" } },
+        "q-5": { "type": "faq", "settings": { "question": "Vad ingår i The Perfect Combo?", "answer": "<p>The Portable Shower, den vikbara 20-litershinken och allt tillbehör du behöver för att komma igång direkt.</p>" } },
+        "q-6": { "type": "faq", "settings": { "question": "Vad kostar frakten?", "answer": "<p>Fri frakt på beställningar över 999 kr inom Sverige. Under det tillkommer en fraktavgift som visas i kassan.</p>" } },
+        "q-7": { "type": "faq", "settings": { "question": "Kan jag returnera eller avboka?", "answer": "<p>Ja. Du har 14 dagars ångerrätt och kan avboka kostnadsfritt så länge ordern inte skickats. Läs mer på sidan <a href=\"/pages/returer\">Returer &amp; avbokningar</a>.</p>" } },
+        "q-8": { "type": "faq", "settings": { "question": "Vilken garanti gäller?", "answer": "<p>Vi lämnar 1 års garanti. Vi strävar efter att erbjuda produkter som håller.</p>" } }
+      },
+      "block_order": ["q-1", "q-2", "q-3", "q-4", "q-5", "q-6", "q-7", "q-8"],
+      "settings": {
+        "eyebrow": "Vanliga frågor",
+        "heading": "FAQ"
+      }
+    }
+  },
+  "order": ["faq"]
+}

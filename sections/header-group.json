@@ -11,12 +11,20 @@
   "type": "header",
   "name": "t:general.header",
   "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "settings": {}
+    },
     "header": {
       "type": "header",
-      "settings": {}
+      "settings": {
+        "show_cta": true,
+        "cta_label": "Köp nu"
+      }
     }
   },
   "order": [
+    "announcement",
     "header"
-  ],
+  ]
 }

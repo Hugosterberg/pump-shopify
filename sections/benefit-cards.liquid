@@ -1,0 +1,244 @@
+<div
+  class="benefit-cards full-width"
+  style="
+    --bc-bg: {{ section.settings.background_color }};
+    --bc-surface: {{ section.settings.surface_color }};
+    --bc-text: {{ section.settings.text_color }};
+    --bc-muted: {{ section.settings.muted_text_color }};
+    --bc-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="benefit-cards__inner">
+    {% if section.settings.heading != blank %}
+      <header class="benefit-cards__header">
+        {% if section.settings.eyebrow != blank %}
+          <p class="benefit-cards__eyebrow">{{ section.settings.eyebrow }}</p>
+        {% endif %}
+        <h2 class="benefit-cards__heading">{{ section.settings.heading }}</h2>
+      </header>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <ul class="benefit-cards__list" role="list">
+        {% for block in section.blocks %}
+          <li class="benefit-cards__card" {{ block.shopify_attributes }}>
+            {% if block.settings.icon != blank %}
+              <div class="benefit-cards__icon">
+                {{
+                  block.settings.icon
+                  | image_url: width: 96
+                  | image_tag: loading: 'lazy', width: 48, height: 48, alt: ''
+                }}
+              </div>
+            {% else %}
+              <span class="benefit-cards__dot" aria-hidden="true"></span>
+            {% endif %}
+            {% if block.settings.title != blank %}
+              <h3 class="benefit-cards__title">{{ block.settings.title }}</h3>
+            {% endif %}
+            {% if block.settings.text != blank %}
+              <p class="benefit-cards__text">{{ block.settings.text }}</p>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .benefit-cards {
+    padding-block: 72px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--bc-bg, #071014);
+    color: var(--bc-text, #f6f7f2);
+  }
+
+  .benefit-cards__inner {
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+  }
+
+  .benefit-cards__header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .benefit-cards__eyebrow {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--bc-accent, #2dd4bf);
+  }
+
+  .benefit-cards__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .benefit-cards__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .benefit-cards__card {
+    padding: 28px 24px;
+    border-radius: 16px;
+    background-color: var(--bc-surface, #14212a);
+    border: 1px solid color-mix(in srgb, var(--bc-text, #f6f7f2) 8%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.15s ease;
+  }
+
+  .benefit-cards__card:hover {
+    transform: translateY(-2px);
+  }
+
+  .benefit-cards__icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background-color: color-mix(in srgb, var(--bc-accent, #2dd4bf) 15%, transparent);
+  }
+
+  .benefit-cards__icon img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+  }
+
+  .benefit-cards__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--bc-accent, #2dd4bf);
+  }
+
+  .benefit-cards__title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+
+  .benefit-cards__text {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--bc-muted, #9aa8a2);
+  }
+
+  @media screen and (min-width: 600px) {
+    .benefit-cards__list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .benefit-cards {
+      padding-block: 96px;
+    }
+
+    .benefit-cards__list {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .benefit-cards__card {
+      transition: none;
+    }
+
+    .benefit-cards__card:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Benefit cards",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Fördelar"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Smart design. Verklig frihet."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#071014"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "Surface",
+      "default": "#14212A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        { "type": "image_picker", "id": "icon", "label": "Icon" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Lång batteritid" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Upp till 150 minuters drift per laddning." }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Benefit cards",
+      "blocks": [
+        { "type": "benefit", "settings": { "title": "Lång batteritid", "text": "Upp till 150 minuters drift per laddning med tydlig batteriindikator." } },
+        { "type": "benefit", "settings": { "title": "Digital display", "text": "Se vattentemperatur och batterinivå i realtid." } },
+        { "type": "benefit", "settings": { "title": "Kraftfullt flöde", "text": "Upp till 8 liter per minut, tillräckligt för en riktig dusch." } },
+        { "type": "benefit", "settings": { "title": "Lätt att bära", "text": "Väger ca 1 kg och tar minimal plats i packningen." } },
+        { "type": "benefit", "settings": { "title": "USB-C laddning", "text": "Ladda enkelt med samma kabel som dina andra prylar." } },
+        { "type": "benefit", "settings": { "title": "Ingen installation", "text": "Fungerar direkt: häng upp, fyll på vatten och duscha." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

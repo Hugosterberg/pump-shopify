@@ -1,0 +1,311 @@
+<div
+  class="faq-section full-width"
+  style="
+    --faq-bg: {{ section.settings.background_color }};
+    --faq-surface: {{ section.settings.surface_color }};
+    --faq-text: {{ section.settings.text_color }};
+    --faq-muted: {{ section.settings.muted_text_color }};
+    --faq-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="faq-section__inner">
+    {% if section.settings.heading != blank %}
+      <header class="faq-section__header">
+        {% if section.settings.eyebrow != blank %}
+          <p class="faq-section__eyebrow">{{ section.settings.eyebrow }}</p>
+        {% endif %}
+        <h2 class="faq-section__heading">{{ section.settings.heading }}</h2>
+      </header>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class="faq-section__list">
+        {% assign current_category = '' %}
+        {% for block in section.blocks %}
+          {% if block.settings.category != blank and block.settings.category != current_category %}
+            {% assign current_category = block.settings.category %}
+            <h3 class="faq-section__category">{{ block.settings.category }}</h3>
+          {% endif %}
+          <details class="faq-section__item" {{ block.shopify_attributes }}>
+            <summary class="faq-section__question">
+              <span>{{ block.settings.question }}</span>
+              <span class="faq-section__icon" aria-hidden="true"></span>
+            </summary>
+            {% if block.settings.answer != blank %}
+              <div class="faq-section__answer">
+                {{ block.settings.answer }}
+              </div>
+            {% endif %}
+          </details>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .faq-section {
+    padding-block: 52px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--faq-bg, #071014);
+    color: var(--faq-text, #f6f7f2);
+  }
+
+  .faq-section__inner {
+    max-width: 720px;
+    margin-inline: auto;
+  }
+
+  .faq-section__header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .faq-section__eyebrow {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--faq-accent, #2dd4bf);
+  }
+
+  .faq-section__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .faq-section__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .faq-section__category {
+    margin: 22px 0 2px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--faq-accent, #2dd4bf);
+  }
+
+  .faq-section__category:first-child {
+    margin-top: 0;
+  }
+
+  .faq-section__item {
+    border-radius: 14px;
+    background-color: var(--faq-surface, #14212a);
+    border: 1px solid color-mix(in srgb, var(--faq-text, #f6f7f2) 8%, transparent);
+    overflow: hidden;
+    transition: border-color 0.18s ease;
+  }
+
+  .faq-section__item:hover {
+    border-color: color-mix(in srgb, var(--faq-accent, #2dd4bf) 35%, transparent);
+  }
+
+  .faq-section__item[open] {
+    border-color: color-mix(in srgb, var(--faq-accent, #2dd4bf) 45%, transparent);
+    background-color: color-mix(in srgb, var(--faq-accent, #2dd4bf) 6%, var(--faq-surface, #14212a));
+  }
+
+  .faq-section__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    font-weight: 600;
+    font-size: 0.98rem;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  .faq-section__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-section__icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    position: relative;
+  }
+
+  .faq-section__icon::before,
+  .faq-section__icon::after {
+    content: '';
+    position: absolute;
+    background-color: var(--faq-accent, #2dd4bf);
+    border-radius: 1px;
+    transition: transform 0.2s ease;
+  }
+
+  .faq-section__icon::before {
+    top: 50%;
+    left: 2px;
+    right: 2px;
+    height: 2px;
+    margin-top: -1px;
+  }
+
+  .faq-section__icon::after {
+    left: 50%;
+    top: 2px;
+    bottom: 2px;
+    width: 2px;
+    margin-left: -1px;
+  }
+
+  .faq-section__item[open] .faq-section__icon::after {
+    transform: rotate(90deg);
+    opacity: 0;
+  }
+
+  .faq-section__answer {
+    padding: 0 20px 18px;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--faq-muted, #9aa8a2);
+  }
+
+  .faq-section__answer > * {
+    margin: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .faq-section {
+      padding-block: 68px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-section__icon::before,
+    .faq-section__icon::after {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "FAQ",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Vanliga frågor"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "FAQ"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#071014"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "Surface",
+      "default": "#14212A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "Question",
+      "settings": [
+        {
+          "type": "text",
+          "id": "category",
+          "label": "Category (groups questions with the same name)"
+        },
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Hur länge räcker batteriet?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Med full laddning får du upp till 150 minuters drift, beroende på flödesinställning.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Hur länge räcker batteriet?",
+            "answer": "<p>Med full laddning får du upp till 150 minuters drift, beroende på flödesinställning.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Fungerar den med varmt vatten?",
+            "answer": "<p>Ja, pumpen fungerar med både kallt och varmt vatten upp till 60°C.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Vad ingår i The Perfect Combo?",
+            "answer": "<p>Den portabla duschen, den vikbara 20-litershinken och allt tillbehör du behöver för att komma igång direkt.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Hur laddar jag pumpen?",
+            "answer": "<p>Enkelt via USB-C. En full laddning tar cirka 4–5 timmar.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Kan jag använda den med havsvatten?",
+            "answer": "<p>Ja, pumpen fungerar med både sötvatten och havsvatten för en snabb sköljning.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,195 @@
+{% comment %}
+  Brand promise band. Each word of the slogan stacks on its own line with
+  the initial letter highlighted, so the PUMP acronym reads top to bottom.
+  Optional aurora background. Sets the tone that PUMP is a brand of portable
+  utilities, not a single product.
+{% endcomment %}
+
+<div
+  class="brand-promise full-width"
+  style="
+    --bp-bg: {{ section.settings.background_color }};
+    --bp-text: {{ section.settings.text_color }};
+    --bp-muted: {{ section.settings.muted_text_color }};
+    --bp-accent: {{ section.settings.accent_color }};
+  "
+>
+  {% if section.settings.show_aurora %}
+    {% render 'aurora', color: section.settings.accent_color %}
+  {% endif %}
+
+  <div class="brand-promise__inner">
+    {% if section.settings.kicker != blank %}
+      <p class="brand-promise__kicker">{{ section.settings.kicker }}</p>
+    {% endif %}
+    {% if section.settings.promise != blank %}
+      {% assign promise_words = section.settings.promise | split: ' ' %}
+      <h2 class="brand-promise__text">
+        {% for word in promise_words %}
+          {% assign initial = word | slice: 0 %}
+          {% assign remainder = word | slice: 1, 60 %}
+          <span class="brand-promise__line" style="--line-index: {{ forloop.index0 }};">
+            <span class="brand-promise__initial">{{ initial }}</span>{{ remainder }}
+          </span>
+        {% endfor %}
+      </h2>
+    {% endif %}
+    {% if section.settings.subtext != blank %}
+      <p class="brand-promise__sub">{{ section.settings.subtext }}</p>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .brand-promise {
+    position: relative;
+    overflow: hidden;
+    padding-block: 36px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--bp-bg, #060c11);
+    color: var(--bp-text, #f6f7f2);
+    text-align: center;
+  }
+
+  .brand-promise__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 72ch;
+    margin-inline: auto;
+  }
+
+  .brand-promise__kicker {
+    margin: 0 0 14px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--bp-accent, #2dd4bf);
+  }
+
+  .brand-promise__text {
+    margin: 0;
+    width: fit-content;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    font-size: clamp(1.5rem, 5vw, 2.6rem);
+    line-height: 1.02;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    text-align: left;
+    color: var(--bp-text, #f6f7f2);
+  }
+
+  .brand-promise__line {
+    display: inline-block;
+  }
+
+  .brand-promise__initial {
+    color: var(--bp-accent, #2dd4bf);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--bp-accent, #2dd4bf) 30%, transparent);
+  }
+
+  .brand-promise__sub {
+    margin: 14px auto 0;
+    max-width: none;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--bp-muted, #9aa8a2);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .brand-promise__line {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: bp-line 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation-delay: calc(var(--line-index, 0) * 0.14s);
+    }
+
+    .brand-promise__initial {
+      animation: bp-glow 3.2s ease-in-out infinite;
+      animation-delay: calc(0.9s + var(--line-index, 0) * 0.8s);
+    }
+  }
+
+  @keyframes bp-line {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes bp-glow {
+    0% {
+      color: var(--bp-accent, #2dd4bf);
+      text-shadow: 0 0 8px color-mix(in srgb, var(--bp-accent, #2dd4bf) 30%, transparent);
+    }
+    8% {
+      color: color-mix(in srgb, var(--bp-accent, #2dd4bf) 60%, #fff);
+      text-shadow:
+        0 0 14px color-mix(in srgb, var(--bp-accent, #2dd4bf) 90%, #fff),
+        0 0 34px color-mix(in srgb, var(--bp-accent, #2dd4bf) 80%, transparent);
+    }
+    25%,
+    100% {
+      color: var(--bp-accent, #2dd4bf);
+      text-shadow: 0 0 8px color-mix(in srgb, var(--bp-accent, #2dd4bf) 30%, transparent);
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .brand-promise {
+      padding-block: 48px;
+    }
+
+    .brand-promise__sub {
+      white-space: nowrap;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Brand promise",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_aurora",
+      "label": "Show animated aurora background",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Kicker",
+      "default": "PUMP"
+    },
+    {
+      "type": "text",
+      "id": "promise",
+      "label": "Promise",
+      "default": "Portable Utilities Made Perfect"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Smarta, portabla lösningar som följer med överallt, idag duschen, snart mycket mer."
+    },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#060C11" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#F6F7F2" },
+    { "type": "color", "id": "muted_text_color", "label": "Muted text", "default": "#9AA8A2" },
+    { "type": "color", "id": "accent_color", "label": "Accent", "default": "#2DD4BF" }
+  ],
+  "presets": [
+    {
+      "name": "Brand promise"
+    }
+  ]
+}
+{% endschema %}

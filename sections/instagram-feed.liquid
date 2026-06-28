@@ -1,0 +1,287 @@
+{% comment %}
+  Instagram feed — editable image blocks. Supports app blocks so a dedicated
+  Instagram app (feed widget) can be embedded via the theme editor.
+{% endcomment %}
+
+<div
+  class="instagram-feed full-width"
+  style="
+    --ig-bg: {{ section.settings.background_color }};
+    --ig-surface: {{ section.settings.surface_color }};
+    --ig-text: {{ section.settings.text_color }};
+    --ig-muted: {{ section.settings.muted_text_color }};
+    --ig-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="instagram-feed__inner">
+    <header class="instagram-feed__header">
+      {% if section.settings.heading != blank %}
+        <h2 class="instagram-feed__heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+      {% if section.settings.handle != blank %}
+        <a
+          class="instagram-feed__handle"
+          href="{{ section.settings.profile_url | default: '#' }}"
+          {% if section.settings.profile_url != blank %}
+            target="_blank"
+            rel="noopener"
+          {% endif %}
+        >
+          {{ section.settings.handle }}
+        </a>
+      {% endif %}
+    </header>
+
+    {% liquid
+      assign image_blocks = section.blocks | where: 'type', 'image'
+      assign app_blocks = section.blocks | where: 'type', '@app'
+    %}
+
+    {% if app_blocks.size > 0 %}
+      <div class="instagram-feed__app">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when '@app' %}
+              {% render block %}
+          {% endcase %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if image_blocks.size > 0 %}
+      <ul class="instagram-feed__grid" role="list">
+        {% for block in section.blocks %}
+          {% if block.type == 'image' %}
+            <li class="instagram-feed__item" {{ block.shopify_attributes }}>
+              {% if block.settings.link != blank %}
+                <a class="instagram-feed__link" href="{{ block.settings.link }}" target="_blank" rel="noopener">
+              {% endif %}
+              {% if block.settings.image != blank %}
+                {{
+                  block.settings.image
+                  | image_url: width: 600
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '200, 400, 600',
+                    sizes: '(min-width: 750px) 20vw, 50vw',
+                    class: 'instagram-feed__image',
+                    alt: 'Instagram'
+                }}
+              {% else %}
+                <div class="instagram-feed__placeholder">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+              {% if block.settings.link != blank %}
+                </a>
+              {% endif %}
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .instagram-feed {
+    padding-block: 40px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--ig-bg, #071014);
+    color: var(--ig-text, #f6f7f2);
+  }
+
+  .instagram-feed__inner {
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+  }
+
+  .instagram-feed__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .instagram-feed__heading {
+    margin: 0;
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    letter-spacing: -0.02em;
+  }
+
+  .instagram-feed__handle {
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ig-accent, #2dd4bf);
+  }
+
+  .instagram-feed__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .instagram-feed__item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: var(--ig-surface, #14212a);
+  }
+
+  .instagram-feed__item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--ig-accent, #2dd4bf) 45%, transparent),
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+
+  .instagram-feed__item:hover::after {
+    opacity: 1;
+  }
+
+  .instagram-feed__link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .instagram-feed__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+  }
+
+  .instagram-feed__item:hover .instagram-feed__image {
+    transform: scale(1.08);
+  }
+
+  .instagram-feed__placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: color-mix(in srgb, var(--ig-text, #f6f7f2) 18%, transparent);
+  }
+
+  .instagram-feed__app {
+    margin-bottom: 24px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .instagram-feed {
+      padding-block: 52px;
+    }
+
+    .instagram-feed__grid {
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .instagram-feed__image {
+      transition: none;
+    }
+
+    .instagram-feed__item:hover .instagram-feed__image {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Instagram feed",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Följ oss"
+    },
+    {
+      "type": "text",
+      "id": "handle",
+      "label": "Handle",
+      "default": "@pumpportable_"
+    },
+    {
+      "type": "url",
+      "id": "profile_url",
+      "label": "Profile URL"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#071014"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "Surface",
+      "default": "#14212A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Instagram feed",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}

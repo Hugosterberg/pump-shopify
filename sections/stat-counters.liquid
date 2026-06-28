@@ -1,0 +1,291 @@
+{% comment %}
+  Stat counters — confident numbers that count up when scrolled into view.
+  Numeric values animate; non-numeric values (e.g. "USB-C") show as-is.
+  Count-up is skipped when the visitor prefers reduced motion.
+{% endcomment %}
+
+<div
+  id="StatCounters-{{ section.id }}"
+  class="stat-counters full-width"
+  style="
+    --sc-bg: {{ section.settings.background_color }};
+    --sc-surface: {{ section.settings.surface_color }};
+    --sc-text: {{ section.settings.text_color }};
+    --sc-muted: {{ section.settings.muted_text_color }};
+    --sc-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="stat-counters__inner">
+    {% if section.settings.heading != blank %}
+      <header class="stat-counters__header">
+        {% if section.settings.eyebrow != blank %}
+          <p class="stat-counters__eyebrow">{{ section.settings.eyebrow }}</p>
+        {% endif %}
+        <h2 class="stat-counters__heading">{{ section.settings.heading }}</h2>
+      </header>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <ul class="stat-counters__grid" role="list">
+        {% for block in section.blocks %}
+          <li class="stat-counters__item" {{ block.shopify_attributes }}>
+            {% if block.settings.icon != blank and block.settings.icon != 'none' %}
+              <span class="stat-counters__icon" aria-hidden="true">
+                {% render 'icon', name: block.settings.icon, size: 22 %}
+              </span>
+            {% endif %}
+            <span class="stat-counters__prefix">{{ block.settings.prefix }}</span>
+            <span
+              class="stat-counters__value"
+              data-target="{{ block.settings.value }}"
+              data-suffix="{{ block.settings.suffix }}"
+            >{{ block.settings.value }}{{ block.settings.suffix }}</span>
+            {% if block.settings.label != blank %}
+              <span class="stat-counters__label">{{ block.settings.label }}</span>
+            {% endif %}
+            {% if block.settings.note != blank %}
+              <span class="stat-counters__note">{{ block.settings.note }}</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .stat-counters {
+    padding-block: 30px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--sc-bg, #060c11);
+    color: var(--sc-text, #f6f7f2);
+  }
+
+  .stat-counters__inner {
+    max-width: 64rem;
+    margin-inline: auto;
+  }
+
+  .stat-counters__header {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  .stat-counters__eyebrow {
+    margin: 0 0 5px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sc-accent, #2dd4bf);
+  }
+
+  .stat-counters__heading {
+    margin: 0;
+    font-size: clamp(1.3rem, 3vw, 1.85rem);
+    letter-spacing: -0.02em;
+  }
+
+  .stat-counters__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .stat-counters__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 3px;
+    padding: 16px 12px;
+    border-radius: 14px;
+    text-align: center;
+    background-color: var(--sc-surface, #111c24);
+    border: 1px solid color-mix(in srgb, var(--sc-text, #f6f7f2) 8%, transparent);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .stat-counters__item:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--sc-accent, #2dd4bf) 40%, transparent);
+  }
+
+  .stat-counters__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    color: var(--sc-accent, #2dd4bf);
+    background-color: color-mix(in srgb, var(--sc-accent, #2dd4bf) 14%, transparent);
+  }
+
+  .stat-counters__prefix {
+    display: block;
+    min-height: 1.1em;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.1;
+    color: color-mix(in srgb, var(--sc-muted, #9aa8a2) 90%, transparent);
+  }
+
+  .stat-counters__value {
+    font-size: clamp(1.7rem, 5vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: var(--sc-accent, #2dd4bf);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-counters__label {
+    margin-top: 2px;
+    font-size: 0.82rem;
+    line-height: 1.3;
+    color: var(--sc-muted, #9aa8a2);
+  }
+
+  .stat-counters__note {
+    font-size: 0.66rem;
+    line-height: 1.35;
+    color: color-mix(in srgb, var(--sc-muted, #9aa8a2) 70%, transparent);
+  }
+
+  @media screen and (min-width: 750px) {
+    .stat-counters {
+      padding-block: 42px;
+    }
+
+    .stat-counters__grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stat-counters__item {
+      transition: none;
+    }
+
+    .stat-counters__item:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    var root = document.getElementById('StatCounters-{{ section.id }}');
+    if (!root) return;
+
+    var values = root.querySelectorAll('.stat-counters__value');
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function format(num, suffix) {
+      return num.toLocaleString('sv-SE') + suffix;
+    }
+
+    function animate(el) {
+      var suffix = el.getAttribute('data-suffix') || '';
+      var raw = (el.getAttribute('data-target') || '').trim();
+      var target = parseFloat(raw.replace(',', '.'));
+
+      if (isNaN(target)) return; // non-numeric, leave as-is
+
+      var duration = 1400;
+      var start = null;
+
+      function step(ts) {
+        if (start === null) start = ts;
+        var progress = Math.min((ts - start) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        var current = Math.round(target * eased);
+        el.textContent = format(current, suffix);
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = format(target, suffix);
+      }
+
+      el.textContent = format(0, suffix);
+      requestAnimationFrame(step);
+    }
+
+    if (reduce || !('IntersectionObserver' in window)) return;
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          animate(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+
+    values.forEach(function (el) { observer.observe(el); });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Stat counters",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "I siffror" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Byggd för att följa med" },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#060C11" },
+    { "type": "color", "id": "surface_color", "label": "Surface", "default": "#111C24" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#F6F7F2" },
+    { "type": "color", "id": "muted_text_color", "label": "Muted text", "default": "#9AA8A2" },
+    { "type": "color", "id": "accent_color", "label": "Accent", "default": "#2DD4BF" }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "battery", "label": "Battery" },
+            { "value": "feather", "label": "Feather (light weight)" },
+            { "value": "droplets", "label": "Water flow" },
+            { "value": "usb", "label": "USB-C" },
+            { "value": "bolt", "label": "Bolt / charge" },
+            { "value": "thermometer", "label": "Thermometer" },
+            { "value": "sliders", "label": "Sliders" }
+          ],
+          "default": "none"
+        },
+        { "type": "text", "id": "prefix", "label": "Prefix" },
+        { "type": "text", "id": "value", "label": "Value", "info": "Use a number to animate (e.g. 150). Text like 'USB-C' shows as-is.", "default": "150" },
+        { "type": "text", "id": "suffix", "label": "Suffix", "default": " min" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Batteritid per laddning" },
+        { "type": "text", "id": "note", "label": "Small note (optional)" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Stat counters",
+      "blocks": [
+        { "type": "stat", "settings": { "icon": "battery", "value": "150", "suffix": " min", "label": "Batteritid per laddning" } },
+        { "type": "stat", "settings": { "icon": "feather", "value": "1", "suffix": " kg", "label": "Lätt att bära med sig" } },
+        { "type": "stat", "settings": { "icon": "droplets", "prefix": "Upp till", "value": "8", "suffix": " L/min", "label": "Kraftfullt vattenflöde", "note": "(något lägre med slang)" } },
+        { "type": "stat", "settings": { "icon": "usb", "value": "USB-C", "suffix": "", "label": "Laddas var du än är" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

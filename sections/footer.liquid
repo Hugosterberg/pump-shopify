@@ -1,39 +1,250 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
-  </div>
+<footer
+  class="site-footer full-width"
+  style="
+    --ftr-bg: {{ section.settings.background_color }};
+    --ftr-surface: {{ section.settings.surface_color }};
+    --ftr-text: {{ section.settings.text_color }};
+    --ftr-muted: {{ section.settings.muted_text_color }};
+    --ftr-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="site-footer__inner">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        {% if section.settings.logo != blank %}
+          {{
+            section.settings.logo
+            | image_url: width: 240
+            | image_tag: loading: 'lazy', class: 'site-footer__logo', alt: shop.name
+          }}
+        {% else %}
+          <span class="site-footer__name">{{ shop.name }}</span>
+        {% endif %}
+        {% if section.settings.tagline != blank %}
+          <p class="site-footer__tagline">{{ section.settings.tagline }}</p>
+        {% endif %}
+        {% if section.settings.contact_email != blank %}
+          <a class="site-footer__email" href="mailto:{{ section.settings.contact_email }}">
+            {{ section.settings.contact_email }}
+          </a>
+        {% endif %}
+        {% if section.settings.instagram_url != blank or section.settings.facebook_url != blank %}
+          <div class="site-footer__social">
+            {% if section.settings.instagram_url != blank %}
+              <a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener">Instagram</a>
+            {% endif %}
+            {% if section.settings.facebook_url != blank %}
+              <a href="{{ section.settings.facebook_url }}" target="_blank" rel="noopener">Facebook</a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+      {% if section.settings.menu != blank %}
+        <nav class="site-footer__nav" aria-label="Sidfotsmeny">
+          <h2 class="site-footer__nav-title">{{ section.settings.menu_title | default: 'Länkar' }}</h2>
+          <ul role="list">
+            {% for link in section.settings.menu.links %}
+              <li>
+                <a href="{{ link.url }}">{{ link.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
+      {% endif %}
 
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
-      {% endfor %}
+      {% if section.settings.secondary_menu != blank %}
+        <nav class="site-footer__nav" aria-label="Support">
+          <h2 class="site-footer__nav-title">{{ section.settings.secondary_menu_title | default: 'Support' }}</h2>
+          <ul role="list">
+            {% for link in section.settings.secondary_menu.links %}
+              <li>
+                <a href="{{ link.url }}">{{ link.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 %}
+      <div class="site-footer__payment">
+        <span class="site-footer__payment-label">Betalningsmetoder</span>
+        <div class="site-footer__payment-icons">
+          {% for type in shop.enabled_payment_types %}
+            {{ type | payment_type_svg_tag }}
+          {% endfor %}
+        </div>
+      </div>
     {% endif %}
+
+    <div class="site-footer__bottom">
+      <p class="site-footer__copyright">
+        &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ section.settings.copyright_text }}
+      </p>
+      <p class="site-footer__powered">{{ powered_by_link }}</p>
+    </div>
   </div>
 </footer>
 
 {% stylesheet %}
-  footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
+  .site-footer {
+    margin-top: auto;
+    padding-block: 64px 32px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--ftr-bg, #071014);
+    color: var(--ftr-text, #f6f7f2);
+    border-top: 1px solid color-mix(in srgb, var(--ftr-text, #f6f7f2) 8%, transparent);
   }
-  footer a {
+
+  .site-footer__inner {
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .site-footer__top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .site-footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 32ch;
+  }
+
+  .site-footer__logo {
+    height: 28px;
+    width: auto;
+  }
+
+  .site-footer__name {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .site-footer__tagline {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--ftr-muted, #9aa8a2);
+  }
+
+  .site-footer__email {
+    font-size: 0.9rem;
+    color: var(--ftr-accent, #2dd4bf);
     text-decoration: none;
-    color: var(--color-foreground);
   }
-  footer .footer__links,
-  footer .footer__payment {
+
+  .site-footer__social {
     display: flex;
-    gap: 1rem;
+    gap: 16px;
+    margin-top: 4px;
+  }
+
+  .site-footer__social a {
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ftr-text, #f6f7f2);
+  }
+
+  .site-footer__social a:hover {
+    color: var(--ftr-accent, #2dd4bf);
+  }
+
+  .site-footer__nav-title {
+    margin: 0 0 14px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ftr-muted, #9aa8a2);
+  }
+
+  .site-footer__nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .site-footer__nav a {
+    font-size: 0.92rem;
+    text-decoration: none;
+    color: var(--ftr-text, #f6f7f2);
+    transition: color 0.15s ease;
+  }
+
+  .site-footer__nav a:hover {
+    color: var(--ftr-accent, #2dd4bf);
+  }
+
+  .site-footer__payment {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 1px solid color-mix(in srgb, var(--ftr-text, #f6f7f2) 6%, transparent);
+  }
+
+  .site-footer__payment-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ftr-muted, #9aa8a2);
+  }
+
+  .site-footer__payment-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .site-footer__payment-icons svg {
+    height: 24px;
+    width: auto;
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 24px;
+    border-top: 1px solid color-mix(in srgb, var(--ftr-text, #f6f7f2) 6%, transparent);
+    font-size: 0.82rem;
+    color: var(--ftr-muted, #9aa8a2);
+  }
+
+  .site-footer__copyright,
+  .site-footer__powered {
+    margin: 0;
+  }
+
+  .site-footer__powered a {
+    color: inherit;
+  }
+
+  @media screen and (min-width: 750px) {
+    .site-footer__top {
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 48px;
+    }
+
+    .site-footer__bottom {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
   }
 {% endstylesheet %}
 
@@ -42,15 +253,95 @@
   "name": "t:general.footer",
   "settings": [
     {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "textarea",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Portabel komfort överallt. Smarta lösningar för livet utomhus."
+    },
+    {
+      "type": "text",
+      "id": "contact_email",
+      "label": "Contact email",
+      "default": "info@pumpportable.com"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook URL"
+    },
+    {
       "type": "link_list",
       "id": "menu",
       "label": "t:labels.menu"
+    },
+    {
+      "type": "text",
+      "id": "menu_title",
+      "label": "Menu title",
+      "default": "Länkar"
+    },
+    {
+      "type": "link_list",
+      "id": "secondary_menu",
+      "label": "Secondary menu"
+    },
+    {
+      "type": "text",
+      "id": "secondary_menu_title",
+      "label": "Secondary menu title",
+      "default": "Support"
     },
     {
       "type": "checkbox",
       "id": "show_payment_icons",
       "label": "t:labels.show_payment_icons",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Copyright text",
+      "default": "Alla rättigheter förbehållna."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#071014"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "Surface",
+      "default": "#14212A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
     }
   ]
 }

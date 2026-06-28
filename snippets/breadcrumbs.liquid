@@ -1,0 +1,125 @@
+{% comment %}
+  Breadcrumbs with BreadcrumbList JSON-LD for SEO.
+  Supports article and blog page types. Renders nothing on other pages
+  unless items are passed via the optional `crumbs` capture pattern.
+
+  Usage: {% render 'breadcrumbs' %}
+{% endcomment %}
+
+{%- liquid
+  assign show_crumbs = false
+
+  if request.page_type == 'article' and blog != blank
+    assign show_crumbs = true
+    assign crumb_2_name = blog.title
+    assign crumb_2_url = blog.url
+    assign crumb_3_name = article.title
+    assign crumb_3_url = article.url
+    assign crumb_count = 3
+  elsif request.page_type == 'blog' and blog != blank
+    assign show_crumbs = true
+    assign crumb_2_name = blog.title
+    assign crumb_2_url = blog.url
+    assign crumb_count = 2
+  endif
+-%}
+
+{%- if show_crumbs -%}
+  <nav class="breadcrumbs" aria-label="Brödsmulor">
+    <ol class="breadcrumbs__list">
+      <li class="breadcrumbs__item">
+        <a class="breadcrumbs__link" href="{{ routes.root_url }}">Hem</a>
+      </li>
+      <li class="breadcrumbs__item" aria-hidden="true">
+        <span class="breadcrumbs__sep">/</span>
+      </li>
+      <li class="breadcrumbs__item">
+        {%- if crumb_count == 2 -%}
+          <span class="breadcrumbs__current" aria-current="page">{{ crumb_2_name }}</span>
+        {%- else -%}
+          <a class="breadcrumbs__link" href="{{ crumb_2_url }}">{{ crumb_2_name }}</a>
+        {%- endif -%}
+      </li>
+      {%- if crumb_count == 3 -%}
+        <li class="breadcrumbs__item" aria-hidden="true">
+          <span class="breadcrumbs__sep">/</span>
+        </li>
+        <li class="breadcrumbs__item">
+          <span class="breadcrumbs__current" aria-current="page">{{ crumb_3_name }}</span>
+        </li>
+      {%- endif -%}
+    </ol>
+  </nav>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Hem",
+          "item": {{ shop.url | append: routes.root_url | json }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ crumb_2_name | json }},
+          "item": {{ shop.url | append: crumb_2_url | json }}
+        }
+        {%- if crumb_count == 3 -%}
+        ,{
+          "@type": "ListItem",
+          "position": 3,
+          "name": {{ crumb_3_name | json }},
+          "item": {{ shop.url | append: crumb_3_url | json }}
+        }
+        {%- endif -%}
+      ]
+    }
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  .breadcrumbs {
+    margin-bottom: 24px;
+  }
+
+  .breadcrumbs__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+
+  .breadcrumbs__item {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .breadcrumbs__link {
+    color: var(--pp-muted, #9aa8a2);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .breadcrumbs__link:hover {
+    color: var(--pp-accent, #2dd4bf);
+  }
+
+  .breadcrumbs__sep {
+    color: color-mix(in srgb, var(--pp-muted, #9aa8a2) 50%, transparent);
+    user-select: none;
+  }
+
+  .breadcrumbs__current {
+    color: var(--pp-text, #f6f7f2);
+    font-weight: 500;
+  }
+{% endstylesheet %}

@@ -1,64 +1,261 @@
 {% comment %}
-  This section is used in the article template to render the article page, which
-  displays the full content of the blog post and can optionally include a
-  comments section for customers (not shown in this example).
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/article
+  Article page — preserves comment form when enabled.
 {% endcomment %}
 
-{% if article.image %}
-  {{ article.image | image_url: width: 1000 | image_tag }}
-{% endif %}
+<article class="main-article full-width">
+  <div class="main-article__inner">
+    {% render 'breadcrumbs' %}
 
-<h1>{{ article.title }}</h1>
+    {% if article.image %}
+      <div class="main-article__hero">
+        {{
+          article.image
+          | image_url: width: 1400
+          | image_tag:
+            loading: 'eager',
+            fetchpriority: 'high',
+            sizes: '(min-width: 750px) 720px, 100vw',
+            widths: '600, 900, 1200, 1400',
+            class: 'main-article__image',
+            alt: article.image.alt | default: article.title
+        }}
+      </div>
+    {% endif %}
 
-{% assign date = article.published_at | time_tag: format: 'date' %}
-<p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
+    <header class="main-article__header">
+      <h1 class="main-article__title">{{ article.title }}</h1>
+      <p class="main-article__meta">
+        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+          {{ article.published_at | date: '%-d %B %Y' }}
+        </time>
+        {%- if article.author != blank -%}
+          <span class="main-article__author">{{ article.author }}</span>
+        {%- endif -%}
+      </p>
+    </header>
 
-{{ article.content }}
+    <div class="main-article__content rte">
+      {{ article.content }}
+    </div>
 
-{% if blog.comments_enabled? %}
-  <h2>{{ 'blog.article_comments' | t }}</h2>
+    {% if blog.url != blank %}
+      <footer class="main-article__footer">
+        <a class="main-article__back" href="{{ blog.url }}">
+          ← {{ blog.title }}
+        </a>
+      </footer>
+    {% endif %}
 
-  <div id="comments">
-    {% paginate article.comments by 10 %}
-      {% for comment in article.comments %}
-        <div>
-          <p>{{ comment.author }}</p>
-          <p>
-            {{- comment.created_at | time_tag: format: 'date' -}}
-          </p>
-          <p>{{ comment.content }}</p>
-        </div>
-      {% endfor %}
+    {% if blog.comments_enabled? %}
+      <section class="main-article__comments" id="comments">
+        <h2 class="main-article__comments-title">{{ 'blog.article_comments' | t }}</h2>
 
-      {{ paginate | default_pagination: anchor: 'comments' }}
-    {% endpaginate %}
+        {% paginate article.comments by 10 %}
+          {% if article.comments.size > 0 %}
+            <ul class="main-article__comment-list" role="list">
+              {% for comment in article.comments %}
+                <li class="main-article__comment">
+                  <p class="main-article__comment-author">{{ comment.author }}</p>
+                  <p class="main-article__comment-date">{{ comment.created_at | time_tag: format: 'date' }}</p>
+                  <p class="main-article__comment-body">{{ comment.content }}</p>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          {% if paginate.pages > 1 %}
+            {{ paginate | default_pagination: anchor: 'comments' }}
+          {% endif %}
+        {% endpaginate %}
+
+        {% form 'new_comment', article, class: 'main-article__comment-form' %}
+          <h3 class="main-article__form-title">{{ 'blog.comment_form_title' | t }}</h3>
+          {{ form.errors | default_errors }}
+
+          <label class="main-article__label" for="author">{{ 'blog.comment_form_name' | t }}</label>
+          <input class="main-article__input" type="text" name="comment[author]" id="author" value="{{ form.author }}" required>
+
+          <label class="main-article__label" for="email">{{ 'blog.comment_form_email' | t }}</label>
+          <input class="main-article__input" type="email" name="comment[email]" id="email" value="{{ form.email }}" required>
+
+          <label class="main-article__label" for="body">{{ 'blog.comment_form_body' | t }}</label>
+          <textarea class="main-article__textarea" name="comment[body]" id="body" required>{{ form.body }}</textarea>
+
+          <button class="main-article__submit" type="submit">{{ 'blog.comment_form_submit' | t }}</button>
+        {% endform %}
+      </section>
+    {% endif %}
   </div>
+</article>
 
-  {% form 'new_comment', article %}
-    <h2>{{ 'blog.comment_form_title' | t }}</h2>
+{% stylesheet %}
+  .main-article {
+    padding-block: 48px 72px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--pp-bg-deep, #071014);
+    color: var(--pp-text, #f6f7f2);
+  }
 
-    {{ form.errors | default_errors }}
+  .main-article__inner {
+    max-width: 720px;
+    margin-inline: auto;
+  }
 
-    <div>
-      <label for="author">{{ 'blog.comment_form_name' | t }}</label>
-      <input type="text" name="comment[author]" id="author" value="{{ form.author }}" required>
-    </div>
+  .main-article__hero {
+    margin-bottom: 32px;
+    border-radius: 16px;
+    overflow: hidden;
+  }
 
-    <div>
-      <label for="email">{{ 'blog.comment_form_email' | t }}</label>
-      <input type="email" name="comment[email]" id="email" value="{{ form.email }}" required>
-    </div>
+  .main-article__image {
+    width: 100%;
+    height: auto;
+  }
 
-    <div>
-      <label for="body">{{ 'blog.comment_form_body' | t }}</label>
-      <textarea name="comment[body]" id="body" required>{{ form.body }}</textarea>
-    </div>
+  .main-article__title {
+    margin: 0 0 12px;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
 
-    <input type="submit" value="{{ 'blog.comment_form_submit' | t }}">
-  {% endform %}
-{% endif %}
+  .main-article__meta {
+    margin: 0 0 32px;
+    font-size: 0.88rem;
+    color: var(--pp-muted, #9aa8a2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+  }
+
+  .main-article__author::before {
+    content: '·';
+    margin-right: 12px;
+    opacity: 0.5;
+  }
+
+  .main-article__footer {
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+  }
+
+  .main-article__back {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--pp-accent, #2dd4bf);
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+  }
+
+  .main-article__back:hover {
+    opacity: 0.8;
+  }
+
+  .main-article__content {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: color-mix(in srgb, var(--pp-text, #f6f7f2) 88%, transparent);
+  }
+
+  .main-article__content h2,
+  .main-article__content h3 {
+    margin-block: 1.5em 0.5em;
+    color: var(--pp-text, #f6f7f2);
+  }
+
+  .main-article__content a {
+    color: var(--pp-accent, #2dd4bf);
+  }
+
+  .main-article__comments {
+    margin-top: 48px;
+    padding-top: 48px;
+    border-top: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+  }
+
+  .main-article__comments-title {
+    margin: 0 0 24px;
+    font-size: 1.25rem;
+  }
+
+  .main-article__comment-list {
+    list-style: none;
+    margin: 0 0 32px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .main-article__comment {
+    padding: 16px;
+    border-radius: 12px;
+    background-color: var(--pp-surface, #14212a);
+  }
+
+  .main-article__comment-author {
+    margin: 0 0 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .main-article__comment-date {
+    margin: 0 0 8px;
+    font-size: 0.8rem;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .main-article__comment-body {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .main-article__comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .main-article__form-title {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+  }
+
+  .main-article__label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .main-article__input,
+  .main-article__textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+    background-color: var(--pp-surface, #14212a);
+    color: var(--pp-text, #f6f7f2);
+  }
+
+  .main-article__textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .main-article__submit {
+    align-self: flex-start;
+    min-height: 48px;
+    padding-inline: 24px;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--pp-bg-deep, #071014);
+    background-color: var(--pp-accent, #2dd4bf);
+  }
+{% endstylesheet %}
 
 {% schema %}
 {

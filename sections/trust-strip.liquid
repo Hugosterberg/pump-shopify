@@ -1,0 +1,151 @@
+<div
+  class="trust-strip full-width"
+  style="
+    --ts-bg: {{ section.settings.background_color }};
+    --ts-text: {{ section.settings.text_color }};
+    --ts-muted: {{ section.settings.muted_text_color }};
+    --ts-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="trust-strip__inner">
+    {% if section.blocks.size > 0 %}
+      <ul class="trust-strip__list" role="list">
+        {% for block in section.blocks %}
+          <li class="trust-strip__item" {{ block.shopify_attributes }}>
+            <span class="trust-strip__icon" aria-hidden="true">
+              {% render 'icon', name: block.settings.icon | default: 'check', size: 18 %}
+            </span>
+            <span>{{ block.settings.text }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .trust-strip {
+    padding-block: 20px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--ts-bg, #101820);
+    border-block: 1px solid color-mix(in srgb, var(--ts-text, #f6f7f2) 6%, transparent);
+    color: var(--ts-text, #f6f7f2);
+  }
+
+  .trust-strip__inner {
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+  }
+
+  .trust-strip__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 28px;
+  }
+
+  .trust-strip__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--ts-muted, #9aa8a2);
+  }
+
+  .trust-strip__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    color: var(--ts-accent, #2dd4bf);
+    background-color: color-mix(in srgb, var(--ts-accent, #2dd4bf) 14%, transparent);
+  }
+
+  @media screen and (min-width: 750px) {
+    .trust-strip__list {
+      gap: 12px 40px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Trust strip",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#101820"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust_item",
+      "name": "Trust item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "check", "label": "Check" },
+            { "value": "truck", "label": "Truck / shipping" },
+            { "value": "shield", "label": "Shield / warranty" },
+            { "value": "bolt", "label": "Bolt / charge" },
+            { "value": "usb", "label": "USB-C" },
+            { "value": "battery", "label": "Battery" },
+            { "value": "card", "label": "Card / payment" },
+            { "value": "lock", "label": "Lock / secure" },
+            { "value": "leaf", "label": "Leaf" }
+          ],
+          "default": "check"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Fri frakt"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Trust strip",
+      "blocks": [
+        { "type": "trust_item", "settings": { "icon": "truck", "text": "Fri frakt över 999 kr" } },
+        { "type": "trust_item", "settings": { "icon": "shield", "text": "30 dagars öppet köp" } },
+        { "type": "trust_item", "settings": { "icon": "check", "text": "Säker betalning" } },
+        { "type": "trust_item", "settings": { "icon": "usb", "text": "USB-C laddning" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

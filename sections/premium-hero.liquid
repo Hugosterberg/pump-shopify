@@ -1,0 +1,608 @@
+{% liquid
+  assign primary_url = section.settings.primary_button_link
+  if primary_url == blank
+    assign primary_url = '#product-showcase'
+  endif
+
+  assign secondary_url = section.settings.secondary_button_link
+  if secondary_url == blank
+    assign secondary_url = '#how-it-works'
+  endif
+%}
+
+<div
+  class="premium-hero full-width"
+  style="
+    --hero-bg: {{ section.settings.background_color }};
+    --hero-surface: {{ section.settings.surface_color }};
+    --hero-text: {{ section.settings.text_color }};
+    --hero-muted: {{ section.settings.muted_text_color }};
+    --hero-accent: {{ section.settings.accent_color }};
+    --hero-accent-ink: {{ section.settings.accent_text_color }};
+    --hero-min-height: {{ section.settings.min_height }}px;
+    --hero-content-align: {{ section.settings.content_alignment }};
+  "
+>
+  <div class="premium-hero__glow" aria-hidden="true"></div>
+
+  <div class="premium-hero__inner">
+    <div class="premium-hero__content">
+      {% if section.settings.eyebrow != blank %}
+        <p class="premium-hero__eyebrow">{{ section.settings.eyebrow }}</p>
+      {% endif %}
+
+      {% if section.settings.heading != blank %}
+        <h1 class="premium-hero__heading">{{ section.settings.heading }}</h1>
+      {% endif %}
+
+      {% if section.settings.subheading != blank %}
+        <div class="premium-hero__subheading">{{ section.settings.subheading }}</div>
+      {% endif %}
+
+      {% if section.settings.primary_button_label != blank or section.settings.secondary_button_label != blank %}
+        <div class="premium-hero__actions">
+          {% if section.settings.primary_button_label != blank %}
+            <a class="premium-hero__btn premium-hero__btn--primary" href="{{ primary_url }}">
+              {{ section.settings.primary_button_label }}
+            </a>
+          {% endif %}
+          {% if section.settings.secondary_button_label != blank %}
+            <a class="premium-hero__btn premium-hero__btn--secondary" href="{{ secondary_url }}">
+              {{ section.settings.secondary_button_label }}
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if section.blocks.size > 0 %}
+        <ul class="premium-hero__badges" role="list">
+          {% for block in section.blocks %}
+            <li class="premium-hero__badge" {{ block.shopify_attributes }}>
+              {% if block.settings.icon != blank %}
+                <span class="premium-hero__badge-icon">
+                  {{
+                    block.settings.icon
+                    | image_url: width: 96
+                    | image_tag: loading: 'lazy', width: 48, height: 48, alt: block.settings.label
+                  }}
+                </span>
+              {% endif %}
+              <span class="premium-hero__badge-label">{{ block.settings.label }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    <div class="premium-hero__media premium-hero__media--{{ section.settings.media_style | default: 'float' }}">
+      <div class="premium-hero__media-frame">
+        <span class="premium-hero__media-glow" aria-hidden="true"></span>
+        {% if section.settings.image != blank %}
+          {{
+            section.settings.image
+            | image_url: width: 1400
+            | image_tag:
+              loading: 'eager',
+              fetchpriority: 'high',
+              sizes: '(min-width: 750px) 50vw, 100vw',
+              widths: '500, 700, 900, 1100, 1400',
+              class: 'premium-hero__image',
+              alt: section.settings.image.alt | default: section.settings.heading
+          }}
+        {% else %}
+          <div class="premium-hero__placeholder">
+            {{ 'image' | placeholder_svg_tag: 'premium-hero__placeholder-svg' }}
+          </div>
+        {% endif %}
+
+        {% if section.settings.badge_text != blank %}
+          <span class="premium-hero__offer">{{ section.settings.badge_text }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .premium-hero {
+    position: relative;
+    display: grid;
+    align-items: center;
+    min-height: var(--hero-min-height, 640px);
+    padding-block: 56px;
+    padding-inline: var(--page-margin, 20px);
+    overflow: hidden;
+    isolation: isolate;
+    color: var(--hero-text, #f6f7f2);
+    background-color: var(--hero-bg, #071014);
+    background-image: radial-gradient(
+      120% 120% at 80% 0%,
+      color-mix(in srgb, var(--hero-accent, #2dd4bf) 22%, transparent) 0%,
+      transparent 55%
+    );
+  }
+
+  .premium-hero__glow {
+    position: absolute;
+    inset: -20% -10% auto auto;
+    width: min(560px, 70vw);
+    aspect-ratio: 1;
+    z-index: -1;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--hero-accent, #2dd4bf) 35%, transparent) 0%,
+      transparent 70%
+    );
+    filter: blur(40px);
+    opacity: 0.7;
+  }
+
+  .premium-hero__inner {
+    width: 100%;
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+
+  .premium-hero__content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: var(--hero-content-align, left);
+    align-items: flex-start;
+  }
+
+  .premium-hero__eyebrow {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--hero-accent, #2dd4bf);
+  }
+
+  .premium-hero__heading {
+    margin: 0;
+    max-width: 22ch;
+    font-size: clamp(2.2rem, 6vw, 3.3rem);
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  @media screen and (min-width: 1200px) {
+    .premium-hero__heading {
+      max-width: none;
+      white-space: nowrap;
+      font-size: 2.7rem;
+    }
+  }
+
+  .premium-hero__subheading {
+    margin: 0;
+    max-width: 50ch;
+    font-size: clamp(1.02rem, 2.4vw, 1.2rem);
+    line-height: 1.6;
+    color: var(--hero-muted, #9aa8a2);
+  }
+
+  .premium-hero__subheading > * {
+    margin: 0;
+  }
+
+  .premium-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 6px;
+  }
+
+  .premium-hero__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    padding-inline: 30px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .premium-hero__btn--primary {
+    background-color: var(--hero-accent, #2dd4bf);
+    color: var(--hero-accent-ink, #071014);
+  }
+
+  .premium-hero__btn--primary:hover {
+    transform: translateY(-2px);
+  }
+
+  .premium-hero__btn--secondary {
+    background-color: transparent;
+    color: var(--hero-text, #f6f7f2);
+    border: 1px solid color-mix(in srgb, var(--hero-text, #f6f7f2) 28%, transparent);
+  }
+
+  .premium-hero__btn--secondary:hover {
+    border-color: var(--hero-accent, #2dd4bf);
+    color: var(--hero-accent, #2dd4bf);
+  }
+
+  .premium-hero__badges {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 22px;
+  }
+
+  .premium-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.92rem;
+    color: var(--hero-text, #f6f7f2);
+  }
+
+  .premium-hero__badge-icon {
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--hero-surface, #14212a);
+    border: 1px solid color-mix(in srgb, var(--hero-text, #f6f7f2) 10%, transparent);
+  }
+
+  .premium-hero__badge-icon img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+  }
+
+  .premium-hero__media {
+    width: 100%;
+  }
+
+  .premium-hero__media-frame {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    background-color: var(--hero-surface, #14212a);
+    border: 1px solid color-mix(in srgb, var(--hero-text, #f6f7f2) 8%, transparent);
+    box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7);
+    aspect-ratio: 4 / 3;
+  }
+
+  .premium-hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .premium-hero__media-glow {
+    display: none;
+  }
+
+  .premium-hero__media--float .premium-hero__media-frame {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+    display: grid;
+    place-items: center;
+  }
+
+  .premium-hero__media--float .premium-hero__media-glow {
+    display: block;
+    position: absolute;
+    inset: 4% 4% 9%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--hero-accent, #2dd4bf) 40%, transparent) 0%,
+      transparent 62%
+    );
+    filter: blur(44px);
+  }
+
+  .premium-hero__media--float .premium-hero__image {
+    object-fit: contain;
+    filter: drop-shadow(0 26px 34px rgba(0, 0, 0, 0.55));
+  }
+
+  .premium-hero__placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: color-mix(in srgb, var(--hero-text, #f6f7f2) 18%, transparent);
+  }
+
+  .premium-hero__placeholder-svg {
+    width: 50%;
+    height: auto;
+  }
+
+  .premium-hero__offer {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--hero-accent-ink, #071014);
+    background-color: var(--hero-accent, #2dd4bf);
+  }
+
+  .premium-hero__btn--primary {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .premium-hero__btn--primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, color-mix(in srgb, #ffffff 55%, transparent), transparent);
+    transform: skewX(-20deg);
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .premium-hero__media-frame {
+      animation: hero-float 6s ease-in-out infinite;
+    }
+
+    .premium-hero__glow {
+      animation: hero-glow 8s ease-in-out infinite;
+    }
+
+    .premium-hero__btn--primary::after {
+      animation: hero-sheen 4.5s ease-in-out infinite;
+    }
+  }
+
+  @keyframes hero-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes hero-glow {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.85;
+      transform: scale(1.08);
+    }
+  }
+
+  @keyframes hero-sheen {
+    0% {
+      left: -60%;
+    }
+    60%,
+    100% {
+      left: 120%;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .premium-hero {
+      padding-block: 88px;
+    }
+
+    .premium-hero__inner {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 56px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .premium-hero__btn {
+      transition: none;
+    }
+
+    .premium-hero__btn--primary:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Premium hero",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "PUMP · The Portable Shower"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Duscha där livet händer"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "<p>Den laddningsbara dusch som följer med på camping, båt, bastu och strand. Skölj av salt, sand och svett direkt, utan fast installation.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Primary call to action"
+    },
+    {
+      "type": "text",
+      "id": "primary_button_label",
+      "label": "Primary button label",
+      "default": "Köp The Perfect Combo"
+    },
+    {
+      "type": "url",
+      "id": "primary_button_link",
+      "label": "Primary button link"
+    },
+    {
+      "type": "header",
+      "content": "Secondary call to action"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_label",
+      "label": "Secondary button label",
+      "default": "Så funkar det"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "header",
+      "content": "Product visual"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Product image",
+      "info": "For the floating style, use a product cut-out with a transparent background (PNG) for best effect."
+    },
+    {
+      "type": "select",
+      "id": "media_style",
+      "label": "Image style",
+      "options": [
+        { "value": "float", "label": "Floating (glow, no frame)" },
+        { "value": "frame", "label": "Framed card" }
+      ],
+      "default": "float"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Image badge",
+      "info": "Optional offer label shown on the image, e.g. a campaign price.",
+      "default": "Just nu 899 kr"
+    },
+    {
+      "type": "header",
+      "content": "Layout & colors"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "Minimum height",
+      "min": 480,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "default": 640
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#071014"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "Surface",
+      "default": "#14212A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    },
+    {
+      "type": "color",
+      "id": "accent_text_color",
+      "label": "Accent text",
+      "default": "#071014"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust_badge",
+      "name": "Trust badge",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon",
+          "info": "Optional. A small monochrome icon works best."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "USB-C laddning"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Premium hero",
+      "blocks": [
+        { "type": "trust_badge", "settings": { "label": "USB-C laddning" } },
+        { "type": "trust_badge", "settings": { "label": "Upp till 150 min batteritid" } },
+        { "type": "trust_badge", "settings": { "label": "Väger ca 1 kg" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

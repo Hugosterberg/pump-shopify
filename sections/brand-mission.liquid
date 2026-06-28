@@ -1,0 +1,281 @@
+{% comment %}
+  Brand mission — large centered statement of the brand's goal.
+  Mirrors the live site's "Our goal" copy.
+{% endcomment %}
+
+<div
+  class="brand-mission full-width"
+  style="
+    --bm-bg: {{ section.settings.background_color }};
+    --bm-text: {{ section.settings.text_color }};
+    --bm-muted: {{ section.settings.muted_text_color }};
+    --bm-accent: {{ section.settings.accent_color }};
+  "
+>
+  {% if section.settings.show_aurora %}
+    {% render 'aurora', color: section.settings.accent_color %}
+  {% endif %}
+  {% if section.settings.show_wave %}
+    {% render 'wave-divider', color: section.settings.accent_color, height: 64 %}
+  {% endif %}
+  {% if section.settings.show_journey %}
+    <div class="brand-mission__journey" aria-hidden="true">
+      <svg
+        class="brand-mission__journey-svg"
+        viewBox="0 0 1200 220"
+        fill="none"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <path
+          class="brand-mission__route"
+          d="M40,150 C260,60 460,60 620,130 S1000,190 1160,90"
+          stroke="var(--bm-accent, #2dd4bf)"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+        <circle class="brand-mission__waypoint" cx="40" cy="150" r="5" />
+        <circle class="brand-mission__waypoint" cx="620" cy="130" r="5" />
+        <circle class="brand-mission__waypoint" cx="1160" cy="90" r="5" />
+        <circle class="brand-mission__marker" r="6" />
+      </svg>
+    </div>
+  {% endif %}
+  <div class="brand-mission__inner">
+    {% if section.settings.eyebrow != blank %}
+      <p class="brand-mission__eyebrow">{{ section.settings.eyebrow }}</p>
+    {% endif %}
+    {% if section.settings.statement != blank %}
+      <p class="brand-mission__statement">{{ section.settings.statement }}</p>
+    {% endif %}
+    {% if section.settings.support_text != blank %}
+      <p class="brand-mission__support">{{ section.settings.support_text }}</p>
+    {% endif %}
+    {% if section.settings.cta_label != blank and section.settings.cta_url != blank %}
+      <a class="brand-mission__cta" href="{{ section.settings.cta_url }}">{{ section.settings.cta_label }}</a>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .brand-mission {
+    position: relative;
+    padding-block: 30px;
+    padding-inline: var(--page-margin, 20px);
+    background:
+      radial-gradient(120% 120% at 50% 0%, color-mix(in srgb, var(--bm-accent, #2dd4bf) 12%, transparent), transparent 60%),
+      var(--bm-bg, #0b1117);
+    color: var(--bm-text, #f6f7f2);
+    text-align: center;
+  }
+
+  .brand-mission__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 110ch;
+    margin-inline: auto;
+  }
+
+  .brand-mission > .wave-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .brand-mission__journey {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  .brand-mission__journey-svg {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(1200px, 130%);
+    height: auto;
+  }
+
+  .brand-mission__route {
+    stroke-dasharray: 5 13;
+    animation: bm-flow 1.4s linear infinite;
+  }
+
+  .brand-mission__waypoint {
+    fill: var(--bm-accent, #2dd4bf);
+  }
+
+  .brand-mission__marker {
+    fill: #ffffff;
+    offset-path: path('M40,150 C260,60 460,60 620,130 S1000,190 1160,90');
+    offset-distance: 0%;
+    offset-rotate: 0deg;
+    filter: drop-shadow(0 0 6px var(--bm-accent, #2dd4bf));
+    animation: bm-travel 9s ease-in-out infinite;
+  }
+
+  @keyframes bm-flow {
+    to {
+      stroke-dashoffset: -18;
+    }
+  }
+
+  @keyframes bm-travel {
+    0% {
+      offset-distance: 0%;
+    }
+    50% {
+      offset-distance: 100%;
+    }
+    100% {
+      offset-distance: 0%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brand-mission__route {
+      animation: none;
+    }
+
+    .brand-mission__marker {
+      display: none;
+    }
+  }
+
+  .brand-mission__eyebrow {
+    margin: 0 0 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--bm-accent, #2dd4bf);
+  }
+
+  .brand-mission__statement {
+    margin: 0;
+    font-size: clamp(1.25rem, 2.8vw, 1.9rem);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+
+  .brand-mission__support {
+    margin: 10px auto 0;
+    max-width: none;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--bm-muted, #9aa8a2);
+  }
+
+  .brand-mission__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    margin-top: 22px;
+    padding-inline: 28px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #06231f;
+    background-color: var(--bm-accent, #2dd4bf);
+  }
+
+  .brand-mission__cta:hover {
+    filter: brightness(1.05);
+  }
+
+  @media screen and (min-width: 750px) {
+    .brand-mission {
+      padding-block: 40px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Brand mission",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_aurora",
+      "label": "Show animated aurora background",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wave",
+      "label": "Show animated water wave",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_journey",
+      "label": "Show animated portability route",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Vårt mål"
+    },
+    {
+      "type": "textarea",
+      "id": "statement",
+      "label": "Statement",
+      "default": "Att ge dig möjligheten att ta med den där lyxiga och sköna känslan överallt, oavsett vart livet tar dig."
+    },
+    {
+      "type": "textarea",
+      "id": "support_text",
+      "label": "Support text",
+      "default": "Vi brinner för smarta och portabla lösningar som gör livet enklare, på resan, ute i naturen eller i vardagen."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button label",
+      "default": "Utforska produkterna"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Button link"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#0B1117"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand mission"
+    }
+  ]
+}
+{% endschema %}
