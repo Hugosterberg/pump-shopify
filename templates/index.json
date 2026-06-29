@@ -88,7 +88,7 @@
           "type": "shot",
           "settings": {
             "image": "shopify://shop_images/IMG_3107.jpg",
-            "caption": "Husbil",
+            "caption": "Ta en skön dusch efter bastun",
             "side": "right"
           }
         }
@@ -228,6 +228,7 @@
         "heading": "Se hur enkelt det är",
         "subheading": "En kort instruktionsvideo, från lösa delar till färdig dusch på sekundrar.",
         "video_url": "",
+        "video": "shopify://files/videos/Portabel. Kraftfull. Alltid redo – med 6000 mAh batteri och exakt temperaturdisplay. (1).mp4",
         "max_width": 880,
         "background_color": "#060c11",
         "text_color": "#f6f7f2",
