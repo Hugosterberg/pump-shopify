@@ -182,10 +182,10 @@
     border: 1px solid color-mix(in srgb, var(--iv-text, #f6f7f2) 10%, transparent);
   }
 
-  /* ---- Framed images / clips flanking the video (same style as P.U.M.P.) ---- */
+  /* ---- Free-floating transparent images / clips flanking the video ---- */
   .instruction-video__gallery {
     display: flex;
-    gap: 12px;
+    gap: 18px;
     justify-content: center;
     flex-wrap: wrap;
   }
@@ -194,32 +194,94 @@
     flex: 0 0 auto;
     width: clamp(118px, 38vw, 160px);
     position: relative;
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
     margin: 0;
-    padding: 5px;
-    border: 1px solid color-mix(in srgb, var(--iv-text, #f6f7f2) 12%, transparent);
-    border-radius: 14px;
-    background: color-mix(in srgb, var(--iv-text, #f6f7f2) 5%, transparent);
-    box-shadow: 0 14px 32px -22px rgba(0, 0, 0, 0.85);
+    padding: 0;
+    border: 0;
+    background: transparent;
     cursor: default;
-    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.28s ease, box-shadow 0.28s ease;
+    -webkit-appearance: none;
+    appearance: none;
   }
 
   .instruction-video__thumb--clip {
     cursor: pointer;
   }
 
+  /* The square stage that holds the floating image + its glow + ground shadow. */
+  .instruction-video__thumb-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: grid;
+    place-items: center;
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Soft accent halo behind the image. */
+  .instruction-video__thumb-media::before {
+    content: '';
+    position: absolute;
+    top: 4%;
+    left: 50%;
+    width: 84%;
+    aspect-ratio: 1 / 1;
+    transform: translateX(-50%);
+    background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--iv-accent, #2dd4bf) 26%, transparent), transparent 62%);
+    filter: blur(10px);
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.32s ease;
+    z-index: 0;
+  }
+
+  /* Pulsing ground shadow that anchors the levitating image. */
+  .instruction-video__thumb-media::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 1%;
+    width: 58%;
+    height: 9%;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55), transparent 70%);
+    filter: blur(4px);
+    pointer-events: none;
+    z-index: 0;
+    animation: iv-float-shadow 6s ease-in-out infinite;
+  }
+
   .instruction-video__thumb-img,
   .instruction-video__thumb-fallback {
+    position: relative;
+    z-index: 1;
     display: block;
     width: 100%;
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-    border-radius: 9px;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.4));
+    animation: iv-float 6s ease-in-out infinite;
   }
 
   .instruction-video__thumb-fallback {
+    object-fit: cover;
+    border-radius: 14px;
+    filter: none;
     background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--iv-accent, #2dd4bf) 22%, transparent), transparent 60%), #0b1218;
+  }
+
+  /* Stagger the float so the images don't bob in unison (3 per side). */
+  .instruction-video__thumb:nth-child(3n + 2) .instruction-video__thumb-img,
+  .instruction-video__thumb:nth-child(3n + 2) .instruction-video__thumb-media::after {
+    animation-delay: -2s;
+  }
+
+  .instruction-video__thumb:nth-child(3n) .instruction-video__thumb-img,
+  .instruction-video__thumb:nth-child(3n) .instruction-video__thumb-media::after {
+    animation-delay: -4s;
   }
 
   .instruction-video__thumb-play {
@@ -227,6 +289,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    z-index: 2;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -240,38 +303,47 @@
   }
 
   .instruction-video__thumb-cap {
-    position: absolute;
-    left: 5px;
-    right: 5px;
-    bottom: 5px;
-    padding: 5px 8px;
-    border-radius: 9px;
-    background: color-mix(in srgb, #000000 55%, transparent);
-    -webkit-backdrop-filter: blur(5px);
-    backdrop-filter: blur(5px);
-    font-size: 0.7rem;
+    margin: 0;
+    font-size: 0.82rem;
     font-weight: 600;
-    line-height: 1.2;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
     color: var(--iv-text, #f6f7f2);
-    text-align: left;
-    opacity: 0;
-    transform: translateY(6px);
-    transition: opacity 0.24s ease, transform 0.24s ease;
+    text-align: center;
   }
 
-  .instruction-video__thumb--clip:hover {
-    transform: translateY(-4px);
-    border-color: color-mix(in srgb, var(--iv-accent, #2dd4bf) 45%, transparent);
-    box-shadow: 0 22px 44px -20px color-mix(in srgb, var(--iv-accent, #2dd4bf) 60%, #000);
+  .instruction-video__thumb--clip:hover .instruction-video__thumb-media {
+    transform: translateY(-6px);
   }
 
-  .instruction-video__thumb:hover .instruction-video__thumb-cap {
-    opacity: 1;
-    transform: none;
+  .instruction-video__thumb--clip:hover .instruction-video__thumb-media::before {
+    opacity: 0.9;
   }
 
   .instruction-video__thumb--clip:hover .instruction-video__thumb-play {
     transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  @keyframes iv-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-9px);
+    }
+  }
+
+  @keyframes iv-float-shadow {
+    0%,
+    100% {
+      transform: translateX(-50%) scale(1);
+      opacity: 0.55;
+    }
+    50% {
+      transform: translateX(-50%) scale(0.8);
+      opacity: 0.3;
+    }
   }
 
   .instruction-video__media,
@@ -378,27 +450,24 @@
 
     .instruction-video__stage--with-rail .instruction-video__gallery {
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
     }
 
     .instruction-video__stage--with-rail .instruction-video__thumb {
-      width: clamp(140px, 13vw, 180px);
-    }
-  }
-
-  /* Touch devices have no hover: keep captions visible so the labels read. */
-  @media (hover: none) {
-    .instruction-video__thumb-cap {
-      opacity: 1;
-      transform: none;
+      width: clamp(118px, 11.5vw, 158px);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .instruction-video__play,
-    .instruction-video__thumb,
+    .instruction-video__thumb-media,
     .instruction-video__thumb-play {
       transition: none;
+    }
+
+    .instruction-video__thumb-img,
+    .instruction-video__thumb-media::after {
+      animation: none;
     }
   }
 {% endstylesheet %}
@@ -509,7 +578,9 @@
       "blocks": [
         { "type": "clip", "settings": { "side": "left", "caption": "Fyll på" } },
         { "type": "clip", "settings": { "side": "left", "caption": "Sätt fast" } },
+        { "type": "clip", "settings": { "side": "left", "caption": "Slå på" } },
         { "type": "clip", "settings": { "side": "right", "caption": "Duscha" } },
+        { "type": "clip", "settings": { "side": "right", "caption": "Skölj av" } },
         { "type": "clip", "settings": { "side": "right", "caption": "Klar" } }
       ]
     }

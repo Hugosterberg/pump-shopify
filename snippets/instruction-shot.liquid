@@ -24,24 +24,26 @@
     aria-label="{{ block.settings.caption | default: 'Spela upp klipp' | escape }}"
     {{ block.shopify_attributes }}
   >
-    {% if block.settings.image != blank %}
-      {{
-        block.settings.image
-        | image_url: width: 480
-        | image_tag:
-          loading: 'lazy',
-          widths: '160, 240, 320, 480',
-          sizes: '(min-width: 990px) 170px, 40vw',
-          class: 'instruction-video__thumb-img',
-          alt: block.settings.caption | default: 'pump-klipp'
-      }}
-    {% else %}
-      <span class="instruction-video__thumb-fallback" aria-hidden="true"></span>
-    {% endif %}
-    <span class="instruction-video__thumb-play" aria-hidden="true">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-        <path d="M8 5v14l11-7z" />
-      </svg>
+    <span class="instruction-video__thumb-media">
+      {% if block.settings.image != blank %}
+        {{
+          block.settings.image
+          | image_url: width: 480
+          | image_tag:
+            loading: 'lazy',
+            widths: '160, 240, 320, 480',
+            sizes: '(min-width: 990px) 170px, 40vw',
+            class: 'instruction-video__thumb-img',
+            alt: block.settings.caption | default: 'pump-klipp'
+        }}
+      {% else %}
+        <span class="instruction-video__thumb-fallback" aria-hidden="true"></span>
+      {% endif %}
+      <span class="instruction-video__thumb-play" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      </span>
     </span>
     {% if block.settings.caption != blank %}
       <span class="instruction-video__thumb-cap">{{ block.settings.caption }}</span>
@@ -49,20 +51,22 @@
   </button>
 {% else %}
   <figure class="instruction-video__thumb" {{ block.shopify_attributes }}>
-    {% if block.settings.image != blank %}
-      {{
-        block.settings.image
-        | image_url: width: 480
-        | image_tag:
-          loading: 'lazy',
-          widths: '160, 240, 320, 480',
-          sizes: '(min-width: 990px) 170px, 40vw',
-          class: 'instruction-video__thumb-img',
-          alt: block.settings.caption | default: 'pump i aktion'
-      }}
-    {% else %}
-      <span class="instruction-video__thumb-fallback" aria-hidden="true"></span>
-    {% endif %}
+    <span class="instruction-video__thumb-media">
+      {% if block.settings.image != blank %}
+        {{
+          block.settings.image
+          | image_url: width: 480
+          | image_tag:
+            loading: 'lazy',
+            widths: '160, 240, 320, 480',
+            sizes: '(min-width: 990px) 170px, 40vw',
+            class: 'instruction-video__thumb-img',
+            alt: block.settings.caption | default: 'pump i aktion'
+        }}
+      {% else %}
+        <span class="instruction-video__thumb-fallback" aria-hidden="true"></span>
+      {% endif %}
+    </span>
     {% if block.settings.caption != blank %}
       <figcaption class="instruction-video__thumb-cap">{{ block.settings.caption }}</figcaption>
     {% endif %}

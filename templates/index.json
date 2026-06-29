@@ -47,10 +47,12 @@
       "blocks": {
         "clip-1": { "type": "clip", "settings": { "side": "left", "caption": "Fyll på" } },
         "clip-2": { "type": "clip", "settings": { "side": "left", "caption": "Sätt fast" } },
-        "clip-3": { "type": "clip", "settings": { "side": "right", "caption": "Duscha" } },
-        "clip-4": { "type": "clip", "settings": { "side": "right", "caption": "Klar" } }
+        "clip-3": { "type": "clip", "settings": { "side": "left", "caption": "Slå på" } },
+        "clip-4": { "type": "clip", "settings": { "side": "right", "caption": "Duscha" } },
+        "clip-5": { "type": "clip", "settings": { "side": "right", "caption": "Skölj av" } },
+        "clip-6": { "type": "clip", "settings": { "side": "right", "caption": "Klar" } }
       },
-      "block_order": ["clip-1", "clip-2", "clip-3", "clip-4"],
+      "block_order": ["clip-1", "clip-2", "clip-3", "clip-4", "clip-5", "clip-6"],
       "settings": {}
     },
     "product_cards": {
