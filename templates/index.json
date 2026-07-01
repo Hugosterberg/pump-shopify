@@ -80,7 +80,7 @@
           "type": "shot",
           "settings": {
             "image": "shopify://shop_images/IMG_7316.heic",
-            "caption": "Fäst duschen enkelt med sugpropp på släta ytor",
+            "caption": "Fäst duschen med sugpropp på släta ytor",
             "side": "right"
           }
         },
@@ -169,48 +169,54 @@
         "clip-1": {
           "type": "clip",
           "settings": {
+            "image": "shopify://shop_images/komplett_set.png",
             "video_url": "",
-            "caption": "Fyll på",
+            "caption": "Ta fram delarna",
             "side": "left"
           }
         },
         "clip-2": {
           "type": "clip",
           "settings": {
+            "image": "shopify://shop_images/27E091C3-5041-4D03-B125-B3282D873A95.png",
             "video_url": "",
-            "caption": "Sätt fast",
+            "caption": "Skruva fast slangen i pumpen",
             "side": "left"
           }
         },
         "clip-3": {
           "type": "clip",
           "settings": {
+            "image": "shopify://shop_images/pump_dusch.png",
             "video_url": "",
-            "caption": "Slå på",
+            "caption": "Skruva fast slangen i duschmunstycket",
             "side": "left"
           }
         },
         "clip-4": {
           "type": "clip",
           "settings": {
+            "image": "shopify://shop_images/vikt_bucket_hand.png",
             "video_url": "",
-            "caption": "Duscha",
+            "caption": "Ta fram vikbara hinken",
             "side": "right"
           }
         },
         "clip-5": {
           "type": "clip",
           "settings": {
+            "image": "shopify://shop_images/bucket-shower-blur-2048-2048_18662d9b-b3ea-4fc0-94d0-fbcbbe6759bd.png",
             "video_url": "",
-            "caption": "Skölj av",
+            "caption": "Använd hink med duschmunstycke",
             "side": "right"
           }
         },
         "clip-6": {
           "type": "clip",
           "settings": {
+            "image": "shopify://shop_images/IMG_7320.png",
             "video_url": "",
-            "caption": "Klar",
+            "caption": "Använd hink med sprutmunstycke",
             "side": "right"
           }
         }
@@ -242,7 +248,7 @@
         "p-1": {
           "type": "product",
           "settings": {
-            "product": "",
+            "product": "the-perfect-combo-portabel-dusch-vikbar-hink-1",
             "description": "Allt du behöver för att duscha var du vill, dusch + vikbar hink.",
             "badge": ""
           }
@@ -250,7 +256,7 @@
         "p-2": {
           "type": "product",
           "settings": {
-            "product": "",
+            "product": "portabel-dusch",
             "description": "Kompakt och kraftfull laddningsbar dusch. Liten i storlek, stor i funktion.",
             "badge": ""
           }
@@ -258,7 +264,7 @@
         "p-3": {
           "type": "product",
           "settings": {
-            "product": "",
+            "product": "portabel-hink",
             "description": "Vikbar hink som rymmer 20 liter. Perfekt komplement till duschen.",
             "badge": ""
           }
@@ -1060,21 +1066,21 @@
         "ec-1": {
           "type": "product",
           "settings": {
-            "product": "",
+            "product": "portabel-dusch",
             "fallback_title": "The Portable Shower"
           }
         },
         "ec-2": {
           "type": "product",
           "settings": {
-            "product": "",
+            "product": "portabel-hink",
             "fallback_title": "The Portable Bucket"
           }
         },
         "ec-3": {
           "type": "product",
           "settings": {
-            "product": "",
+            "product": "the-perfect-combo-portabel-dusch-vikbar-hink-1",
             "fallback_title": "The Perfect Combo"
           }
         },
@@ -1127,30 +1133,35 @@
         "ig-1": {
           "type": "image",
           "settings": {
+            "image": "shopify://shop_images/18090357118691848.jpg",
             "link": ""
           }
         },
         "ig-2": {
           "type": "image",
           "settings": {
+            "image": "shopify://shop_images/17958045660127861.jpg",
             "link": ""
           }
         },
         "ig-3": {
           "type": "image",
           "settings": {
+            "image": "shopify://shop_images/18096761960298623.jpg",
             "link": ""
           }
         },
         "ig-4": {
           "type": "image",
           "settings": {
+            "image": "shopify://shop_images/18024824459827389.jpg",
             "link": ""
           }
         },
         "ig-5": {
           "type": "image",
           "settings": {
+            "image": "shopify://shop_images/17857832940531272.jpg",
             "link": ""
           }
         }
