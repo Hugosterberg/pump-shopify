@@ -1,0 +1,37 @@
+{% comment %}
+  Merchant identity info for footer (EU/Swedish e-commerce transparency).
+
+  Usage: {% render 'legal-business-info', business_name: section.settings.legal_business_name, org_number: section.settings.legal_org_number, show_address: section.settings.show_legal_address %}
+{% endcomment %}
+
+{%- liquid
+  assign display_name = business_name | default: shop.name
+  assign display_org = org_number | strip
+  assign show_address = show_address | default: true
+-%}
+
+{%- if display_name != blank or display_org != blank or shop.email != blank or shop.phone != blank or shop.address -%}
+  <div class="legal-business">
+    {%- if display_name != blank -%}
+      <p class="legal-business__name">{{ display_name }}</p>
+    {%- endif -%}
+
+    {%- if display_org != blank -%}
+      <p class="legal-business__org">Org.nr {{ display_org }}</p>
+    {%- endif -%}
+
+    {%- if show_address and shop.address -%}
+      <p class="legal-business__address">{{ shop.address | format_address }}</p>
+    {%- endif -%}
+
+    <p class="legal-business__contact">
+      {%- if shop.email != blank -%}
+        <a href="mailto:{{ shop.email }}">{{ shop.email }}</a>
+      {%- endif -%}
+      {%- if shop.phone != blank -%}
+        {%- if shop.email != blank -%}<span aria-hidden="true"> · </span>{%- endif -%}
+        <a href="tel:{{ shop.phone | replace: ' ', '' }}">{{ shop.phone }}</a>
+      {%- endif -%}
+    </p>
+  </div>
+{%- endif -%}

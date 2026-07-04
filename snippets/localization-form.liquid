@@ -1,0 +1,59 @@
+{% comment %}
+  Country and language selector (Shopify Markets / localization).
+
+  Usage: {% render 'localization-form', class_prefix: 'localization-form' %}
+{% endcomment %}
+
+{%- liquid
+  assign class_prefix = class_prefix | default: 'localization-form'
+  assign show_countries = false
+  assign show_languages = false
+
+  if localization.available_countries.size > 1
+    assign show_countries = true
+  endif
+  if localization.available_languages.size > 1
+    assign show_languages = true
+  endif
+-%}
+
+{%- if show_countries or show_languages -%}
+  {% form 'localization', class: class_prefix, id: 'FooterLocalizationForm' %}
+    <p class="{{ class_prefix }}__label">Region &amp; språk</p>
+    <div class="{{ class_prefix }}__fields">
+      {%- if show_countries -%}
+        <label class="visually-hidden" for="FooterCountrySelect">Land/region</label>
+        <select id="FooterCountrySelect" name="country_code" class="{{ class_prefix }}__select">
+          {%- for country in localization.available_countries -%}
+            <option
+              value="{{ country.iso_code }}"
+              {%- if country.iso_code == localization.country.iso_code %}
+                selected
+              {% endif %}
+            >
+              {{ country.name }} ({{ country.currency.iso_code }})
+            </option>
+          {%- endfor -%}
+        </select>
+      {%- endif -%}
+
+      {%- if show_languages -%}
+        <label class="visually-hidden" for="FooterLanguageSelect">Språk</label>
+        <select id="FooterLanguageSelect" name="locale_code" class="{{ class_prefix }}__select">
+          {%- for language in localization.available_languages -%}
+            <option
+              value="{{ language.iso_code }}"
+              {%- if language.iso_code == localization.language.iso_code %}
+                selected
+              {% endif %}
+            >
+              {{ language.endonym_name | capitalize }}
+            </option>
+          {%- endfor -%}
+        </select>
+      {%- endif -%}
+
+      <button type="submit" class="{{ class_prefix }}__submit">Uppdatera</button>
+    </div>
+  {% endform %}
+{%- endif -%}

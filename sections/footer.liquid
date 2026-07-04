@@ -50,6 +50,7 @@
                 {% render 'icon', name: 'arrow-right', size: 18 %}
               </button>
             </div>
+            {% render 'newsletter-privacy-note', class_prefix: 'site-footer__newsletter-privacy' %}
             {%- if form.errors -%}
               <p class="site-footer__newsletter-error">{{ form.errors | default_errors }}</p>
             {%- endif -%}
@@ -124,6 +125,18 @@
         </nav>
       {% endif %}
     </div>
+
+    {% if section.settings.show_legal_links %}
+      <div class="site-footer__legal-row">
+        {% render 'legal-business-info',
+          business_name: section.settings.legal_business_name,
+          org_number: section.settings.legal_org_number,
+          show_address: section.settings.show_legal_address
+        %}
+        {% render 'legal-links', class_prefix: 'site-footer__legal' %}
+        {% render 'localization-form', class_prefix: 'site-footer__localization' %}
+      </div>
+    {% endif %}
 
     {% if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 %}
       <div class="site-footer__payment">
@@ -242,6 +255,122 @@
     margin: 8px 0 0;
     font-size: 0.82rem;
     color: #f59e0b;
+  }
+
+  .site-footer__newsletter-privacy {
+    margin: 10px 0 0;
+    max-width: 48ch;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--ftr-muted, #9aa8a2);
+  }
+
+  .site-footer__newsletter-privacy a {
+    color: var(--ftr-text, #f6f7f2);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .site-footer__legal-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-top: 24px;
+    border-top: 1px solid color-mix(in srgb, var(--ftr-text, #f6f7f2) 6%, transparent);
+  }
+
+  .legal-business {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 42ch;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--ftr-muted, #9aa8a2);
+  }
+
+  .legal-business__name {
+    margin: 0;
+    font-weight: 600;
+    color: var(--ftr-text, #f6f7f2);
+  }
+
+  .legal-business__org,
+  .legal-business__address,
+  .legal-business__contact {
+    margin: 0;
+  }
+
+  .legal-business a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .legal-business a:hover {
+    color: var(--ftr-accent, #2dd4bf);
+  }
+
+  .site-footer__legal__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+  }
+
+  .site-footer__legal a {
+    font-size: 0.82rem;
+    text-decoration: none;
+    color: var(--ftr-text, #f6f7f2);
+  }
+
+  .site-footer__legal a:hover {
+    color: var(--ftr-accent, #2dd4bf);
+  }
+
+  .site-footer__localization {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .site-footer__localization__label {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ftr-muted, #9aa8a2);
+  }
+
+  .site-footer__localization__fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .site-footer__localization__select {
+    min-height: 40px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--ftr-text, #f6f7f2) 15%, transparent);
+    background: var(--ftr-surface, #14212a);
+    color: var(--ftr-text, #f6f7f2);
+    font-size: 0.82rem;
+  }
+
+  .site-footer__localization__submit {
+    min-height: 40px;
+    padding-inline: 16px;
+    border: none;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--ftr-bg, #071014);
+    background: var(--ftr-accent, #2dd4bf);
   }
 
   .visually-hidden {
@@ -413,6 +542,12 @@
       gap: 48px;
     }
 
+    .site-footer__legal-row {
+      grid-template-columns: 1.2fr 1fr;
+      align-items: start;
+      gap: 40px;
+    }
+
     .site-footer__bottom {
       flex-direction: row;
       justify-content: space-between;
@@ -474,6 +609,34 @@
       "id": "newsletter_success",
       "label": "Success message",
       "default": "Tack! Du är nu anmäld."
+    },
+    {
+      "type": "header",
+      "content": "Legal information"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_legal_links",
+      "label": "Show legal links and business info",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "legal_business_name",
+      "label": "Legal business name",
+      "info": "Shown in footer. Defaults to shop name if empty."
+    },
+    {
+      "type": "text",
+      "id": "legal_org_number",
+      "label": "Organisation number",
+      "info": "e.g. 559123-4567"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_legal_address",
+      "label": "Show shop address from Shopify settings",
+      "default": true
     },
     {
       "type": "header",

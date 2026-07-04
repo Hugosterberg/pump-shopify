@@ -21,7 +21,7 @@
         {% if section.settings.eyebrow != blank %}
           <p class="product-cards__eyebrow">{{ section.settings.eyebrow }}</p>
         {% endif %}
-        <h2 class="product-cards__heading">{{ section.settings.heading | replace: 'pump', '<span class="brand-mark">pump</span>' }}</h2>
+        <h2 class="product-cards__heading">{{ section.settings.heading | replace: 'pump', '<span class="brand-mark">pump</span>' | raw }}</h2>
         {% if section.settings.subheading != blank %}
           <p class="product-cards__subheading">{{ section.settings.subheading }}</p>
         {% endif %}
@@ -79,7 +79,7 @@
 
                 <div class="product-cards__actions">
                   {% if variant != blank and product.available %}
-                    {% form 'product', product, class: 'product-cards__form' %}
+                    {% form 'product', product, class: 'product-cards__form ajax-cart-form' %}
                       <input type="hidden" name="id" value="{{ variant.id }}">
                       <button
                         type="submit"
@@ -340,8 +340,10 @@
   .product-cards__btn--primary {
     position: relative;
     overflow: hidden;
-    color: #06231f;
-    background-color: var(--pc-accent, #2dd4bf);
+    color: var(--pp-accent-ink, #06231f);
+    background: linear-gradient(135deg, var(--pc-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 28%, var(--pc-accent, #2dd4bf)));
+    box-shadow: var(--pp-shadow-glow);
+    transition: transform var(--pp-transition, 0.2s ease), filter var(--pp-transition, 0.2s ease);
   }
 
   .product-cards__btn--primary::after {
@@ -362,7 +364,8 @@
   }
 
   .product-cards__btn--primary:hover {
-    filter: brightness(1.05);
+    transform: translateY(-1px);
+    filter: brightness(1.03);
   }
 
   .product-cards__btn--ghost {

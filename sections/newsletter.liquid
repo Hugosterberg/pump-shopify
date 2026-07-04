@@ -48,6 +48,7 @@
             {{ section.settings.button_label | default: 'Prenumerera' }}
           </button>
         </div>
+        {% render 'newsletter-privacy-note', class_prefix: 'newsletter__privacy' %}
         {%- if form.errors -%}
           <p class="newsletter__error">{{ form.errors | default_errors }}</p>
         {%- endif -%}
@@ -135,6 +136,19 @@
     margin: 12px 0 0;
     font-size: 0.85rem;
     color: #f59e0b;
+  }
+
+  .newsletter__privacy {
+    margin: 12px 0 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--nl-muted, #9aa8a2);
+  }
+
+  .newsletter__privacy a {
+    color: var(--nl-text, #f6f7f2);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   .visually-hidden {

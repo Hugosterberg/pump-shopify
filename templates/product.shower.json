@@ -4,6 +4,17 @@
       "type": "product",
       "settings": {}
     },
+    "trust": {
+      "type": "trust-strip",
+      "blocks": {
+        "t-0": { "type": "trust_item", "settings": { "icon": "truck", "text": "Snabb leverans från Sverige" } },
+        "t-1": { "type": "trust_item", "settings": { "icon": "check", "text": "Fri frakt över 999 kr" } },
+        "t-2": { "type": "trust_item", "settings": { "icon": "shield", "text": "1 års garanti ingår" } },
+        "t-3": { "type": "trust_item", "settings": { "icon": "lock", "text": "Säker betalning" } }
+      },
+      "block_order": ["t-0", "t-1", "t-2", "t-3"],
+      "settings": {}
+    },
     "benefits": {
       "type": "benefit-cards",
       "blocks": {
@@ -86,6 +97,7 @@
   },
   "order": [
     "main",
+    "trust",
     "benefits",
     "specs",
     "included",

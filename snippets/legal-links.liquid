@@ -1,0 +1,65 @@
+{% comment %}
+  Shopify policy links for footer, cart and newsletter forms.
+
+  Usage:
+    {% render 'legal-links', class_prefix: 'legal-links' %}
+    {% render 'legal-links', class_prefix: 'main-cart__legal', compact: true %}
+{% endcomment %}
+
+{%- liquid
+  assign link_class_prefix = class_prefix | default: 'legal-links'
+  assign is_compact = compact | default: false
+  assign has_policies = false
+
+  if shop.privacy_policy != blank or shop.terms_of_service != blank or shop.refund_policy != blank or shop.shipping_policy != blank or shop.legal_notice != blank or shop.subscription_policy != blank or settings.cookie_policy_url != blank
+    assign has_policies = true
+  endif
+-%}
+
+{%- if has_policies -%}
+  {%- if is_compact -%}
+    <p class="{{ link_class_prefix }}">
+      {%- if shop.refund_policy != blank -%}
+        <a href="{{ shop.refund_policy.url }}">{{ shop.refund_policy.title }}</a>
+      {%- endif -%}
+      {%- if shop.shipping_policy != blank -%}
+        {%- if shop.refund_policy != blank -%}<span aria-hidden="true"> · </span>{%- endif -%}
+        <a href="{{ shop.shipping_policy.url }}">{{ shop.shipping_policy.title }}</a>
+      {%- endif -%}
+      {%- if shop.terms_of_service != blank -%}
+        {%- if shop.refund_policy != blank or shop.shipping_policy != blank -%}<span aria-hidden="true"> · </span>{%- endif -%}
+        <a href="{{ shop.terms_of_service.url }}">{{ shop.terms_of_service.title }}</a>
+      {%- endif -%}
+      {%- if shop.privacy_policy != blank -%}
+        {%- if shop.refund_policy != blank or shop.shipping_policy != blank or shop.terms_of_service != blank -%}<span aria-hidden="true"> · </span>{%- endif -%}
+        <a href="{{ shop.privacy_policy.url }}">{{ shop.privacy_policy.title }}</a>
+      {%- endif -%}
+    </p>
+  {%- else -%}
+    <nav class="{{ link_class_prefix }}" aria-label="Juridisk information">
+      <ul class="{{ link_class_prefix }}__list" role="list">
+        {%- if shop.privacy_policy != blank -%}
+          <li><a href="{{ shop.privacy_policy.url }}">{{ shop.privacy_policy.title }}</a></li>
+        {%- endif -%}
+        {%- if shop.terms_of_service != blank -%}
+          <li><a href="{{ shop.terms_of_service.url }}">{{ shop.terms_of_service.title }}</a></li>
+        {%- endif -%}
+        {%- if shop.refund_policy != blank -%}
+          <li><a href="{{ shop.refund_policy.url }}">{{ shop.refund_policy.title }}</a></li>
+        {%- endif -%}
+        {%- if shop.shipping_policy != blank -%}
+          <li><a href="{{ shop.shipping_policy.url }}">{{ shop.shipping_policy.title }}</a></li>
+        {%- endif -%}
+        {%- if shop.subscription_policy != blank -%}
+          <li><a href="{{ shop.subscription_policy.url }}">{{ shop.subscription_policy.title }}</a></li>
+        {%- endif -%}
+        {%- if shop.legal_notice != blank -%}
+          <li><a href="{{ shop.legal_notice.url }}">{{ shop.legal_notice.title }}</a></li>
+        {%- endif -%}
+        {%- if settings.cookie_policy_url != blank -%}
+          <li><a href="{{ settings.cookie_policy_url }}">Cookiepolicy</a></li>
+        {%- endif -%}
+      </ul>
+    </nav>
+  {%- endif -%}
+{%- endif -%}

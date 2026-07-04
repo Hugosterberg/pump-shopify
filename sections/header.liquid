@@ -86,12 +86,14 @@
         </a>
       {% endif %}
 
-      <a class="site-header__icon-btn site-header__cart" href="{{ routes.cart_url }}" aria-label="Varukorg">
+      <button type="button" class="site-header__icon-btn" data-search-open aria-label="Sök">
+        {% render 'icon', name: 'search', size: 22 %}
+      </button>
+
+      <button type="button" class="site-header__icon-btn site-header__cart" data-cart-open aria-label="Varukorg">
         {{ 'icon-cart.svg' | inline_asset_content }}
-        {% if cart.item_count > 0 %}
-          <span class="site-header__cart-count">{{ cart.item_count }}</span>
-        {% endif %}
-      </a>
+        <span class="site-header__cart-count" data-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>{{ cart.item_count }}</span>
+      </button>
 
       {% if section.settings.menu != blank %}
         <details class="site-header__drawer">
@@ -131,9 +133,9 @@
     position: sticky;
     top: 0;
     z-index: 200;
-    background-color: color-mix(in srgb, var(--hdr-bg, #071014) 92%, transparent);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--hdr-border, rgba(255, 255, 255, 0.08));
+    background-color: var(--pp-glass, color-mix(in srgb, var(--hdr-bg, #071014) 88%, transparent));
+    backdrop-filter: blur(16px) saturate(1.2);
+    border-bottom: 1px solid var(--pp-border);
     color: var(--hdr-text, #f6f7f2);
   }
 
@@ -218,12 +220,19 @@
     min-height: 40px;
     padding-inline: 20px;
     align-items: center;
-    border-radius: 999px;
+    border-radius: var(--pp-radius-pill, 999px);
     font-size: 0.88rem;
     font-weight: 600;
     text-decoration: none;
     color: var(--hdr-bg, #071014);
-    background-color: var(--hdr-accent, #2dd4bf);
+    background: linear-gradient(135deg, var(--hdr-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 30%, var(--hdr-accent, #2dd4bf)));
+    box-shadow: 0 10px 28px -16px color-mix(in srgb, var(--hdr-accent, #2dd4bf) 70%, #000);
+    transition: transform var(--pp-transition, 0.2s ease), box-shadow var(--pp-transition, 0.2s ease);
+  }
+
+  .site-header__cta:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--pp-shadow-glow);
   }
 
   .site-header__icon-btn {
@@ -234,13 +243,16 @@
     width: 40px;
     height: 40px;
     border-radius: 10px;
+    border: none;
     color: var(--hdr-text, #f6f7f2);
     text-decoration: none;
+    background: transparent;
     transition: background-color 0.15s ease;
   }
 
   .site-header__icon-btn:hover {
-    background-color: color-mix(in srgb, var(--hdr-text, #f6f7f2) 8%, transparent);
+    background-color: color-mix(in srgb, var(--hdr-accent, #2dd4bf) 14%, transparent);
+    color: var(--hdr-text, #f6f7f2);
   }
 
   .site-header__icon-btn svg {
@@ -262,6 +274,10 @@
     text-align: center;
     color: var(--hdr-bg, #071014);
     background-color: var(--hdr-accent, #2dd4bf);
+  }
+
+  .site-header__cart-count[hidden] {
+    display: none;
   }
 
   .site-header__drawer {

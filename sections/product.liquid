@@ -1,10 +1,17 @@
 {% comment %}
-  Product page section — preserves Shopify product form, variant picker and payment button.
+  Product page section — gallery, variant picker, trust row and payment button.
 {% endcomment %}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign featured_media = current_variant.featured_media | default: product.featured_media
+-%}
 
 <div
   id="main-product"
   class="main-product full-width"
+  data-main-product
+  data-section-id="{{ section.id }}"
   style="
     --mp-bg: {{ section.settings.background_color }};
     --mp-surface: {{ section.settings.surface_color }};
@@ -15,10 +22,11 @@
   "
 >
   <div class="main-product__inner">
+    {% render 'breadcrumbs' %}
+
     <div class="main-product__gallery">
       {% if product.media.size > 0 %}
-        <div class="main-product__media-main">
-          {% assign featured_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media %}
+        <div class="main-product__media-main" id="MainProductMedia-{{ section.id }}" data-main-product-media>
           {% if featured_media != blank %}
             {% if featured_media.media_type == 'image' %}
               {{
@@ -30,26 +38,48 @@
                   sizes: '(min-width: 750px) 50vw, 100vw',
                   widths: '500, 700, 900, 1200, 1400',
                   class: 'main-product__image',
-                  alt: featured_media.alt | default: product.title
+                  alt: featured_media.alt | default: product.title,
+                  data-media-id: featured_media.id
               }}
             {% else %}
-              {{ featured_media | media_tag: class: 'main-product__image' }}
+              {{ featured_media | media_tag: class: 'main-product__image', data-media-id: featured_media.id }}
             {% endif %}
           {% endif %}
         </div>
         {% if product.media.size > 1 %}
-          <ul class="main-product__thumbs" role="list">
-            {% for media in product.media limit: 6 %}
+          <ul class="main-product__thumbs" role="list" data-main-product-thumbs>
+            {% for media in product.media limit: 8 %}
+              {%- liquid
+                assign thumb_active = false
+                if featured_media != blank and media.id == featured_media.id
+                  assign thumb_active = true
+                elsif featured_media == blank and forloop.first
+                  assign thumb_active = true
+                endif
+              -%}
               <li class="main-product__thumb">
-                {% if media.media_type == 'image' %}
-                  {{
-                    media
-                    | image_url: width: 200
-                    | image_tag: loading: 'lazy', widths: '100, 200', sizes: '80px', alt: media.alt
-                  }}
-                {% else %}
-                  {{ media | media_tag }}
-                {% endif %}
+                <button
+                  type="button"
+                  class="main-product__thumb-btn{% if thumb_active %} is-active{% endif %}"
+                  data-media-index="{{ forloop.index0 }}"
+                  data-media-id="{{ media.id }}"
+                  aria-label="{{ media.alt | default: product.title | escape }}"
+                  aria-pressed="{% if thumb_active %}true{% else %}false{% endif %}"
+                >
+                  {% if media.media_type == 'image' %}
+                    {{
+                      media
+                      | image_url: width: 200
+                      | image_tag: loading: 'lazy', widths: '100, 200', sizes: '80px', alt: media.alt
+                    }}
+                  {% else %}
+                    {{
+                      media.preview_image
+                      | image_url: width: 200
+                      | image_tag: loading: 'lazy', widths: '100, 200', sizes: '80px', alt: media.alt
+                    }}
+                  {% endif %}
+                </button>
               </li>
             {% endfor %}
           </ul>
@@ -64,28 +94,44 @@
     <div class="main-product__info">
       <h1 class="main-product__title">{{ product.title }}</h1>
 
-      <div class="main-product__price">
-        {% assign current_variant = product.selected_or_first_available_variant %}
+      <div class="main-product__price" data-main-product-price>
         {% if current_variant.compare_at_price > current_variant.price %}
-          <s class="main-product__price-compare">{{ current_variant.compare_at_price | money }}</s>
+          <s class="main-product__price-compare" data-price-compare>{{ current_variant.compare_at_price | money }}</s>
+        {% else %}
+          <s class="main-product__price-compare" data-price-compare hidden></s>
         {% endif %}
-        <span class="main-product__price-current">{{ current_variant.price | money }}</span>
+        <span class="main-product__price-current" data-price-current>{{ current_variant.price | money }}</span>
       </div>
 
       {% if product.description != blank %}
         <div class="main-product__description">{{ product.description }}</div>
       {% endif %}
 
-      <div class="main-product__form-wrap">
-        {% form 'product', product %}
-          {% assign current_variant = product.selected_or_first_available_variant %}
+      <ul class="main-product__trust" role="list">
+        <li class="main-product__trust-item">
+          <span class="main-product__trust-icon" aria-hidden="true">{% render 'icon', name: 'truck', size: 16 %}</span>
+          {{ section.settings.trust_shipping | default: 'Fri frakt över 999 kr' }}
+        </li>
+        <li class="main-product__trust-item">
+          <span class="main-product__trust-icon" aria-hidden="true">{% render 'icon', name: 'shield', size: 16 %}</span>
+          {{ section.settings.trust_warranty | default: '1 års garanti' }}
+        </li>
+        <li class="main-product__trust-item">
+          <span class="main-product__trust-icon" aria-hidden="true">{% render 'icon', name: 'lock', size: 16 %}</span>
+          {{ section.settings.trust_payment | default: 'Säker betalning' }}
+        </li>
+      </ul>
 
+      <div class="main-product__form-wrap">
+        {% capture product_form_id %}MainProductForm-{{ section.id }}{% endcapture %}
+        {% form 'product', product, id: product_form_id, class: 'main-product__form ajax-cart-form' %}
           {% if product.variants.size > 1 %}
             <label class="main-product__label" for="MainProduct-Variant-{{ section.id }}">Variant</label>
             <select
               id="MainProduct-Variant-{{ section.id }}"
               class="main-product__select"
               name="id"
+              data-variant-select
             >
               {% for variant in product.variants %}
                 <option
@@ -97,12 +143,12 @@
                     disabled
                   {% endunless %}
                 >
-                  {{ variant.title }}, {{ variant.price | money }}
+                  {{ variant.title }}{% unless variant.available %} — slutsåld{% endunless %}
                 </option>
               {% endfor %}
             </select>
           {% else %}
-            <input type="hidden" name="id" value="{{ current_variant.id }}">
+            <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
           {% endif %}
 
           <div class="main-product__qty-row">
@@ -120,6 +166,7 @@
           <button
             class="main-product__submit"
             type="submit"
+            data-main-product-submit
             {% unless current_variant.available %}
               disabled
             {% endunless %}
@@ -132,6 +179,8 @@
           </button>
 
           {{ form | payment_button }}
+
+          {% render 'legal-links', class_prefix: 'main-product__legal', compact: true %}
         {% endform %}
       </div>
     </div>
@@ -151,6 +200,42 @@
   {% endif %}
 </div>
 
+<script type="application/json" id="ProductMedia-{{ section.id }}">
+  [
+    {%- for media in product.media -%}
+      {%- liquid
+        if media.media_type == 'image'
+          assign media_src = media | image_url: width: 1400
+          assign media_alt = media.alt | default: product.title
+        else
+          assign media_src = media.preview_image | image_url: width: 1400
+          assign media_alt = media.alt | default: product.title
+        endif
+      -%}
+      {
+        "id": {{ media.id | json }},
+        "media_type": {{ media.media_type | json }},
+        "src": {{ media_src | json }},
+        "alt": {{ media_alt | json }}
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+</script>
+
+<script type="application/json" id="ProductVariants-{{ section.id }}">
+  [
+    {%- for variant in product.variants -%}
+      {
+        "id": {{ variant.id | json }},
+        "available": {{ variant.available | json }},
+        "price": {{ variant.price | json }},
+        "compare_at_price": {{ variant.compare_at_price | default: 0 | json }},
+        "featured_media_id": {% if variant.featured_media %}{{ variant.featured_media.id | json }}{% else %}null{% endif %}
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+</script>
+
 {% stylesheet %}
   .main-product {
     padding-block: 48px 72px;
@@ -169,12 +254,17 @@
     align-items: start;
   }
 
+  .main-product__gallery {
+    min-width: 0;
+  }
+
   .main-product__media-main {
-    border-radius: 20px;
+    border-radius: var(--pp-radius-lg, 20px);
     overflow: hidden;
     background-color: var(--mp-surface, #14212a);
-    border: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 8%, transparent);
+    border: 1px solid var(--pp-border);
     aspect-ratio: 1;
+    box-shadow: var(--pp-shadow-soft);
   }
 
   .main-product__image {
@@ -194,17 +284,38 @@
 
   .main-product__thumb {
     flex-shrink: 0;
-    width: 72px;
-    height: 72px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 10%, transparent);
   }
 
-  .main-product__thumb img {
+  .main-product__thumb-btn {
+    width: 72px;
+    height: 72px;
+    padding: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    background: var(--mp-surface, #14212a);
+    transition:
+      border-color var(--pp-transition, 0.2s ease),
+      transform var(--pp-transition, 0.2s ease),
+      box-shadow var(--pp-transition, 0.2s ease);
+  }
+
+  .main-product__thumb-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px -12px rgb(0 0 0 / 50%);
+  }
+
+  .main-product__thumb-btn.is-active {
+    border-color: var(--mp-accent, #2dd4bf);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--mp-accent, #2dd4bf) 35%, transparent);
+  }
+
+  .main-product__thumb-btn img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
 
   .main-product__placeholder {
@@ -235,6 +346,10 @@
     color: var(--mp-muted, #9aa8a2);
   }
 
+  .main-product__price-compare[hidden] {
+    display: none;
+  }
+
   .main-product__price-current {
     font-size: 1.5rem;
     font-weight: 700;
@@ -242,17 +357,46 @@
   }
 
   .main-product__description {
-    margin-bottom: 28px;
+    margin-bottom: 20px;
     font-size: 0.95rem;
     line-height: 1.65;
     color: var(--mp-muted, #9aa8a2);
   }
 
+  .main-product__trust {
+    list-style: none;
+    margin: 0 0 24px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .main-product__trust-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: var(--mp-muted, #9aa8a2);
+  }
+
+  .main-product__trust-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    color: var(--mp-accent, #2dd4bf);
+    background: color-mix(in srgb, var(--mp-accent, #2dd4bf) 14%, transparent);
+  }
+
   .main-product__form-wrap {
     padding: 28px 24px;
-    border-radius: 20px;
-    background-color: var(--mp-surface, #14212a);
-    border: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 8%, transparent);
+    border-radius: var(--pp-radius-lg, 20px);
+    background: linear-gradient(165deg, color-mix(in srgb, var(--mp-surface, #14212a) 92%, #fff 8%) 0%, var(--mp-surface, #14212a) 100%);
+    border: 1px solid var(--pp-border);
+    box-shadow: var(--pp-shadow-soft);
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -285,12 +429,21 @@
     width: 100%;
     min-height: 54px;
     border: none;
-    border-radius: 999px;
+    border-radius: var(--pp-radius-pill, 999px);
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
     color: var(--mp-accent-ink, #071014);
-    background-color: var(--mp-accent, #2dd4bf);
+    background: linear-gradient(135deg, var(--mp-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 28%, var(--mp-accent, #2dd4bf)));
+    box-shadow: var(--pp-shadow-glow);
+    transition:
+      transform var(--pp-transition, 0.2s ease),
+      box-shadow var(--pp-transition, 0.2s ease),
+      opacity var(--pp-transition, 0.2s ease);
+  }
+
+  .main-product__submit:hover:not(:disabled) {
+    transform: translateY(-1px);
   }
 
   .main-product__submit:disabled {
@@ -300,6 +453,19 @@
 
   .main-product__form-wrap .shopify-payment-button {
     margin-top: 4px;
+  }
+
+  .main-product__legal {
+    margin: 4px 0 0;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--mp-muted, #9aa8a2);
+  }
+
+  .main-product__legal a {
+    color: var(--mp-text, #f6f7f2);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   .main-product__app {
@@ -317,8 +483,142 @@
       gap: 56px;
       align-items: start;
     }
+
+    .main-product__inner > .breadcrumbs {
+      grid-column: 1 / -1;
+    }
+
+    .main-product__trust {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+    }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    const root = document.querySelector('[data-main-product]');
+    if (!root) return;
+
+    const sectionId = root.dataset.sectionId;
+    const mediaJson = document.getElementById('ProductMedia-' + sectionId);
+    const variantsJson = document.getElementById('ProductVariants-' + sectionId);
+    if (!mediaJson || !variantsJson) return;
+
+    const mediaItems = JSON.parse(mediaJson.textContent);
+    const variants = JSON.parse(variantsJson.textContent);
+    const mediaWrap = root.querySelector('[data-main-product-media]');
+    const variantSelect = root.querySelector('[data-variant-select]');
+    const hiddenVariantId = root.querySelector('[data-variant-id]');
+    const priceCurrent = root.querySelector('[data-price-current]');
+    const priceCompare = root.querySelector('[data-price-compare]');
+    const submitBtn = root.querySelector('[data-main-product-submit]');
+    const thumbButtons = root.querySelectorAll('[data-media-index]');
+
+    const moneyFormat = {{ shop.money_format | json }};
+
+    function formatMoney(cents) {
+      if (typeof Shopify !== 'undefined' && typeof Shopify.formatMoney === 'function') {
+        return Shopify.formatMoney(cents, moneyFormat);
+      }
+      return (cents / 100).toFixed(0) + ' kr';
+    }
+
+    function findVariant(id) {
+      return variants.find((variant) => String(variant.id) === String(id));
+    }
+
+    function findMediaIndex(mediaId) {
+      if (!mediaId) return 0;
+      const index = mediaItems.findIndex((item) => String(item.id) === String(mediaId));
+      return index >= 0 ? index : 0;
+    }
+
+    function setActiveThumb(index) {
+      thumbButtons.forEach((btn) => {
+        const active = Number(btn.dataset.mediaIndex) === index;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+
+    function showMedia(index) {
+      const media = mediaItems[index];
+      if (!media || !mediaWrap) return;
+
+      setActiveThumb(index);
+
+      if (media.media_type === 'image') {
+        mediaWrap.innerHTML =
+          '<img class="main-product__image" src="' +
+          media.src +
+          '" alt="' +
+          (media.alt || '').replace(/"/g, '&quot;') +
+          '" loading="eager" data-media-id="' +
+          media.id +
+          '">';
+      }
+    }
+
+    function dispatchVariantChange(variant) {
+      document.dispatchEvent(
+        new CustomEvent('pump:variant-change', {
+          detail: {
+            variantId: variant.id,
+            available: variant.available,
+            price: variant.price,
+            formattedPrice: formatMoney(variant.price),
+          },
+        })
+      );
+    }
+
+    function updateVariant(id) {
+      const variant = findVariant(id);
+      if (!variant) return;
+
+      if (priceCurrent) priceCurrent.textContent = formatMoney(variant.price);
+
+      if (priceCompare) {
+        if (variant.compare_at_price > variant.price) {
+          priceCompare.hidden = false;
+          priceCompare.textContent = formatMoney(variant.compare_at_price);
+        } else {
+          priceCompare.hidden = true;
+        }
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = !variant.available;
+        submitBtn.textContent = variant.available ? submitBtn.dataset.availableLabel || 'Lägg i varukorg' : 'Slutsåld';
+      }
+
+      if (variant.featured_media_id) {
+        showMedia(findMediaIndex(variant.featured_media_id));
+      }
+
+      dispatchVariantChange(variant);
+    }
+
+    if (submitBtn && !submitBtn.dataset.availableLabel) {
+      submitBtn.dataset.availableLabel = submitBtn.textContent.trim();
+    }
+
+    thumbButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        showMedia(Number(btn.dataset.mediaIndex));
+      });
+    });
+
+    if (variantSelect) {
+      variantSelect.addEventListener('change', () => updateVariant(variantSelect.value));
+      updateVariant(variantSelect.value);
+    } else if (hiddenVariantId) {
+      updateVariant(hiddenVariantId.value);
+    }
+  })();
+{% endjavascript %}
 
 {% schema %}
 {
@@ -329,6 +629,24 @@
       "id": "button_label",
       "label": "Add to cart label",
       "default": "Lägg i varukorg"
+    },
+    {
+      "type": "text",
+      "id": "trust_shipping",
+      "label": "Trust — shipping",
+      "default": "Fri frakt över 999 kr"
+    },
+    {
+      "type": "text",
+      "id": "trust_warranty",
+      "label": "Trust — warranty",
+      "default": "1 års garanti"
+    },
+    {
+      "type": "text",
+      "id": "trust_payment",
+      "label": "Trust — payment",
+      "default": "Säker betalning"
     },
     {
       "type": "color",

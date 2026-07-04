@@ -40,7 +40,7 @@
   <div class="premium-hero__inner">
     <div class="premium-hero__content">
       {% if section.settings.eyebrow != blank %}
-        <p class="premium-hero__eyebrow">{{ section.settings.eyebrow | replace: 'pump', '<span class="brand-mark">pump</span>' }}</p>
+        <p class="premium-hero__eyebrow">{{ section.settings.eyebrow | replace: 'pump', '<span class="brand-mark">pump</span>' | raw }}</p>
       {% endif %}
 
       {% if section.settings.heading != blank or section.settings.subheading != blank %}

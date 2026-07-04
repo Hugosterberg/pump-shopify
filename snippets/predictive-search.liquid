@@ -1,0 +1,329 @@
+{% comment %}
+  Predictive search modal — Shopify Search Suggest API.
+
+  Usage: {% render 'predictive-search' %}
+{% endcomment %}
+
+<div class="predictive-search" data-predictive-search hidden aria-hidden="true">
+  <div class="predictive-search__backdrop" data-search-close tabindex="-1"></div>
+  <div class="predictive-search__dialog" role="dialog" aria-modal="true" aria-labelledby="PredictiveSearchTitle">
+    <div class="predictive-search__header">
+      <h2 id="PredictiveSearchTitle" class="predictive-search__title">Sök</h2>
+      <button type="button" class="predictive-search__close" data-search-close aria-label="Stäng">
+        {% render 'icon', name: 'x', size: 20 %}
+      </button>
+    </div>
+
+    <form class="predictive-search__form" action="{{ routes.search_url }}" method="get" role="search">
+      <label class="visually-hidden" for="PredictiveSearchInput">Sök produkter</label>
+      <input
+        id="PredictiveSearchInput"
+        class="predictive-search__input"
+        type="search"
+        name="q"
+        autocomplete="off"
+        placeholder="Sök produkter, sidor…"
+        data-predictive-search-input
+      >
+      <button type="submit" class="predictive-search__submit">Sök</button>
+    </form>
+
+    <div class="predictive-search__results" data-predictive-search-results hidden></div>
+    <p class="predictive-search__status" data-predictive-search-status hidden></p>
+  </div>
+</div>
+
+{% stylesheet %}
+  .predictive-search {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    display: grid;
+    place-items: start center;
+    padding: 80px 20px 20px;
+  }
+
+  .predictive-search[hidden] {
+    display: none;
+  }
+
+  body.predictive-search-open {
+    overflow: hidden;
+  }
+
+  .predictive-search__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgb(7 16 20 / 76%);
+    backdrop-filter: blur(8px);
+  }
+
+  .predictive-search__dialog {
+    position: relative;
+    width: min(100%, 560px);
+    padding: 24px;
+    border-radius: var(--pp-radius-lg, 20px);
+    border: 1px solid var(--pp-border);
+    background: linear-gradient(165deg, var(--pp-surface-light, #1d2b35) 0%, var(--pp-surface, #14212a) 40%);
+    color: var(--pp-text, #f6f7f2);
+    box-shadow: var(--pp-shadow-soft);
+    animation: pp-fade-up 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .predictive-search__dialog::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--pp-accent, #2dd4bf), transparent);
+    opacity: 0.65;
+  }
+
+  .predictive-search__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .predictive-search__title {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .predictive-search__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--pp-muted, #9aa8a2);
+    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 6%, transparent);
+  }
+
+  .predictive-search__form {
+    display: flex;
+    gap: 10px;
+  }
+
+  .predictive-search__input {
+    flex: 1;
+    min-height: 48px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 15%, transparent);
+    background: var(--pp-bg, #071014);
+    color: var(--pp-text, #f6f7f2);
+  }
+
+  .predictive-search__submit {
+    min-height: 48px;
+    padding-inline: 20px;
+    border: none;
+    border-radius: var(--pp-radius-pill, 999px);
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--pp-accent-ink, #071014);
+    background: linear-gradient(135deg, var(--pp-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 30%, var(--pp-accent, #2dd4bf)));
+    box-shadow: var(--pp-shadow-glow);
+    transition: transform var(--pp-transition, 0.2s ease);
+  }
+
+  .predictive-search__submit:hover {
+    transform: translateY(-1px);
+  }
+
+  .predictive-search__close:hover {
+    color: var(--pp-text, #f6f7f2);
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 16%, transparent);
+  }
+
+  .predictive-search__results {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .predictive-search__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--pp-radius-md, 12px);
+    text-decoration: none;
+    color: inherit;
+    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 4%, transparent);
+    border: 1px solid transparent;
+    transition:
+      background var(--pp-transition, 0.2s ease),
+      border-color var(--pp-transition, 0.2s ease),
+      transform var(--pp-transition, 0.2s ease);
+  }
+
+  .predictive-search__item:hover {
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 10%, transparent);
+    border-color: color-mix(in srgb, var(--pp-accent, #2dd4bf) 28%, transparent);
+    transform: translateX(2px);
+  }
+
+  .predictive-search__thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .predictive-search__name {
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+
+  .predictive-search__price {
+    font-size: 0.82rem;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .predictive-search__status {
+    margin: 12px 0 0;
+    font-size: 0.85rem;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .predictive-search .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    const root = document.querySelector('[data-predictive-search]');
+    if (!root) return;
+
+    const input = root.querySelector('[data-predictive-search-input]');
+    const results = root.querySelector('[data-predictive-search-results]');
+    const status = root.querySelector('[data-predictive-search-status]');
+    let debounceTimer;
+
+    function closeSearch() {
+      root.hidden = true;
+      root.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('predictive-search-open');
+    }
+
+    function openSearch() {
+      root.hidden = false;
+      root.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('predictive-search-open');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      if (results) {
+        results.hidden = true;
+        results.innerHTML = '';
+      }
+      if (status) status.hidden = true;
+    }
+
+    function formatMoney(cents) {
+      return (cents / 100).toFixed(0) + ' kr';
+    }
+
+    function renderResults(products) {
+      if (!results) return;
+      if (!products.length) {
+        results.hidden = true;
+        if (status) {
+          status.hidden = false;
+          status.textContent = 'Inga träffar. Prova ett annat sökord.';
+        }
+        return;
+      }
+
+      if (status) status.hidden = true;
+      results.hidden = false;
+      results.innerHTML = products
+        .map(function (product) {
+          const image = product.featured_image && product.featured_image.url
+            ? '<img class="predictive-search__thumb" src="' + product.featured_image.url + '" alt="" loading="lazy">'
+            : '';
+          const price = product.price ? '<span class="predictive-search__price">' + formatMoney(product.price) + '</span>' : '';
+          return (
+            '<a class="predictive-search__item" href="' +
+            product.url +
+            '">' +
+            image +
+            '<span><span class="predictive-search__name">' +
+            product.title +
+            '</span>' +
+            price +
+            '</span></a>'
+          );
+        })
+        .join('');
+    }
+
+    function fetchSuggestions(query) {
+      if (!query || query.length < 2) {
+        if (results) {
+          results.hidden = true;
+          results.innerHTML = '';
+        }
+        if (status) status.hidden = true;
+        return;
+      }
+
+      fetch('/search/suggest.json?q=' + encodeURIComponent(query) + '&resources[type]=product&resources[limit]=6')
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          const products = (data.resources && data.resources.results && data.resources.results.products) || [];
+          renderResults(products);
+        })
+        .catch(function () {
+          if (status) {
+            status.hidden = false;
+            status.textContent = 'Kunde inte ladda sökförslag.';
+          }
+        });
+    }
+
+    document.querySelectorAll('[data-search-open]').forEach(function (button) {
+      button.addEventListener('click', openSearch);
+    });
+
+    root.querySelectorAll('[data-search-close]').forEach(function (el) {
+      el.addEventListener('click', closeSearch);
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !root.hidden) closeSearch();
+    });
+
+    if (input) {
+      input.addEventListener('input', function () {
+        window.clearTimeout(debounceTimer);
+        debounceTimer = window.setTimeout(function () {
+          fetchSuggestions(input.value.trim());
+        }, 250);
+      });
+    }
+  })();
+</script>

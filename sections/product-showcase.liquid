@@ -76,7 +76,7 @@
           {% endif %}
 
           <div class="product-showcase__form">
-            {% form 'product', showcase_product %}
+            {% form 'product', showcase_product, class: 'ajax-cart-form' %}
               {% assign current_variant = showcase_product.selected_or_first_available_variant %}
 
               {% if showcase_product.variants.size > 1 %}
@@ -213,9 +213,10 @@
 
   .product-showcase__buy {
     padding: 32px 28px;
-    border-radius: 20px;
-    background-color: var(--pshow-surface, #14212a);
-    border: 1px solid color-mix(in srgb, var(--pshow-text, #f6f7f2) 8%, transparent);
+    border-radius: var(--pp-radius-lg, 20px);
+    background: linear-gradient(165deg, color-mix(in srgb, var(--pshow-surface, #14212a) 92%, #fff 8%) 0%, var(--pshow-surface, #14212a) 100%);
+    border: 1px solid var(--pp-border);
+    box-shadow: var(--pp-shadow-soft);
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -309,17 +310,21 @@
     width: 100%;
     min-height: 54px;
     border: none;
-    border-radius: 999px;
+    border-radius: var(--pp-radius-pill, 999px);
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
     color: var(--pshow-accent-ink, #071014);
-    background-color: var(--pshow-accent, #2dd4bf);
-    transition: transform 0.15s ease, opacity 0.15s ease;
+    background: linear-gradient(135deg, var(--pshow-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 28%, var(--pshow-accent, #2dd4bf)));
+    box-shadow: var(--pp-shadow-glow);
+    transition:
+      transform var(--pp-transition, 0.2s ease),
+      box-shadow var(--pp-transition, 0.2s ease),
+      opacity var(--pp-transition, 0.2s ease);
   }
 
   .product-showcase__submit:hover:not(:disabled) {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
 
   .product-showcase__submit:disabled {

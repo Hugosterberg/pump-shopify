@@ -35,12 +35,19 @@
   </head>
 
   <body>
+    <a class="skip-link" href="#MainContent">Hoppa till innehåll</a>
+
     {% sections 'header-group' %}
 
-    {{ content_for_layout }}
+    <main id="MainContent" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
 
     {% sections 'footer-group' %}
 
+    {% render 'newsletter-popup' %}
+    {% render 'predictive-search' %}
+    {% render 'cart-drawer' %}
     {% render 'motion-fx' %}
   </body>
 </html>

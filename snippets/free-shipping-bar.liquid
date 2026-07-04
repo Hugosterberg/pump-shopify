@@ -1,0 +1,73 @@
+{% comment %}
+  Dynamic free-shipping progress bar. Uses theme setting free_shipping_threshold (in store currency units, e.g. 999).
+
+  Usage: {% render 'free-shipping-bar', class_prefix: 'free-shipping-bar' %}
+{% endcomment %}
+
+{%- liquid
+  assign threshold = settings.free_shipping_threshold | default: 999 | times: 100
+  assign class_prefix = class_prefix | default: 'free-shipping-bar'
+  assign remaining = threshold | minus: cart.total_price
+  assign progress = cart.total_price | times: 100 | divided_by: threshold
+  if progress > 100
+    assign progress = 100
+  endif
+-%}
+
+{%- if threshold > 0 -%}
+  <div class="{{ class_prefix }}" data-free-shipping-bar>
+    {%- if remaining > 0 -%}
+      <p class="{{ class_prefix }}__text">
+        Lägg till <strong>{{ remaining | money }}</strong> till för fri frakt
+      </p>
+    {%- else -%}
+      <p class="{{ class_prefix }}__text {{ class_prefix }}__text--complete">
+        Du har uppnått fri frakt
+      </p>
+    {%- endif -%}
+    <div class="{{ class_prefix }}__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}">
+      <span class="{{ class_prefix }}__fill" style="width: {{ progress }}%;"></span>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  [class*='__shipping'],
+  .free-shipping-bar {
+    padding: 14px 16px;
+    border-radius: var(--pp-radius-md, 14px);
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 6%, transparent);
+    border: 1px solid color-mix(in srgb, var(--pp-accent, #2dd4bf) 18%, transparent);
+  }
+
+  .free-shipping-bar__text,
+  [class*='__shipping__text'] {
+    margin: 0 0 10px;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--pp-text, #f6f7f2);
+  }
+
+  [class*='__shipping__text--complete'] {
+    color: var(--pp-accent, #2dd4bf);
+    font-weight: 600;
+  }
+
+  .free-shipping-bar__track,
+  [class*='__shipping__track'] {
+    height: 6px;
+    border-radius: var(--pp-radius-pill, 999px);
+    overflow: hidden;
+    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 10%, transparent);
+  }
+
+  .free-shipping-bar__fill,
+  [class*='__shipping__fill'] {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--pp-accent, #2dd4bf), var(--pp-accent-blue, #4cc9f0));
+    box-shadow: 0 0 12px color-mix(in srgb, var(--pp-accent, #2dd4bf) 45%, transparent);
+    transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+{% endstylesheet %}

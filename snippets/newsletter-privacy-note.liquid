@@ -1,0 +1,14 @@
+{% comment %}
+  Short privacy note for newsletter signup forms (GDPR).
+
+  Usage: {% render 'newsletter-privacy-note', class_prefix: 'site-footer__newsletter-privacy' %}
+{% endcomment %}
+
+{%- assign note_class = class_prefix | default: 'newsletter-privacy' -%}
+
+{%- if shop.privacy_policy != blank -%}
+  <p class="{{ note_class }}">
+    Genom att prenumerera godkänner du vår
+    <a href="{{ shop.privacy_policy.url }}">{{ shop.privacy_policy.title | downcase }}</a>.
+  </p>
+{%- endif -%}

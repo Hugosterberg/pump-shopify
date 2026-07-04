@@ -22,7 +22,7 @@
         {% if section.settings.eyebrow != blank %}
           <p class="feature-highlights__eyebrow">{{ section.settings.eyebrow }}</p>
         {% endif %}
-        <h2 class="feature-highlights__heading">{{ section.settings.heading | replace: 'pump', '<span class="brand-mark">pump</span>' }}</h2>
+        <h2 class="feature-highlights__heading">{{ section.settings.heading | replace: 'pump', '<span class="brand-mark">pump</span>' | raw }}</h2>
         {% if section.settings.subheading != blank %}
           <p class="feature-highlights__subheading">{{ section.settings.subheading }}</p>
         {% endif %}

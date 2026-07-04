@@ -7,6 +7,7 @@
     <h1 class="main-cart__title">{{ 'cart.title' | t }}</h1>
 
     {% if cart.item_count > 0 %}
+      {% render 'free-shipping-bar', class_prefix: 'main-cart__shipping' %}
       <form class="main-cart__form" action="{{ routes.cart_url }}" method="post">
         <ul class="main-cart__items" role="list">
           {% for item in cart.items %}
@@ -51,9 +52,15 @@
               <span>Delsumma</span>
               <strong>{{ cart.total_price | money }}</strong>
             </p>
+            {% render 'legal-links', class_prefix: 'main-cart__legal', compact: true %}
             <button class="main-cart__checkout" type="submit" name="checkout">
               {{ 'cart.checkout' | t }}
             </button>
+            {% if additional_checkout_buttons %}
+              <div class="main-cart__dynamic-checkout">
+                {{ content_for_additional_checkout_buttons }}
+              </div>
+            {% endif %}
           </div>
         </div>
       </form>
@@ -184,6 +191,27 @@
     display: flex;
     justify-content: space-between;
     font-size: 1rem;
+  }
+
+  .main-cart__legal {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .main-cart__legal a {
+    color: var(--pp-text, #f6f7f2);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .main-cart__shipping {
+    margin-bottom: 24px;
+  }
+
+  .main-cart__dynamic-checkout {
+    margin-top: 4px;
   }
 
   .main-cart__checkout {

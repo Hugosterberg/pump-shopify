@@ -19,6 +19,30 @@
         "type": "image_picker",
         "id": "favicon",
         "label": "Favicon"
+      },
+      {
+        "type": "image_picker",
+        "id": "share_image",
+        "label": "Default social share image",
+        "info": "Used when a page has no featured image (Open Graph / Twitter)."
+      }
+    ]
+  },
+  {
+    "name": "Store",
+    "settings": [
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping threshold",
+        "default": 999,
+        "info": "Amount in store currency (e.g. 999 for 999 kr). Used in cart progress bar."
+      },
+      {
+        "type": "url",
+        "id": "cookie_policy_url",
+        "label": "Cookie policy page",
+        "info": "Optional link shown in footer legal links."
       }
     ]
   },
@@ -92,6 +116,57 @@
         "unit": "px",
         "label": "t:labels.input_corner_radius",
         "default": 8
+      }
+    ]
+  },
+  {
+    "name": "Newsletter popup",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "newsletter_popup_enabled",
+        "label": "Show newsletter popup",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "newsletter_popup_delay",
+        "min": 3,
+        "max": 30,
+        "step": 1,
+        "unit": "s",
+        "label": "Delay before popup",
+        "default": 8
+      },
+      {
+        "type": "text",
+        "id": "newsletter_popup_heading",
+        "label": "Heading",
+        "default": "Få 10% rabatt på din första order"
+      },
+      {
+        "type": "textarea",
+        "id": "newsletter_popup_subheading",
+        "label": "Subheading",
+        "default": "Anmäl dig till nyhetsbrevet — tips, lanseringar och erbjudanden."
+      },
+      {
+        "type": "text",
+        "id": "newsletter_popup_placeholder",
+        "label": "Email placeholder",
+        "default": "Din e-post"
+      },
+      {
+        "type": "text",
+        "id": "newsletter_popup_button",
+        "label": "Button label",
+        "default": "Prenumerera"
+      },
+      {
+        "type": "text",
+        "id": "newsletter_popup_success",
+        "label": "Success message",
+        "default": "Tack! Kolla inkorgen snart."
       }
     ]
   }

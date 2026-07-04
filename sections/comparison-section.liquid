@@ -55,7 +55,7 @@
             <p class="comparison-section__eyebrow">{{ section.settings.eyebrow }}</p>
           {% endif %}
           <h2 class="comparison-section__heading">
-            {{ heading_prefix }}
+            {{ heading_prefix | raw }}
             {% if can_flip %}
               <label class="comparison-flip__headword" for="cmp-flip-{{ section.id }}" title="Byt jämförelse">
                 <span class="comparison-flip__word comparison-flip__word--front">{{ word_competitors }}</span>

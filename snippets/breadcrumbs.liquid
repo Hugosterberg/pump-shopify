@@ -1,7 +1,6 @@
 {% comment %}
   Breadcrumbs with BreadcrumbList JSON-LD for SEO.
-  Supports article and blog page types. Renders nothing on other pages
-  unless items are passed via the optional `crumbs` capture pattern.
+  Supports product, article and blog page types.
 
   Usage: {% render 'breadcrumbs' %}
 {% endcomment %}
@@ -9,7 +8,21 @@
 {%- liquid
   assign show_crumbs = false
 
-  if request.page_type == 'article' and blog != blank
+  if request.page_type == 'product' and product != blank
+    assign show_crumbs = true
+    assign crumb_2_name = 'Produkter'
+    assign crumb_2_url = routes.all_products_collection_url
+    assign crumb_3_name = product.title
+    assign crumb_3_url = product.url
+    assign crumb_count = 3
+  elsif request.page_type == 'collection' and collection != blank
+    assign show_crumbs = true
+    assign crumb_2_name = 'Produkter'
+    assign crumb_2_url = routes.all_products_collection_url
+    assign crumb_3_name = collection.title
+    assign crumb_3_url = collection.url
+    assign crumb_count = 3
+  elsif request.page_type == 'article' and blog != blank
     assign show_crumbs = true
     assign crumb_2_name = blog.title
     assign crumb_2_url = blog.url
@@ -84,6 +97,12 @@
 {% stylesheet %}
   .breadcrumbs {
     margin-bottom: 24px;
+    padding: 8px 14px;
+    border-radius: var(--pp-radius-pill, 999px);
+    width: fit-content;
+    max-width: 100%;
+    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 4%, transparent);
+    border: 1px solid var(--pp-border);
   }
 
   .breadcrumbs__list {
@@ -94,8 +113,9 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 6px;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     line-height: 1.4;
+    letter-spacing: 0.03em;
   }
 
   .breadcrumbs__item {

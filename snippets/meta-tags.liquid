@@ -2,13 +2,33 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
+{%- liquid
+  assign share_image = page_image
+  if share_image == blank and settings.share_image != blank
+    assign share_image = settings.share_image
+  endif
+  if share_image == blank and settings.logo != blank
+    assign share_image = settings.logo
+  endif
+-%}
+
 {% if settings.favicon != blank %}
   <link
     rel="icon"
     type="image/png"
     href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
   >
+  <link
+    rel="apple-touch-icon"
+    href="{{ settings.favicon | image_url: width: 180, height: 180 }}"
+  >
 {% endif %}
+
+<meta name="theme-color" content="{{ settings.background_color | default: '#071014' }}">
+
+{%- if request.page_type == 'cart' or request.page_type == 'password' or request.page_type == 'customers/account' or request.page_type == 'customers/login' or request.page_type == 'customers/register' or request.page_type == 'customers/addresses' or request.page_type == 'customers/order' -%}
+  <meta name="robots" content="noindex, nofollow">
+{%- endif -%}
 
 {%- liquid
   assign og_title = page_title | default: shop.name
@@ -23,46 +43,28 @@
   elsif request.page_type == 'password'
     assign og_url = request.origin
   endif
-%}
+-%}
 
-<meta
-  property="og:site_name"
-  content="{{ shop.name }}"
->
-<meta
-  property="og:url"
-  content="{{ og_url }}"
->
-<meta
-  property="og:title"
-  content="{{ og_title | escape }}"
->
-<meta
-  property="og:type"
-  content="{{ og_type }}"
->
-<meta
-  property="og:description"
-  content="{{ og_description | escape }}"
->
+<meta property="og:site_name" content="{{ shop.name }}">
+<meta property="og:url" content="{{ og_url }}">
+<meta property="og:title" content="{{ og_title | escape }}">
+<meta property="og:type" content="{{ og_type }}">
+<meta property="og:description" content="{{ og_description | escape }}">
+<meta property="og:locale" content="{{ request.locale.iso_code | replace: '-', '_' }}">
 
-{%- if page_image -%}
-  <meta
-    property="og:image"
-    content="http:{{ page_image | image_url }}"
-  >
-  <meta
-    property="og:image:secure_url"
-    content="https:{{ page_image | image_url }}"
-  >
-  <meta
-    property="og:image:width"
-    content="{{ page_image.width }}"
-  >
-  <meta
-    property="og:image:height"
-    content="{{ page_image.height }}"
-  >
+{%- if localization.available_languages.size > 1 -%}
+  {%- for language in localization.available_languages -%}
+    <link rel="alternate" hreflang="{{ language.iso_code }}" href="{{ canonical_url | replace: localization.language.iso_code, language.iso_code }}">
+  {%- endfor -%}
+  <link rel="alternate" hreflang="x-default" href="{{ canonical_url }}">
+{%- endif -%}
+
+{%- if share_image -%}
+  <meta property="og:image" content="https:{{ share_image | image_url: width: 1200 }}">
+  <meta property="og:image:secure_url" content="https:{{ share_image | image_url: width: 1200 }}">
+  <meta property="og:image:width" content="{{ share_image.width | default: 1200 }}">
+  <meta property="og:image:height" content="{{ share_image.height | default: 630 }}">
+  <meta name="twitter:image" content="https:{{ share_image | image_url: width: 1200 }}">
 {%- endif -%}
 
 {%- if request.page_type == 'product' -%}
@@ -70,14 +72,8 @@
     {{ product | structured_data }}
   </script>
 
-  <meta
-    property="og:price:amount"
-    content="{{ product.price | money_without_currency | strip_html }}"
-  >
-  <meta
-    property="og:price:currency"
-    content="{{ cart.currency.iso_code }}"
-  >
+  <meta property="og:price:amount" content="{{ product.price | money_without_currency | strip_html }}">
+  <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
 {%- endif -%}
 
 {%- if request.page_type == 'article' -%}
@@ -110,24 +106,38 @@
 <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebSite",
+    "@type": "Organization",
     "name": {{ shop.name | json }},
     "url": {{ shop.url | json }}
+    {%- if settings.logo != blank -%}
+    ,"logo": "https:{{ settings.logo | image_url: width: 512 }}"
+    {%- endif -%}
+    {%- if shop.email != blank -%}
+    ,"email": {{ shop.email | json }}
+    {%- endif -%}
   }
 </script>
 
-<meta
-  name="twitter:card"
-  content="summary_large_image"
->
-<meta
-  name="twitter:title"
-  content="{{ og_title | escape }}"
->
-<meta
-  name="twitter:description"
-  content="{{ og_description | escape }}"
->
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": {{ shop.name | json }},
+    "url": {{ shop.url | json }},
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": {{ shop.url | append: routes.search_url | append: '?q={search_term_string}' | json }}
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+</script>
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ og_title | escape }}">
+<meta name="twitter:description" content="{{ og_description | escape }}">
 
 <title>
   {{ page_title }}
@@ -136,14 +146,8 @@
   {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
 </title>
 
-<link
-  rel="canonical"
-  href="{{ canonical_url }}"
->
+<link rel="canonical" href="{{ canonical_url }}">
 
 {% if page_description %}
-  <meta
-    name="description"
-    content="{{ page_description | escape }}"
-  >
+  <meta name="description" content="{{ page_description | escape }}">
 {% endif %}
