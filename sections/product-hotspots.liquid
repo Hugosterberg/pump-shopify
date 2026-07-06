@@ -52,6 +52,7 @@
             type="button"
             class="hotspots__dot"
             aria-label="{{ block.settings.title | escape }}"
+            aria-expanded="false"
           >
             <span class="hotspots__dot-pulse" aria-hidden="true"></span>
           </button>
@@ -214,7 +215,8 @@
   }
 
   .hotspots__point:hover .hotspots__tip,
-  .hotspots__point:focus-within .hotspots__tip {
+  .hotspots__point:focus-within .hotspots__tip,
+  .hotspots__point.is-active .hotspots__tip {
     opacity: 1;
     visibility: visible;
     transform: translate(-50%, 0);
@@ -222,8 +224,10 @@
 
   .hotspots__point:hover .hotspots__tip--left,
   .hotspots__point:focus-within .hotspots__tip--left,
+  .hotspots__point.is-active .hotspots__tip--left,
   .hotspots__point:hover .hotspots__tip--right,
-  .hotspots__point:focus-within .hotspots__tip--right {
+  .hotspots__point:focus-within .hotspots__tip--right,
+  .hotspots__point.is-active .hotspots__tip--right {
     transform: translate(0, 0);
   }
 
@@ -254,6 +258,46 @@
     }
   }
 {% endstylesheet %}
+
+<script>
+  (function () {
+    var root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root) return;
+
+    var points = root.querySelectorAll('.hotspots__point');
+
+    function closeAll() {
+      points.forEach(function (point) {
+        point.classList.remove('is-active');
+        var dot = point.querySelector('.hotspots__dot');
+        if (dot) dot.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    points.forEach(function (point) {
+      var dot = point.querySelector('.hotspots__dot');
+      if (!dot) return;
+
+      dot.addEventListener('click', function (event) {
+        event.stopPropagation();
+        var isActive = point.classList.contains('is-active');
+        closeAll();
+        if (!isActive) {
+          point.classList.add('is-active');
+          dot.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!root.contains(event.target)) closeAll();
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeAll();
+    });
+  })();
+</script>
 
 {% schema %}
 {

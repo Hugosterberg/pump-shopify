@@ -85,16 +85,22 @@
 
                 <div class="product-cards__actions">
                   {% if variant != blank and product.available %}
-                    {% form 'product', product, class: 'product-cards__form ajax-cart-form' %}
-                      <input type="hidden" name="id" value="{{ variant.id }}">
-                      <button
-                        type="submit"
-                        name="add"
-                        class="product-cards__btn product-cards__btn--primary"
-                      >
-                        {{ section.settings.buy_label | default: 'Köp nu' }}
-                      </button>
-                    {% endform %}
+                    {% if product.variants.size > 1 %}
+                      <a class="product-cards__btn product-cards__btn--primary" href="{{ product.url }}">
+                        Välj variant
+                      </a>
+                    {% else %}
+                      {% form 'product', product, class: 'product-cards__form ajax-cart-form' %}
+                        <input type="hidden" name="id" value="{{ variant.id }}">
+                        <button
+                          type="submit"
+                          name="add"
+                          class="product-cards__btn product-cards__btn--primary"
+                        >
+                          {{ section.settings.buy_label | default: 'Köp nu' }}
+                        </button>
+                      {% endform %}
+                    {% endif %}
                   {% else %}
                     <span class="product-cards__btn product-cards__btn--soldout" aria-disabled="true">
                       Slutsåld

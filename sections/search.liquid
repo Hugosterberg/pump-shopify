@@ -21,7 +21,17 @@
 
     {% if search.performed %}
       {% if search.results_count == 0 %}
-        <p class="main-search__message">{{ 'search.no_results_html' | t: terms: search.terms }}</p>
+        <div class="main-search__empty">
+          <p class="main-search__message">{{ 'search.no_results_html' | t: terms: search.terms }}</p>
+          <p class="main-search__empty-hint">Prova ett annat sökord eller bläddra bland våra produkter.</p>
+          <ul class="main-search__suggestions" role="list">
+            <li><a class="main-search__suggestion" href="/products/portabel-dusch">Portabel dusch</a></li>
+            <li><a class="main-search__suggestion" href="/products/portabel-hink">Portabel hink</a></li>
+            <li><a class="main-search__suggestion" href="/products/the-perfect-combo-portabel-dusch-vikbar-hink-1">The Perfect Combo</a></li>
+            <li><a class="main-search__suggestion" href="/pages/faq">Vanliga frågor</a></li>
+          </ul>
+          <a class="main-search__cta" href="{{ routes.all_products_collection_url }}">Se alla produkter</a>
+        </div>
       {% else %}
         <p class="main-search__message">{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}</p>
 
@@ -174,6 +184,57 @@
   .main-search__pagination {
     margin-top: 32px;
     text-align: center;
+  }
+
+  .main-search__empty {
+    padding: 28px 24px;
+    border-radius: 16px;
+    background-color: var(--pp-surface, #14212a);
+    border: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+  }
+
+  .main-search__empty-hint {
+    margin: 0 0 16px;
+    font-size: 0.92rem;
+    color: var(--pp-text, #f6f7f2);
+  }
+
+  .main-search__suggestions {
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .main-search__suggestion {
+    display: inline-flex;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--pp-text, #f6f7f2);
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--pp-accent, #2dd4bf) 25%, transparent);
+    transition: background-color 0.15s ease;
+  }
+
+  .main-search__suggestion:hover {
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 18%, transparent);
+  }
+
+  .main-search__cta {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    padding-inline: 20px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--pp-bg-deep, #071014);
+    background-color: var(--pp-accent, #2dd4bf);
   }
 
   .visually-hidden {

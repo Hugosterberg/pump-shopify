@@ -9,7 +9,8 @@
  */
 {
   "current": {
-    "free_shipping_threshold": 500,
+    "free_shipping_threshold": 999,
+    "announcement_shipping_threshold": 999,
     "enable_cookie_banner": true,
     "cookie_banner_text": "Vi använder cookies för att ge dig bästa möjliga upplevelse på vår webbplats.",
     "cookie_banner_button": "Acceptera cookies"

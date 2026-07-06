@@ -27,6 +27,7 @@
     {% endif %}
 
     {% if showcase_product != blank %}
+      {% assign current_variant = showcase_product.selected_or_first_available_variant %}
       <div class="product-showcase__grid">
         <div class="product-showcase__media">
           {% if showcase_product.featured_image != blank %}
@@ -54,15 +55,18 @@
           </div>
           <h3 class="product-showcase__title">{{ showcase_product.title }}</h3>
 
-          <div class="product-showcase__price">
-            {% if showcase_product.compare_at_price > showcase_product.price %}
-              <span class="product-showcase__price-compare">
-                <s>{{ showcase_product.compare_at_price | money }}</s>
+          <div class="product-showcase__price" data-product-showcase-price>
+            {% if current_variant.compare_at_price > current_variant.price %}
+              <span class="product-showcase__price-compare" data-price-compare>
+                <s>{{ current_variant.compare_at_price | money }}</s>
               </span>
-              {% assign saving = showcase_product.compare_at_price | minus: showcase_product.price | times: 100.0 | divided_by: showcase_product.compare_at_price | round %}
-              <span class="product-showcase__save">Spara {{ saving }}%</span>
+              {% assign saving = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round %}
+              <span class="product-showcase__save" data-save-badge>Spara {{ saving }}%</span>
+            {% else %}
+              <span class="product-showcase__price-compare" data-price-compare hidden></span>
+              <span class="product-showcase__save" data-save-badge hidden></span>
             {% endif %}
-            <span class="product-showcase__price-current">{{ showcase_product.price | money }}</span>
+            <span class="product-showcase__price-current" data-price-current>{{ current_variant.price | money }}</span>
           </div>
 
           {% if section.settings.description != blank %}
@@ -93,6 +97,7 @@
                   id="ProductShowcase-Variant-{{ section.id }}"
                   class="product-showcase__select"
                   name="id"
+                  data-variant-select
                 >
                   {% for variant in showcase_product.variants %}
                     <option
@@ -129,6 +134,7 @@
               <button
                 class="product-showcase__submit"
                 type="submit"
+                data-product-showcase-submit
                 {% unless current_variant.available %}
                   disabled
                 {% endunless %}
@@ -155,6 +161,85 @@
     {% endif %}
   </div>
 </div>
+
+{% if showcase_product != blank %}
+<script type="application/json" id="ProductShowcaseVariants-{{ section.id }}">
+  [
+    {%- for variant in showcase_product.variants -%}
+      {
+        "id": {{ variant.id | json }},
+        "available": {{ variant.available | json }},
+        "price": {{ variant.price | json }},
+        "compare_at_price": {{ variant.compare_at_price | default: 0 | json }}
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+</script>
+<script>
+  (function () {
+    var root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root) return;
+
+    var select = root.querySelector('[data-variant-select]');
+    var variantsEl = document.getElementById('ProductShowcaseVariants-{{ section.id }}');
+    if (!variantsEl) return;
+
+    var variants = JSON.parse(variantsEl.textContent);
+    var variantMap = {};
+    variants.forEach(function (v) {
+      variantMap[String(v.id)] = v;
+    });
+
+    var priceCurrent = root.querySelector('[data-price-current]');
+    var priceCompare = root.querySelector('[data-price-compare]');
+    var saveBadge = root.querySelector('[data-save-badge]');
+    var submitBtn = root.querySelector('[data-product-showcase-submit]');
+    var moneyFormat = {{ shop.money_format | json }};
+
+    function formatMoney(cents) {
+      if (typeof Shopify !== 'undefined' && typeof Shopify.formatMoney === 'function') {
+        return Shopify.formatMoney(cents, moneyFormat);
+      }
+      return (cents / 100).toFixed(0) + ' kr';
+    }
+
+    function updateVariant(id) {
+      var variant = variantMap[String(id)];
+      if (!variant) return;
+
+      if (priceCurrent) priceCurrent.textContent = formatMoney(variant.price);
+
+      if (variant.compare_at_price > variant.price) {
+        var saving = Math.round(((variant.compare_at_price - variant.price) / variant.compare_at_price) * 100);
+        if (priceCompare) {
+          priceCompare.hidden = false;
+          priceCompare.innerHTML = '<s>' + formatMoney(variant.compare_at_price) + '</s>';
+        }
+        if (saveBadge) {
+          saveBadge.hidden = false;
+          saveBadge.textContent = 'Spara ' + saving + '%';
+        }
+      } else {
+        if (priceCompare) priceCompare.hidden = true;
+        if (saveBadge) saveBadge.hidden = true;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = !variant.available;
+        submitBtn.textContent = variant.available
+          ? {{ section.settings.button_label | default: 'Lägg i varukorg' | json }}
+          : 'Slutsåld';
+      }
+    }
+
+    if (select) {
+      select.addEventListener('change', function () {
+        updateVariant(select.value);
+      });
+    }
+  })();
+</script>
+{% endif %}
 
 {% stylesheet %}
   .product-showcase {

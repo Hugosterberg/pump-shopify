@@ -523,6 +523,7 @@
   window.PumpCart = {
     moneyFormat: {{ shop.money_format | json }},
     freeShippingThreshold: {{ settings.free_shipping_threshold | default: 999 | times: 100 | json }},
+    moneyFormat: {{ shop.money_format | json }},
     upsellProducts: {
       combo: {
         handle: {{ combo.handle | json }},

@@ -169,7 +169,9 @@
           const imgHtml = img
             ? '<img src="' + img + '" alt="' + (product.title || '').replace(/"/g, '&quot;') + '" loading="lazy" width="400" height="400">'
             : '';
-          const price = (product.price / 100).toLocaleString('sv-SE') + ' kr';
+          const price = window.PumpTheme && window.PumpTheme.moneyFormat && typeof Shopify !== 'undefined' && typeof Shopify.formatMoney === 'function'
+            ? Shopify.formatMoney(product.price, window.PumpTheme.moneyFormat)
+            : (product.price / 100).toLocaleString('sv-SE') + ' kr';
           return (
             '<li class="recently-viewed__card">' +
             '<a class="recently-viewed__link" href="' + product.url + '">' +

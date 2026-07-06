@@ -144,6 +144,16 @@
                 {{ section.settings.cta_label }}
               </a>
             {% endif %}
+            {% if section.settings.show_localization %}
+              <div class="site-header__drawer-localization">
+                {% render 'localization-form',
+                  class_prefix: 'site-header__drawer-loc',
+                  form_id: 'DrawerLocalizationForm',
+                  compact: true,
+                  show_label: false
+                %}
+              </div>
+            {% endif %}
           </nav>
         </details>
       {% endif %}
@@ -417,6 +427,29 @@
     text-decoration: none;
     color: var(--hdr-bg, #071014);
     background-color: var(--hdr-accent, #2dd4bf);
+  }
+
+  .site-header__drawer-localization {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--hdr-border, rgba(255, 255, 255, 0.08));
+  }
+
+  .site-header__drawer-loc__fields--compact {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .site-header__drawer-loc__fields--compact select {
+    max-width: none;
+    width: 100%;
+  }
+
+  @media screen and (max-width: 749px) {
+    .site-header__icon-btn[data-wishlist-open],
+    .site-header__icon-btn[data-compare-open] {
+      display: none;
+    }
   }
 
   @media screen and (min-width: 990px) {

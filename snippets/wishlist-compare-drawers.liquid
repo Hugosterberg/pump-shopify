@@ -259,35 +259,6 @@
   .site-header__badge-count[hidden] {
     display: none;
   }
-
-  .main-product__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-
-  .main-product__action-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-height: 36px;
-    padding: 0 14px;
-    border-radius: var(--pp-radius-pill, 999px);
-    border: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 12%, transparent);
-    background: color-mix(in srgb, var(--mp-text, #f6f7f2) 4%, transparent);
-    color: var(--mp-muted, #9aa8a2);
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: border-color 0.15s ease, color 0.15s ease;
-  }
-
-  .main-product__action-btn.is-active,
-  .main-product__action-btn:hover {
-    border-color: color-mix(in srgb, var(--mp-accent, #2dd4bf) 45%, transparent);
-    color: var(--mp-accent, #2dd4bf);
-  }
 {% endstylesheet %}
 
 <script src="{{ 'wishlist-compare.js' | asset_url }}" defer></script>

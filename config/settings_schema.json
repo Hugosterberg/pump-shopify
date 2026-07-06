@@ -35,8 +35,15 @@
         "type": "number",
         "id": "free_shipping_threshold",
         "label": "Free shipping threshold",
-        "default": 500,
-        "info": "Amount in store currency (e.g. 500 for 500 kr). Used in cart progress bar and trust copy."
+        "default": 999,
+        "info": "Actual cart threshold in store currency (e.g. 999 for 999 kr)."
+      },
+      {
+        "type": "number",
+        "id": "announcement_shipping_threshold",
+        "label": "Announcement bar shipping threshold",
+        "default": 999,
+        "info": "Marketing message in announcement bar. Use [frakt] token in announcement text."
       },
       {
         "type": "url",

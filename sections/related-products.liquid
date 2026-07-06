@@ -4,7 +4,20 @@
     assign source_product = section.settings.product
   endif
 
-  assign related_collection = source_product.collections.first
+  assign related_collection = section.settings.collection
+  if related_collection == blank and source_product != blank
+    for coll in source_product.collections
+      if coll.handle != 'all' and coll.handle != 'frontpage' and coll.products.size > 1
+        assign related_collection = coll
+        break
+      endif
+    endfor
+  endif
+
+  if related_collection == blank or related_collection.products.size <= 1
+    assign related_collection = collections.all
+  endif
+
   assign related_count = 0
 %}
 
@@ -159,6 +172,12 @@
       "id": "product",
       "label": "Product",
       "info": "Only needed off the product page. On product pages the current product is used automatically."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Optional. Defaults to the product's primary collection, then All products."
     },
     {
       "type": "text",

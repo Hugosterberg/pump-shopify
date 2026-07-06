@@ -10,6 +10,7 @@
     data-cookie-consent
     role="dialog"
     aria-label="Cookie-meddelande"
+    aria-modal="true"
     aria-live="polite"
     hidden
   >
@@ -20,9 +21,14 @@
           <a href="{{ settings.cookie_policy_url }}">Läs mer</a>
         {% endif %}
       </p>
-      <button type="button" class="cookie-consent__accept" data-cookie-accept>
-        {{ settings.cookie_banner_button | default: 'Acceptera cookies' }}
-      </button>
+      <div class="cookie-consent__actions">
+        <button type="button" class="cookie-consent__reject" data-cookie-reject>
+          Endast nödvändiga
+        </button>
+        <button type="button" class="cookie-consent__accept" data-cookie-accept>
+          {{ settings.cookie_banner_button | default: 'Acceptera cookies' }}
+        </button>
+      </div>
     </div>
   </div>
 
@@ -30,9 +36,9 @@
     .cookie-consent {
       position: fixed;
       inset-inline: var(--page-margin, 20px);
-      bottom: 20px;
+      bottom: calc(20px + var(--sticky-atc-offset, 0px));
       z-index: 10000;
-      max-width: 480px;
+      max-width: 520px;
       margin-inline: auto;
       left: 0;
       right: 0;
@@ -64,17 +70,32 @@
       text-underline-offset: 2px;
     }
 
-    .cookie-consent__accept {
-      align-self: flex-start;
+    .cookie-consent__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .cookie-consent__accept,
+    .cookie-consent__reject {
       min-height: 42px;
-      padding-inline: 20px;
-      border: none;
+      padding-inline: 18px;
       border-radius: var(--pp-radius-pill, 999px);
-      font-size: 0.88rem;
+      font-size: 0.84rem;
       font-weight: 600;
       cursor: pointer;
+    }
+
+    .cookie-consent__accept {
+      border: none;
       color: var(--pp-accent-ink, #071014);
       background: linear-gradient(135deg, var(--pp-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 30%, var(--pp-accent, #2dd4bf)));
+    }
+
+    .cookie-consent__reject {
+      border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 14%, transparent);
+      background: transparent;
+      color: var(--pp-text, #f6f7f2);
     }
 
     @media screen and (min-width: 480px) {
@@ -83,7 +104,7 @@
         align-items: center;
       }
 
-      .cookie-consent__accept {
+      .cookie-consent__actions {
         flex-shrink: 0;
       }
     }
@@ -95,17 +116,34 @@
       const banner = document.querySelector('[data-cookie-consent]');
       if (!banner) return;
 
-      if (localStorage.getItem(STORAGE_KEY) === 'accepted') return;
+      if (localStorage.getItem(STORAGE_KEY)) return;
+
+      function syncStickyOffset() {
+        const sticky = document.querySelector('[data-sticky-atc].is-visible');
+        document.documentElement.style.setProperty('--sticky-atc-offset', sticky ? '72px' : '0px');
+      }
 
       banner.hidden = false;
+      syncStickyOffset();
+      window.addEventListener('scroll', syncStickyOffset, { passive: true });
 
-      banner.querySelector('[data-cookie-accept]').addEventListener('click', function () {
-        localStorage.setItem(STORAGE_KEY, 'accepted');
+      const acceptBtn = banner.querySelector('[data-cookie-accept]');
+      acceptBtn?.focus();
+
+      function setConsent(accepted) {
+        localStorage.setItem(STORAGE_KEY, accepted ? 'accepted' : 'rejected');
         banner.hidden = true;
-
         if (window.Shopify && window.Shopify.customerPrivacy && typeof window.Shopify.customerPrivacy.setTrackingConsent === 'function') {
-          window.Shopify.customerPrivacy.setTrackingConsent(true, function () {});
+          window.Shopify.customerPrivacy.setTrackingConsent(accepted, function () {});
         }
+      }
+
+      banner.querySelector('[data-cookie-accept]')?.addEventListener('click', function () {
+        setConsent(true);
+      });
+
+      banner.querySelector('[data-cookie-reject]')?.addEventListener('click', function () {
+        setConsent(false);
       });
     })();
   {% endjavascript %}

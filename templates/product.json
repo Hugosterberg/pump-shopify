@@ -17,7 +17,7 @@
       "type": "trust-strip",
       "blocks": {
         "t-0": { "type": "trust_item", "settings": { "icon": "truck", "text": "Snabb leverans från Sverige" } },
-        "t-1": { "type": "trust_item", "settings": { "icon": "check", "text": "Fri frakt över 500 kr" } },
+        "t-1": { "type": "trust_item", "settings": { "icon": "check", "text": "Fri frakt över 999 kr" } },
         "t-2": { "type": "trust_item", "settings": { "icon": "shield", "text": "1 års garanti ingår" } },
         "t-3": { "type": "trust_item", "settings": { "icon": "lock", "text": "Säker betalning" } }
       },
@@ -166,7 +166,7 @@
         "f-2": { "type": "faq", "settings": { "question": "Fungerar den med varmt vatten?", "answer": "<p>Ja, upp till 60°C.</p>" } },
         "f-3": { "type": "faq", "settings": { "question": "Vad ingår?", "answer": "<p>Dusch, hink, munstycke, slang, laddkabel och tillbehör.</p>" } },
         "f-4": { "type": "faq", "settings": { "category": "Returer & garanti", "question": "Kan jag returnera produkten?", "answer": "<p>Ja. Du har 14 dagars ångerrätt från det att du tagit emot produkten. Produkten ska vara oanvänd och i originalförpackning.</p>" } },
-        "f-5": { "type": "faq", "settings": { "category": "Frakt & leverans", "question": "Hur lång är leveranstiden?", "answer": "<p>2–5 arbetsdagar inom Sverige. Fri frakt vid köp över 500 kr.</p>" } }
+        "f-5": { "type": "faq", "settings": { "category": "Frakt & leverans", "question": "Hur lång är leveranstiden?", "answer": "<p>2–5 arbetsdagar inom Sverige. Fri frakt vid köp över 999 kr.</p>" } }
       },
       "block_order": ["f-1", "f-2", "f-3", "f-4", "f-5"],
       "settings": {}
@@ -175,7 +175,7 @@
       "type": "final-cta",
       "settings": {
         "heading": "Redo att duscha var du vill?",
-        "subheading": "Köp med 14 dagars ångerrätt, 1 års garanti och fri frakt över 500 kr.",
+        "subheading": "Köp med 14 dagars ångerrätt, 1 års garanti och fri frakt över 999 kr.",
         "button_label": "Till köpboxen",
         "button_link": "#main-product"
       }

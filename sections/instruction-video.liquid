@@ -426,13 +426,37 @@
     pointer-events: none;
   }
 
+  @media screen and (max-width: 989px) {
+    .instruction-video__gallery {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      gap: 12px;
+      padding-bottom: 4px;
+    }
+
+    .instruction-video__gallery::-webkit-scrollbar {
+      display: none;
+    }
+
+    .instruction-video__thumb {
+      flex-shrink: 0;
+      scroll-snap-align: start;
+      width: clamp(100px, 28vw, 130px);
+    }
+  }
+
   @media screen and (min-width: 750px) {
     .instruction-video {
       padding-block: 60px;
     }
 
     .instruction-video__subheading {
-      white-space: nowrap;
+      text-wrap: balance;
     }
   }
 

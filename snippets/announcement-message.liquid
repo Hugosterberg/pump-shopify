@@ -1,11 +1,22 @@
 {% comment %}
-  Single announcement message with optional icon.
+  Single announcement message with optional icon and dynamic tokens.
+
+  Tokens in block text:
+  - [frakt] → announcement shipping threshold (default 999 kr)
+  - [frakt-gratis] → actual cart free-shipping threshold (default 999 kr)
+
   Params: block (announcement-bar message block)
 {% endcomment %}
+
+{%- liquid
+  assign ann_threshold = settings.announcement_shipping_threshold | default: 999
+  assign cart_threshold = settings.free_shipping_threshold | default: 999
+  assign message = block.settings.text | replace: '[frakt]', ann_threshold | replace: '[frakt-gratis]', cart_threshold
+-%}
 
 {% if block.settings.icon != blank and block.settings.icon != 'none' %}
   <span class="announcement-bar__icon" aria-hidden="true">
     {% render 'icon', name: block.settings.icon, size: 14 %}
   </span>
 {% endif %}
-{{ block.settings.text }}
+{{- message -}}

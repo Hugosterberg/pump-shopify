@@ -550,6 +550,14 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .premium-hero__particles,
+    .premium-hero__aurora,
+    .premium-hero__caustics,
+    .premium-hero__mist,
+    .premium-hero__fx {
+      display: none;
+    }
+
     .premium-hero__btn {
       transition: none;
     }
@@ -557,8 +565,10 @@
     .premium-hero__btn--primary:hover {
       transform: none;
     }
+  }
 
-    .premium-hero__fx {
+  @media screen and (max-width: 749px) {
+    .premium-hero__particles {
       display: none;
     }
   }

@@ -124,7 +124,7 @@
           "type": "trust_item",
           "settings": {
             "icon": "check",
-            "text": "Fri frakt över 500 kr"
+            "text": "Fri frakt över 999 kr"
           }
         },
         "t-2": {
@@ -381,6 +381,9 @@
         "eyebrow": "Användningsområden",
         "heading": "Perfekt överallt där duschen saknas",
         "subheading": "Från skärgården till fjällen, pump följer med.",
+        "show_cta": true,
+        "cta_label": "Se produkterna",
+        "cta_link": "#product-showcase",
         "background_color": "#101820",
         "surface_color": "#14212a",
         "text_color": "#f6f7f2",
@@ -706,7 +709,7 @@
         "t-1": {
           "type": "trust_point",
           "settings": {
-            "text": "Fri frakt"
+            "text": "Fri frakt över 999 kr"
           }
         },
         "t-2": {
@@ -1046,6 +1049,9 @@
         "anchor_id": "jamforelse",
         "share_label": "Kopiera länk till jämförelsen",
         "share_label_copied": "Länk kopierad!",
+        "show_cta": true,
+        "cta_label": "Köp The Perfect Combo",
+        "cta_link": "#product-showcase",
         "feature_column_label": "Funktion",
         "us_column_label": "The Portable Shower",
         "them_column_label": "Vanlig lösning",
@@ -1298,7 +1304,7 @@
           "settings": {
             "category": "Användning & tips",
             "question": "Kan jag använda den med varmt vatten?",
-            "answer": "<p>Ja, upp till 50°C fungerar bra. Varmare än så kan skada pumpen. Den digitala displayen visar vattentemperaturen så du alltid har koll på hur varmt det är.</p>"
+            "answer": "<p>Ja, upp till 60°C fungerar bra. Varmare än så kan skada pumpen. Den digitala displayen visar vattentemperaturen så du alltid har koll på hur varmt det är.</p>"
           }
         },
         "f-6": {
@@ -1354,7 +1360,7 @@
           "settings": {
             "category": "Frakt & leverans",
             "question": "Vad kostar frakten?",
-            "answer": "<p>Fri frakt inom Sverige vid köp över 500 kr, annars tillkommer en fraktkostnad på 69 kr. För leveranser inom övriga EU räknas frakten ut automatiskt i kassan.</p>"
+            "answer": "<p>Fri frakt inom Sverige vid köp över 999 kr, annars tillkommer en fraktkostnad på 69 kr. För leveranser inom övriga EU räknas frakten ut automatiskt i kassan.</p>"
           }
         },
         "f-14": {
@@ -1448,7 +1454,7 @@
         "heading": "FAQ",
         "show_cta": true,
         "cta_heading": "Fortfarande osäker?",
-        "cta_text": "Köp tryggt med 14 dagars ångerrätt, 1 års garanti och fri frakt över 500 kr.",
+        "cta_text": "Köp tryggt med 14 dagars ångerrätt, 1 års garanti och fri frakt över 999 kr.",
         "cta_button_label": "Till köpboxen",
         "cta_button_link": "#product-showcase",
         "background_color": "#071014",

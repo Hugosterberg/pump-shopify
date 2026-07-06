@@ -64,7 +64,7 @@
 
   function renderShippingBar(cart) {
     if (!shippingWrap) return;
-    const threshold = Number(config.freeShippingThreshold || 50000);
+    const threshold = Number(config.freeShippingThreshold || 99900);
     if (threshold <= 0) {
       shippingWrap.innerHTML = '';
       return;

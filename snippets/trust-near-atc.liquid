@@ -11,14 +11,13 @@
   assign class_prefix = class_prefix | default: 'trust-atc'
   assign compact = compact | default: false
   assign show_payment_icons = show_payment_icons | default: true
-  assign shipping_threshold = settings.free_shipping_threshold | default: 500
 -%}
 
 {% if compact %}
   <div class="{{ class_prefix }} {{ class_prefix }}--compact" aria-label="Köpgarantier">
     <span class="{{ class_prefix }}__pill">
       <span class="{{ class_prefix }}__pill-icon" aria-hidden="true">{% render 'icon', name: 'truck', size: 12 %}</span>
-      Fri frakt {{ shipping_threshold }}+
+      Fri frakt {% render 'free-shipping-text', format: 'short' %} kr+
     </span>
     <span class="{{ class_prefix }}__pill">
       <span class="{{ class_prefix }}__pill-icon" aria-hidden="true">{% render 'icon', name: 'shield', size: 12 %}</span>
@@ -36,7 +35,7 @@
         <span class="{{ class_prefix }}__chip-icon" aria-hidden="true">{% render 'icon', name: 'truck', size: 16 %}</span>
         <span class="{{ class_prefix }}__chip-text">
           <strong>Leverans 2–5 dagar</strong>
-          <span>Fri frakt över {{ shipping_threshold }} kr</span>
+          <span>Fri frakt över {% render 'free-shipping-text', format: 'short' %} kr</span>
         </span>
       </li>
       <li class="{{ class_prefix }}__chip">

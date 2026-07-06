@@ -46,7 +46,7 @@
             id="cmp-flip-{{ section.id }}"
             class="comparison-flip__toggle"
             data-comparison-toggle
-            aria-label="{{ word_common | escape }}"
+            aria-label="Byt jämförelse till {{ word_common | escape }} eller {{ word_competitors | escape }}"
           >
         {% endif %}
 
@@ -169,6 +169,18 @@
         </div>
       </div>
     {% endif %}
+
+    {% if section.settings.show_cta and section.settings.cta_label != blank %}
+      {% liquid
+        assign cta_url = section.settings.cta_link
+        if cta_url == blank
+          assign cta_url = '#product-showcase'
+        endif
+      %}
+      <div class="comparison-section__cta">
+        <a class="comparison-section__cta-btn" href="{{ cta_url }}">{{ section.settings.cta_label }}</a>
+      </div>
+    {% endif %}
   </div>
 </div>
 
@@ -183,6 +195,32 @@
   .comparison-section__inner {
     max-width: var(--page-width, 90rem);
     margin-inline: auto;
+  }
+
+  .comparison-section__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+  }
+
+  .comparison-section__cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding-inline: 28px;
+    border-radius: var(--pp-radius-pill, 999px);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--cmp-accent-ink, #071014);
+    background: linear-gradient(135deg, var(--cmp-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 28%, var(--cmp-accent, #2dd4bf)));
+    box-shadow: var(--pp-shadow-glow);
+    transition: transform 0.2s ease;
+  }
+
+  .comparison-section__cta-btn:hover {
+    transform: translateY(-2px);
   }
 
   .comparison-section__header {
@@ -752,6 +790,27 @@
       "id": "share_label_copied",
       "label": "Share button label (after copy)",
       "default": "Länk kopierad!"
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show CTA button below table",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "Köp The Perfect Combo"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link"
     },
     {
       "type": "header",

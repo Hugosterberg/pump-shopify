@@ -23,6 +23,9 @@
   }
 
   function formatPrice(cents) {
+    if (window.PumpTheme && window.PumpTheme.moneyFormat && typeof Shopify !== 'undefined' && typeof Shopify.formatMoney === 'function') {
+      return Shopify.formatMoney(cents, window.PumpTheme.moneyFormat);
+    }
     return (cents / 100).toLocaleString('sv-SE') + ' kr';
   }
 

@@ -18,7 +18,7 @@
           "type": "message",
           "settings": {
             "icon": "truck",
-            "text": "Fri frakt över 1000 kr"
+            "text": "Fri frakt över 999 kr"
           }
         },
         "msg-2": {

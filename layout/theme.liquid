@@ -32,6 +32,11 @@
     {% render 'meta-tags' %}
 
     {{ content_for_header }}
+
+    <script>
+      window.PumpTheme = window.PumpTheme || {};
+      window.PumpTheme.moneyFormat = {{ shop.money_format | json }};
+    </script>
   </head>
 
   <body>

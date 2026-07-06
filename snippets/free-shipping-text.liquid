@@ -1,0 +1,28 @@
+{% comment %}
+  Dynamic free-shipping copy from theme settings.
+
+  Params:
+  - format: 'short' (999 kr) | 'over' (Fri frakt över 999 kr) | 'footer' (full sentence)
+  - use_announcement: true = use announcement_shipping_threshold instead of cart threshold
+
+  Usage:
+    {% render 'free-shipping-text', format: 'over' %}
+{% endcomment %}
+
+{%- liquid
+  assign format = format | default: 'over'
+  if use_announcement
+    assign threshold = settings.announcement_shipping_threshold | default: 999
+  else
+    assign threshold = settings.free_shipping_threshold | default: 999
+  endif
+-%}
+
+{%- case format -%}
+  {%- when 'short' -%}
+    {{- threshold -}}
+  {%- when 'footer' -%}
+    Fri frakt på order över {{ threshold }} kr inom Sverige.
+  {%- else -%}
+    Fri frakt över {{ threshold }} kr
+{%- endcase -%}

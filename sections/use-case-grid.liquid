@@ -53,6 +53,18 @@
         {% endfor %}
       </ul>
     {% endif %}
+
+    {% if section.settings.show_cta and section.settings.cta_label != blank %}
+      {% liquid
+        assign uc_cta = section.settings.cta_link
+        if uc_cta == blank
+          assign uc_cta = '#product-showcase'
+        endif
+      %}
+      <div class="use-case-grid__cta">
+        <a class="use-case-grid__cta-btn" href="{{ uc_cta }}">{{ section.settings.cta_label }}</a>
+      </div>
+    {% endif %}
   </div>
 </div>
 
@@ -102,8 +114,14 @@
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 16px;
+  }
+
+  @media screen and (min-width: 480px) {
+    .use-case-grid__list {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   .use-case-grid__card {
@@ -116,8 +134,28 @@
     transition: transform 0.15s ease;
   }
 
-  .use-case-grid__card:hover {
-    transform: translateY(-3px);
+  @media (hover: hover) {
+    .use-case-grid__card:hover {
+      transform: translateY(-3px);
+    }
+  }
+
+  .use-case-grid__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: 28px;
+  }
+
+  .use-case-grid__cta-btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding-inline: 24px;
+    border-radius: var(--pp-radius-pill, 999px);
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--uc-accent-ink, #071014);
+    background: var(--uc-accent, #2dd4bf);
   }
 
   .use-case-grid__media {
@@ -253,6 +291,27 @@
       "id": "subheading",
       "label": "Subheading",
       "default": "Från skärgården till fjällen, pump följer med."
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show CTA button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "Se produkterna"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link"
     },
     {
       "type": "color",

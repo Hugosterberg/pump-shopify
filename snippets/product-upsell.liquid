@@ -1,0 +1,160 @@
+{% comment %}
+  PDP upsell — suggests complementary products based on current product.
+
+  Usage: {% render 'product-upsell', product: product %}
+{% endcomment %}
+
+{%- liquid
+  assign source = product
+-%}
+
+{%- if source != blank -%}
+{%- liquid
+  assign combo = all_products['the-perfect-combo-portabel-dusch-vikbar-hink-1']
+  assign shower = all_products['portabel-dusch']
+  assign bucket = all_products['portabel-hink']
+
+  assign upsell_product = blank
+  assign upsell_label = ''
+  assign upsell_badge = 'Rekommenderat'
+
+  if source.handle == 'portabel-dusch'
+    assign upsell_product = combo
+    assign upsell_label = 'Uppgradera till Perfect Combo'
+    assign upsell_badge = 'Spara mer'
+  elsif source.handle == 'portabel-hink'
+    assign upsell_product = combo
+    assign upsell_label = 'Komplettera med duschen — Perfect Combo'
+    assign upsell_badge = 'Bästsäljare'
+  endif
+-%}
+
+{%- if upsell_product != blank and upsell_product.id != source.id -%}
+  {%- assign upsell_variant = upsell_product.selected_or_first_available_variant -%}
+  <aside class="product-upsell" aria-label="Rekommenderad produkt">
+    <p class="product-upsell__label">{{ upsell_label }}</p>
+    <div class="product-upsell__card">
+      <span class="product-upsell__badge">{{ upsell_badge }}</span>
+      {% if upsell_product.featured_image %}
+        <a class="product-upsell__media" href="{{ upsell_product.url }}">
+          {{
+            upsell_product.featured_image
+            | image_url: width: 200
+            | image_tag: loading: 'lazy', widths: '100, 200', sizes: '80px', alt: upsell_product.title
+          }}
+        </a>
+      {% endif %}
+      <div class="product-upsell__info">
+        <a class="product-upsell__title" href="{{ upsell_product.url }}">{{ upsell_product.title }}</a>
+        <div class="product-upsell__prices">
+          {% if upsell_product.compare_at_price > upsell_product.price %}
+            <s class="product-upsell__compare">{{ upsell_product.compare_at_price | money }}</s>
+          {% endif %}
+          <span class="product-upsell__price">{{ upsell_variant.price | money }}</span>
+        </div>
+      </div>
+      {% form 'product', upsell_product, class: 'product-upsell__form ajax-cart-form' %}
+        <input type="hidden" name="id" value="{{ upsell_variant.id }}">
+        <button type="submit" class="product-upsell__add" {% unless upsell_variant.available %}disabled{% endunless %}>
+          {% if upsell_variant.available %}Lägg till{% else %}Slutsåld{% endif %}
+        </button>
+      {% endform %}
+    </div>
+  </aside>
+{%- endif -%}
+{%- endif -%}
+
+{% stylesheet %}
+  .product-upsell {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: var(--pp-radius-md, 14px);
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 6%, transparent);
+    border: 1px solid color-mix(in srgb, var(--pp-accent, #2dd4bf) 22%, transparent);
+  }
+
+  .product-upsell__label {
+    margin: 0 0 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--pp-accent, #2dd4bf);
+  }
+
+  .product-upsell__card {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    position: relative;
+  }
+
+  .product-upsell__badge {
+    position: absolute;
+    top: -8px;
+    left: 0;
+    padding: 3px 8px;
+    border-radius: var(--pp-radius-pill, 999px);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--pp-accent-ink, #071014);
+    background: var(--pp-accent, #2dd4bf);
+  }
+
+  .product-upsell__media img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .product-upsell__title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: inherit;
+    line-height: 1.3;
+  }
+
+  .product-upsell__prices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: baseline;
+    margin-top: 4px;
+  }
+
+  .product-upsell__compare {
+    font-size: 0.78rem;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .product-upsell__price {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--pp-accent, #2dd4bf);
+  }
+
+  .product-upsell__form {
+    margin: 0;
+  }
+
+  .product-upsell__add {
+    min-height: 40px;
+    padding-inline: 14px;
+    border: none;
+    border-radius: var(--pp-radius-pill, 999px);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--pp-accent-ink, #071014);
+    background: var(--pp-accent, #2dd4bf);
+    white-space: nowrap;
+  }
+
+  .product-upsell__add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+{% endstylesheet %}
