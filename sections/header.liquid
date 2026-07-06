@@ -72,6 +72,29 @@
     {% endif %}
 
     <div class="site-header__actions">
+      {% if section.settings.show_localization %}
+        {% render 'localization-form',
+          class_prefix: 'site-header__localization',
+          form_id: 'HeaderLocalizationForm',
+          compact: true,
+          show_label: false
+        %}
+      {% endif %}
+
+      {% if section.settings.show_wishlist %}
+        <button type="button" class="site-header__icon-btn" data-wishlist-open aria-label="Önskelista">
+          {% render 'icon', name: 'sparkles', size: 20 %}
+          <span class="site-header__badge-count" data-wishlist-count hidden>0</span>
+        </button>
+      {% endif %}
+
+      {% if section.settings.show_compare %}
+        <button type="button" class="site-header__icon-btn" data-compare-open aria-label="Jämför produkter">
+          {% render 'icon', name: 'sliders', size: 20 %}
+          <span class="site-header__badge-count" data-compare-count hidden>0</span>
+        </button>
+      {% endif %}
+
       {% if section.settings.show_cta and section.settings.cta_label != blank %}
         <a class="site-header__cta" href="{{ section.settings.cta_link | default: '#product-showcase' }}">
           {{ section.settings.cta_label }}
@@ -196,6 +219,7 @@
   }
 
   .site-header__link {
+    position: relative;
     font-size: 0.92rem;
     font-weight: 500;
     text-decoration: none;
@@ -203,9 +227,28 @@
     transition: color 0.15s ease;
   }
 
+  .site-header__link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--pp-gradient-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+  }
+
   .site-header__link:hover,
   .site-header__link--active {
     color: var(--hdr-text, #f6f7f2);
+  }
+
+  .site-header__link:hover::after,
+  .site-header__link--active::after {
+    transform: scaleX(1);
   }
 
   .site-header__actions {
@@ -404,6 +447,20 @@
   }
 {% endstylesheet %}
 
+{% javascript %}
+  (function () {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+
+    function onScroll() {
+      header.classList.toggle('is-scrolled', window.scrollY > 8);
+    }
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+{% endjavascript %}
+
 {% schema %}
 {
   "name": "t:general.header",
@@ -427,6 +484,24 @@
     {
       "type": "header",
       "content": "Call to action"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_localization",
+      "label": "Show country & language selector",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Show wishlist button",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_compare",
+      "label": "Show compare button",
+      "default": true
     },
     {
       "type": "checkbox",

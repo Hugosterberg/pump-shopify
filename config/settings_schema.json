@@ -35,14 +35,36 @@
         "type": "number",
         "id": "free_shipping_threshold",
         "label": "Free shipping threshold",
-        "default": 999,
-        "info": "Amount in store currency (e.g. 999 for 999 kr). Used in cart progress bar."
+        "default": 500,
+        "info": "Amount in store currency (e.g. 500 for 500 kr). Used in cart progress bar and trust copy."
       },
       {
         "type": "url",
         "id": "cookie_policy_url",
         "label": "Cookie policy page",
-        "info": "Optional link shown in footer legal links."
+        "info": "Optional link shown in footer legal links and cookie banner."
+      },
+      {
+        "type": "header",
+        "content": "Cookie consent"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_cookie_banner",
+        "label": "Show cookie consent banner",
+        "default": true
+      },
+      {
+        "type": "textarea",
+        "id": "cookie_banner_text",
+        "label": "Cookie banner text",
+        "default": "Vi använder cookies för att ge dig bästa möjliga upplevelse på vår webbplats."
+      },
+      {
+        "type": "text",
+        "id": "cookie_banner_button",
+        "label": "Accept button label",
+        "default": "Acceptera cookies"
       }
     ]
   },
@@ -136,7 +158,7 @@
         "step": 1,
         "unit": "s",
         "label": "Delay before popup",
-        "default": 8
+        "default": 25
       },
       {
         "type": "text",

@@ -126,15 +126,56 @@ body {
   grid-column: 1 / -1;
 }
 
-/* Subtle rhythm: hairline separator between stacked sections */
+/* Subtle rhythm: soft glow between sections instead of harsh lines */
 .shopify-section:not(:first-child) > .full-width {
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: none;
+  background-image: var(--pp-gradient-section-glow);
+  background-repeat: no-repeat;
+  background-size: 100% 120px;
+  background-position: top center;
 }
 
-/* Compact section headers: full-width headings on one line (desktop), subtext constrained */
+/* Unified premium section headers */
+.shopify-section [class$='__eyebrow'] {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shopify-section [class$='__eyebrow']::before,
+.shopify-section [class$='__eyebrow']::after {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--pp-accent, #2dd4bf) 80%, transparent));
+  opacity: 0.9;
+}
+
+.shopify-section [class$='__eyebrow']::after {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--pp-accent, #2dd4bf) 80%, transparent), transparent);
+}
+
+.shopify-section [class$='__heading'] {
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+/* Reusable glass card surface */
+.pp-glass-card {
+  border-radius: var(--pp-radius-lg, 20px);
+  background: var(--pp-gradient-surface);
+  border: 1px solid var(--pp-border);
+  box-shadow: var(--pp-shadow-soft);
+}
+
+/* Header scroll elevation */
+.site-header.is-scrolled {
+  box-shadow: 0 12px 40px -24px rgb(0 0 0 / 55%);
+  border-bottom-color: color-mix(in srgb, var(--pp-accent, #2dd4bf) 12%, var(--pp-border));
+}
 .shopify-section [class$='__header'] {
   max-width: none;
-  margin-bottom: 28px;
+  margin-bottom: clamp(24px, 4vw, 36px);
 }
 
 .shopify-section [class$='__subheading'] {

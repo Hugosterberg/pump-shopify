@@ -8,7 +8,7 @@
       "type": "trust-strip",
       "blocks": {
         "t-0": { "type": "trust_item", "settings": { "icon": "truck", "text": "Snabb leverans från Sverige" } },
-        "t-1": { "type": "trust_item", "settings": { "icon": "check", "text": "Fri frakt över 999 kr" } },
+        "t-1": { "type": "trust_item", "settings": { "icon": "check", "text": "Fri frakt över 500 kr" } },
         "t-2": { "type": "trust_item", "settings": { "icon": "shield", "text": "1 års garanti ingår" } },
         "t-3": { "type": "trust_item", "settings": { "icon": "lock", "text": "Säker betalning" } }
       },
@@ -55,6 +55,28 @@
         "i-7": { "type": "item", "settings": { "item": "1× nätförvaringspåse" } }
       },
       "block_order": ["i-1", "i-2", "i-3", "i-4", "i-5", "i-6", "i-7"],
+      "settings": { "heading": "Vad ingår?" }
+    },
+    "detail_tabs": {
+      "type": "product-detail-tabs",
+      "blocks": {
+        "tab-1": {
+          "type": "panel",
+          "settings": {
+            "title": "Funktion",
+            "list": "Lång batteritid (upp till 150 min)\nDigital display med temperatur och batteriprocent\nFlöde: upp till 8 L/min\nFungerar med kallt och varmt vatten (max 60°C)",
+            "open_by_default": true
+          }
+        },
+        "tab-2": {
+          "type": "panel",
+          "settings": {
+            "title": "Material & skötsel",
+            "content": "<p><strong>Material:</strong> ABS-plast, PVC, elektronik.</p><p><strong>Skötsel:</strong> Låt alla delar torka helt innan förvaring. Använd inte starka rengöringsmedel.</p>"
+          }
+        }
+      },
+      "block_order": ["tab-1", "tab-2"],
       "settings": {}
     },
     "how_it_works": {
@@ -74,6 +96,26 @@
         "r-2": { "type": "review", "settings": { "quote": "Toppen att ha i bastun i vår stuga ute i skärgården!", "author": "Erik", "context": "Bastu" } }
       },
       "block_order": ["r-1", "r-2"],
+      "settings": {
+        "heading": "Det här säger våra kunder",
+        "subheading": "Installera Judge.me och lägg till appblock här.",
+        "show_placeholder_reviews": true
+      }
+    },
+    "feature_icons": {
+      "type": "product-feature-icons",
+      "blocks": {
+        "f-1": { "type": "feature", "settings": { "icon": "spray", "title": "Kraftfull stråle" } },
+        "f-2": { "type": "feature", "settings": { "icon": "thermometer", "title": "Inbyggd termometer" } },
+        "f-3": { "type": "feature", "settings": { "icon": "battery", "title": "Lång batteritid" } },
+        "f-4": { "type": "feature", "settings": { "icon": "sparkles", "title": "Digital display" } },
+        "f-5": { "type": "feature", "settings": { "icon": "sliders", "title": "Justerbart tryck" } }
+      },
+      "block_order": ["f-1", "f-2", "f-3", "f-4", "f-5"],
+      "settings": {}
+    },
+    "recently_viewed": {
+      "type": "recently-viewed",
       "settings": {}
     },
     "related": {
@@ -98,11 +140,14 @@
   "order": [
     "main",
     "trust",
+    "included",
+    "detail_tabs",
     "benefits",
     "specs",
-    "included",
     "how_it_works",
     "reviews",
+    "feature_icons",
+    "recently_viewed",
     "related",
     "faq",
     "sticky_atc"

@@ -1,0 +1,112 @@
+{% comment %}
+  Simple cookie consent banner. Uses theme settings and localStorage.
+
+  Usage: {% render 'cookie-consent' %}
+{% endcomment %}
+
+{%- if settings.enable_cookie_banner -%}
+  <div
+    class="cookie-consent"
+    data-cookie-consent
+    role="dialog"
+    aria-label="Cookie-meddelande"
+    aria-live="polite"
+    hidden
+  >
+    <div class="cookie-consent__inner">
+      <p class="cookie-consent__text">
+        {{ settings.cookie_banner_text | default: 'Vi använder cookies för att ge dig bästa möjliga upplevelse på vår webbplats.' }}
+        {% if settings.cookie_policy_url != blank %}
+          <a href="{{ settings.cookie_policy_url }}">Läs mer</a>
+        {% endif %}
+      </p>
+      <button type="button" class="cookie-consent__accept" data-cookie-accept>
+        {{ settings.cookie_banner_button | default: 'Acceptera cookies' }}
+      </button>
+    </div>
+  </div>
+
+  {% stylesheet %}
+    .cookie-consent {
+      position: fixed;
+      inset-inline: var(--page-margin, 20px);
+      bottom: 20px;
+      z-index: 10000;
+      max-width: 480px;
+      margin-inline: auto;
+      left: 0;
+      right: 0;
+    }
+
+    .cookie-consent__inner {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 18px 20px;
+      border-radius: var(--pp-radius-md, 14px);
+      background: color-mix(in srgb, var(--pp-bg, #071014) 92%, transparent);
+      backdrop-filter: blur(16px) saturate(1.2);
+      border: 1px solid var(--pp-border, rgba(255, 255, 255, 0.1));
+      box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.7);
+      color: var(--pp-text, #f6f7f2);
+    }
+
+    .cookie-consent__text {
+      margin: 0;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: var(--pp-muted, #9aa8a2);
+    }
+
+    .cookie-consent__text a {
+      color: var(--pp-accent, #2dd4bf);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .cookie-consent__accept {
+      align-self: flex-start;
+      min-height: 42px;
+      padding-inline: 20px;
+      border: none;
+      border-radius: var(--pp-radius-pill, 999px);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--pp-accent-ink, #071014);
+      background: linear-gradient(135deg, var(--pp-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 30%, var(--pp-accent, #2dd4bf)));
+    }
+
+    @media screen and (min-width: 480px) {
+      .cookie-consent__inner {
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .cookie-consent__accept {
+        flex-shrink: 0;
+      }
+    }
+  {% endstylesheet %}
+
+  {% javascript %}
+    (function () {
+      const STORAGE_KEY = 'pump_cookie_consent';
+      const banner = document.querySelector('[data-cookie-consent]');
+      if (!banner) return;
+
+      if (localStorage.getItem(STORAGE_KEY) === 'accepted') return;
+
+      banner.hidden = false;
+
+      banner.querySelector('[data-cookie-accept]').addEventListener('click', function () {
+        localStorage.setItem(STORAGE_KEY, 'accepted');
+        banner.hidden = true;
+
+        if (window.Shopify && window.Shopify.customerPrivacy && typeof window.Shopify.customerPrivacy.setTrackingConsent === 'function') {
+          window.Shopify.customerPrivacy.setTrackingConsent(true, function () {});
+        }
+      });
+    })();
+  {% endjavascript %}
+{%- endif -%}

@@ -11,6 +11,7 @@
   id="main-product"
   class="main-product full-width"
   data-main-product
+  data-product-handle="{{ product.handle }}"
   data-section-id="{{ section.id }}"
   style="
     --mp-bg: {{ section.settings.background_color }};
@@ -27,24 +28,32 @@
     <div class="main-product__gallery">
       {% if product.media.size > 0 %}
         <div class="main-product__media-main" id="MainProductMedia-{{ section.id }}" data-main-product-media>
-          {% if featured_media != blank %}
-            {% if featured_media.media_type == 'image' %}
-              {{
-                featured_media
-                | image_url: width: 1400
-                | image_tag:
-                  loading: 'eager',
-                  fetchpriority: 'high',
-                  sizes: '(min-width: 750px) 50vw, 100vw',
-                  widths: '500, 700, 900, 1200, 1400',
-                  class: 'main-product__image',
-                  alt: featured_media.alt | default: product.title,
-                  data-media-id: featured_media.id
-              }}
-            {% else %}
-              {{ featured_media | media_tag: class: 'main-product__image', data-media-id: featured_media.id }}
+          <button
+            type="button"
+            class="main-product__media-open"
+            data-media-modal-open
+            aria-label="Öppna bild i modal"
+          >
+            {% if featured_media != blank %}
+              {% if featured_media.media_type == 'image' %}
+                {{
+                  featured_media
+                  | image_url: width: 1400
+                  | image_tag:
+                    loading: 'eager',
+                    fetchpriority: 'high',
+                    sizes: '(min-width: 750px) 50vw, 100vw',
+                    widths: '500, 700, 900, 1200, 1400',
+                    class: 'main-product__image',
+                    alt: featured_media.alt | default: product.title,
+                    data-media-id: featured_media.id
+                }}
+              {% else %}
+                {{ featured_media | media_tag: class: 'main-product__image', data-media-id: featured_media.id }}
+              {% endif %}
             {% endif %}
-          {% endif %}
+            <span class="main-product__media-zoom" aria-hidden="true">{% render 'icon', name: 'search', size: 18 %}</span>
+          </button>
         </div>
         {% if product.media.size > 1 %}
           <ul class="main-product__thumbs" role="list" data-main-product-thumbs>
@@ -92,35 +101,75 @@
     </div>
 
     <div class="main-product__info">
+      {% if section.blocks.size > 0 %}
+        <div class="main-product__reviews-slot">
+          {% for block in section.blocks %}
+            {% if block.type == '@app' %}
+              <div {{ block.shopify_attributes }}>{% render block %}</div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
       <h1 class="main-product__title">{{ product.title }}</h1>
+
+      <div class="main-product__actions">
+        <button
+          type="button"
+          class="main-product__action-btn"
+          data-wishlist-toggle="{{ product.handle }}"
+          aria-pressed="false"
+        >
+          {% render 'icon', name: 'sparkles', size: 14 %}
+          Önskelista
+        </button>
+        <button
+          type="button"
+          class="main-product__action-btn"
+          data-compare-toggle="{{ product.handle }}"
+          aria-pressed="false"
+        >
+          {% render 'icon', name: 'sliders', size: 14 %}
+          Jämför
+        </button>
+      </div>
+
+      <div class="main-product__badges">
+        {% if current_variant.available %}
+          <span class="main-product__badge main-product__badge--stock">
+            {% render 'icon', name: 'check', size: 12 %}
+            I lager — skickas snabbt
+          </span>
+        {% endif %}
+        <span class="main-product__badge main-product__badge--delivery">
+          {% render 'icon', name: 'truck', size: 12 %}
+          Leverans 2–5 dagar
+        </span>
+        {% if current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= 8 %}
+          <span class="main-product__badge main-product__badge--urgency">
+            {% render 'icon', name: 'bolt', size: 12 %}
+            Bara {{ current_variant.inventory_quantity }} kvar
+          </span>
+        {% endif %}
+      </div>
 
       <div class="main-product__price" data-main-product-price>
         {% if current_variant.compare_at_price > current_variant.price %}
           <s class="main-product__price-compare" data-price-compare>{{ current_variant.compare_at_price | money }}</s>
+          {% assign saving = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round %}
+          <span class="main-product__save-badge" data-save-badge>Spara {{ saving }}%</span>
         {% else %}
           <s class="main-product__price-compare" data-price-compare hidden></s>
+          <span class="main-product__save-badge" data-save-badge hidden></span>
         {% endif %}
         <span class="main-product__price-current" data-price-current>{{ current_variant.price | money }}</span>
       </div>
 
+      {% render 'free-shipping-bar', class_prefix: 'main-product__shipping' %}
+
       {% if product.description != blank %}
         <div class="main-product__description">{{ product.description }}</div>
       {% endif %}
-
-      <ul class="main-product__trust" role="list">
-        <li class="main-product__trust-item">
-          <span class="main-product__trust-icon" aria-hidden="true">{% render 'icon', name: 'truck', size: 16 %}</span>
-          {{ section.settings.trust_shipping | default: 'Fri frakt över 999 kr' }}
-        </li>
-        <li class="main-product__trust-item">
-          <span class="main-product__trust-icon" aria-hidden="true">{% render 'icon', name: 'shield', size: 16 %}</span>
-          {{ section.settings.trust_warranty | default: '1 års garanti' }}
-        </li>
-        <li class="main-product__trust-item">
-          <span class="main-product__trust-icon" aria-hidden="true">{% render 'icon', name: 'lock', size: 16 %}</span>
-          {{ section.settings.trust_payment | default: 'Säker betalning' }}
-        </li>
-      </ul>
 
       <div class="main-product__form-wrap">
         {% capture product_form_id %}MainProductForm-{{ section.id }}{% endcapture %}
@@ -180,25 +229,28 @@
 
           {{ form | payment_button }}
 
+          {% render 'trust-near-atc', class_prefix: 'main-product__trust-atc' %}
           {% render 'legal-links', class_prefix: 'main-product__legal', compact: true %}
         {% endform %}
       </div>
     </div>
   </div>
-
-  {% if section.blocks.size > 0 %}
-    <div class="main-product__app">
-      {% for block in section.blocks %}
-        {% case block.type %}
-          {% when '@app' %}
-            <div {{ block.shopify_attributes }}>
-              {% render block %}
-            </div>
-        {% endcase %}
-      {% endfor %}
-    </div>
-  {% endif %}
 </div>
+
+<dialog class="main-product__modal" data-media-modal aria-label="Produktmedia">
+  <div class="main-product__modal-inner">
+    <button type="button" class="main-product__modal-close" data-media-modal-close aria-label="Stäng">
+      {% render 'icon', name: 'x', size: 22 %}
+    </button>
+    <div class="main-product__modal-content" data-media-modal-content></div>
+    {% if product.media.size > 1 %}
+      <div class="main-product__modal-nav">
+        <button type="button" class="main-product__modal-prev" data-media-modal-prev aria-label="Föregående bild">‹</button>
+        <button type="button" class="main-product__modal-next" data-media-modal-next aria-label="Nästa bild">›</button>
+      </div>
+    {% endif %}
+  </div>
+</dialog>
 
 <script type="application/json" id="ProductMedia-{{ section.id }}">
   [
@@ -265,12 +317,106 @@
     border: 1px solid var(--pp-border);
     aspect-ratio: 1;
     box-shadow: var(--pp-shadow-soft);
+    position: relative;
+  }
+
+  .main-product__media-open {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: none;
+    cursor: zoom-in;
+    background: transparent;
+    position: relative;
+  }
+
+  .main-product__media-zoom {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    color: var(--mp-text, #f6f7f2);
+    background: color-mix(in srgb, var(--mp-bg, #071014) 72%, transparent);
+    border: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 12%, transparent);
+    pointer-events: none;
   }
 
   .main-product__image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
+  }
+
+  .main-product__modal {
+    width: min(960px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    padding: 0;
+    border: none;
+    border-radius: var(--pp-radius-lg, 20px);
+    background: var(--mp-bg, #071014);
+    color: var(--mp-text, #f6f7f2);
+    box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.7);
+  }
+
+  .main-product__modal::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+  }
+
+  .main-product__modal-inner {
+    position: relative;
+    padding: 16px;
+  }
+
+  .main-product__modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--mp-text, #f6f7f2);
+    background: color-mix(in srgb, var(--mp-bg, #071014) 80%, transparent);
+  }
+
+  .main-product__modal-content img,
+  .main-product__modal-content video {
+    width: 100%;
+    max-height: calc(100vh - 120px);
+    object-fit: contain;
+    border-radius: 12px;
+  }
+
+  .main-product__modal-nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .main-product__modal-prev,
+  .main-product__modal-next {
+    min-width: 44px;
+    min-height: 44px;
+    border: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 12%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--mp-text, #f6f7f2) 6%, transparent);
+    color: var(--mp-text, #f6f7f2);
+    font-size: 1.4rem;
+    cursor: pointer;
   }
 
   .main-product__thumbs {
@@ -334,11 +480,49 @@
     letter-spacing: -0.02em;
   }
 
+  .main-product__reviews-slot {
+    margin-bottom: 10px;
+  }
+
+  .main-product__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .main-product__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1;
+    border: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 10%, transparent);
+    background: color-mix(in srgb, var(--mp-text, #f6f7f2) 4%, transparent);
+    color: var(--mp-muted, #9aa8a2);
+  }
+
+  .main-product__badge--stock {
+    color: var(--mp-accent, #2dd4bf);
+    border-color: color-mix(in srgb, var(--mp-accent, #2dd4bf) 35%, transparent);
+    background: color-mix(in srgb, var(--mp-accent, #2dd4bf) 10%, transparent);
+  }
+
+  .main-product__badge--urgency {
+    color: #fbbf24;
+    border-color: color-mix(in srgb, #fbbf24 40%, transparent);
+    background: color-mix(in srgb, #fbbf24 12%, transparent);
+  }
+
   .main-product__price {
     display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
   }
 
   .main-product__price-compare {
@@ -351,9 +535,25 @@
   }
 
   .main-product__price-current {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
     color: var(--mp-accent, #2dd4bf);
+  }
+
+  .main-product__save-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--mp-accent-ink, #071014);
+    background: linear-gradient(135deg, var(--mp-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 35%, var(--mp-accent, #2dd4bf)));
+    box-shadow: 0 4px 12px -6px color-mix(in srgb, var(--mp-accent, #2dd4bf) 70%, #000);
+  }
+
+  .main-product__save-badge[hidden] {
+    display: none;
   }
 
   .main-product__description {
@@ -361,6 +561,16 @@
     font-size: 0.95rem;
     line-height: 1.65;
     color: var(--mp-muted, #9aa8a2);
+  }
+
+  .main-product__shipping {
+    margin-bottom: 20px;
+  }
+
+  .main-product__trust-atc-wrap {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
   }
 
   .main-product__trust {
@@ -452,7 +662,26 @@
   }
 
   .main-product__form-wrap .shopify-payment-button {
-    margin-top: 4px;
+    margin-top: 8px;
+  }
+
+  .main-product__form-wrap .shopify-payment-button__button,
+  .main-product__form-wrap .shopify-payment-button button {
+    width: 100%;
+    min-height: 54px !important;
+    border-radius: var(--pp-radius-pill, 999px) !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    border: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 18%, transparent) !important;
+    background: color-mix(in srgb, var(--mp-text, #f6f7f2) 6%, transparent) !important;
+    color: var(--mp-text, #f6f7f2) !important;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .main-product__form-wrap .shopify-payment-button__button:hover,
+  .main-product__form-wrap .shopify-payment-button button:hover {
+    border-color: color-mix(in srgb, var(--mp-accent, #2dd4bf) 45%, transparent) !important;
+    background: color-mix(in srgb, var(--mp-accent, #2dd4bf) 10%, transparent) !important;
   }
 
   .main-product__legal {
@@ -513,6 +742,7 @@
     const hiddenVariantId = root.querySelector('[data-variant-id]');
     const priceCurrent = root.querySelector('[data-price-current]');
     const priceCompare = root.querySelector('[data-price-compare]');
+    const saveBadge = root.querySelector('[data-save-badge]');
     const submitBtn = root.querySelector('[data-main-product-submit]');
     const thumbButtons = root.querySelectorAll('[data-media-index]');
 
@@ -549,15 +779,18 @@
 
       setActiveThumb(index);
 
+      const openBtn = mediaWrap.querySelector('[data-media-modal-open]');
+      if (!openBtn) return;
+
       if (media.media_type === 'image') {
-        mediaWrap.innerHTML =
+        openBtn.innerHTML =
           '<img class="main-product__image" src="' +
           media.src +
           '" alt="' +
           (media.alt || '').replace(/"/g, '&quot;') +
           '" loading="eager" data-media-id="' +
           media.id +
-          '">';
+          '"><span class="main-product__media-zoom" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>';
       }
     }
 
@@ -584,8 +817,14 @@
         if (variant.compare_at_price > variant.price) {
           priceCompare.hidden = false;
           priceCompare.textContent = formatMoney(variant.compare_at_price);
+          if (saveBadge) {
+            const pct = Math.round(((variant.compare_at_price - variant.price) * 100) / variant.compare_at_price);
+            saveBadge.hidden = false;
+            saveBadge.textContent = 'Spara ' + pct + '%';
+          }
         } else {
           priceCompare.hidden = true;
+          if (saveBadge) saveBadge.hidden = true;
         }
       }
 
@@ -617,6 +856,64 @@
     } else if (hiddenVariantId) {
       updateVariant(hiddenVariantId.value);
     }
+
+    const modal = document.querySelector('[data-media-modal]');
+    const modalContent = document.querySelector('[data-media-modal-content]');
+    const modalOpenBtn = root.querySelector('[data-media-modal-open]');
+    let modalIndex = 0;
+
+    function renderModalMedia(index) {
+      const media = mediaItems[index];
+      if (!media || !modalContent) return;
+      modalIndex = index;
+      if (media.media_type === 'image') {
+        modalContent.innerHTML =
+          '<img src="' + media.src + '" alt="' + (media.alt || '').replace(/"/g, '&quot;') + '">';
+      } else {
+        modalContent.innerHTML = '<img src="' + media.src + '" alt="' + (media.alt || '').replace(/"/g, '&quot;') + '">';
+      }
+    }
+
+    function openModal(index) {
+      if (!modal) return;
+      renderModalMedia(typeof index === 'number' ? index : findMediaIndex(mediaWrap?.querySelector('[data-media-id]')?.dataset.mediaId));
+      if (typeof modal.showModal === 'function') {
+        modal.showModal();
+      } else {
+        modal.setAttribute('open', '');
+      }
+    }
+
+    function closeModal() {
+      if (!modal) return;
+      if (typeof modal.close === 'function') {
+        modal.close();
+      } else {
+        modal.removeAttribute('open');
+      }
+    }
+
+    modalOpenBtn?.addEventListener('click', () => {
+      const activeThumb = root.querySelector('.main-product__thumb-btn.is-active');
+      openModal(activeThumb ? Number(activeThumb.dataset.mediaIndex) : 0);
+    });
+
+    document.querySelector('[data-media-modal-close]')?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', (event) => {
+      if (event.target === modal) closeModal();
+    });
+
+    document.querySelector('[data-media-modal-prev]')?.addEventListener('click', () => {
+      const next = (modalIndex - 1 + mediaItems.length) % mediaItems.length;
+      renderModalMedia(next);
+      showMedia(next);
+    });
+
+    document.querySelector('[data-media-modal-next]')?.addEventListener('click', () => {
+      const next = (modalIndex + 1) % mediaItems.length;
+      renderModalMedia(next);
+      showMedia(next);
+    });
   })();
 {% endjavascript %}
 

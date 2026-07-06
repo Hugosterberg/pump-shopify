@@ -40,6 +40,23 @@
         {% endfor %}
       </div>
     {% endif %}
+
+    {% if section.settings.show_cta %}
+      <div class="faq-section__cta">
+        {% if section.settings.cta_heading != blank %}
+          <p class="faq-section__cta-heading">{{ section.settings.cta_heading }}</p>
+        {% endif %}
+        {% if section.settings.cta_text != blank %}
+          <p class="faq-section__cta-text">{{ section.settings.cta_text }}</p>
+        {% endif %}
+        {% if section.settings.cta_button_label != blank %}
+          <a class="faq-section__cta-btn" href="{{ section.settings.cta_button_link | default: '#product-showcase' }}">
+            {{ section.settings.cta_button_label }}
+          </a>
+        {% endif %}
+        {% render 'trust-near-atc', class_prefix: 'faq-section__trust', show_payment_icons: false, compact: true %}
+      </div>
+    {% endif %}
   </div>
 </div>
 
@@ -205,6 +222,61 @@
     margin: 0;
   }
 
+  .faq-section__cta {
+    margin-top: 28px;
+    padding: 24px 20px;
+    border-radius: 20px;
+    text-align: center;
+    background: linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--faq-accent, #2dd4bf) 10%, var(--faq-surface, #14212a)),
+      var(--faq-surface, #14212a)
+    );
+    border: 1px solid color-mix(in srgb, var(--faq-accent, #2dd4bf) 22%, transparent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .faq-section__cta-heading {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--faq-text, #f6f7f2);
+  }
+
+  .faq-section__cta-text {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--faq-muted, #9aa8a2);
+    max-width: 420px;
+  }
+
+  .faq-section__cta-btn {
+    display: inline-flex;
+    min-height: 48px;
+    padding-inline: 28px;
+    align-items: center;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    color: var(--faq-accent-ink, #071014);
+    background: linear-gradient(135deg, var(--faq-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 30%, var(--faq-accent, #2dd4bf)));
+    box-shadow: 0 8px 24px -10px color-mix(in srgb, var(--faq-accent, #2dd4bf) 80%, #000);
+    transition: transform 0.15s ease;
+  }
+
+  .faq-section__cta-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .faq-section__trust--compact {
+    justify-content: center;
+  }
+
   @media screen and (min-width: 750px) {
     .faq-section {
       padding-block: 48px;
@@ -265,6 +337,39 @@
       "id": "accent_color",
       "label": "Accent",
       "default": "#2DD4BF"
+    },
+    {
+      "type": "header",
+      "content": "CTA after FAQ"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show CTA box after questions",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_heading",
+      "label": "CTA heading",
+      "default": "Fortfarande osäker?"
+    },
+    {
+      "type": "textarea",
+      "id": "cta_text",
+      "label": "CTA text",
+      "default": "Köp tryggt med 14 dagars ångerrätt, 1 års garanti och fri frakt över 999 kr."
+    },
+    {
+      "type": "text",
+      "id": "cta_button_label",
+      "label": "CTA button label",
+      "default": "Till köpboxen"
+    },
+    {
+      "type": "url",
+      "id": "cta_button_link",
+      "label": "CTA button link"
     }
   ],
   "blocks": [

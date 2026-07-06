@@ -13,11 +13,47 @@
   "sections": {
     "announcement": {
       "type": "announcement-bar",
-      "settings": {}
+      "blocks": {
+        "msg-1": {
+          "type": "message",
+          "settings": {
+            "icon": "truck",
+            "text": "Fri frakt över 1000 kr"
+          }
+        },
+        "msg-2": {
+          "type": "message",
+          "settings": {
+            "icon": "bolt",
+            "text": "Upp till 40% rabatt"
+          }
+        },
+        "msg-3": {
+          "type": "message",
+          "settings": {
+            "icon": "shield",
+            "text": "1 års garanti · 14 dagars ångerrätt"
+          }
+        },
+        "msg-4": {
+          "type": "message",
+          "settings": {
+            "icon": "bolt",
+            "text": "Leverans 2–5 arbetsdagar från Sverige"
+          }
+        }
+      },
+      "block_order": ["msg-1", "msg-2", "msg-3", "msg-4"],
+      "settings": {
+        "rotate_interval": 5
+      }
     },
     "header": {
       "type": "header",
       "settings": {
+        "show_localization": true,
+        "show_wishlist": true,
+        "show_compare": true,
         "show_cta": true,
         "cta_label": "Köp nu"
       }

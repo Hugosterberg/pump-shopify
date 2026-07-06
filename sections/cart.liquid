@@ -43,6 +43,8 @@
           {% endfor %}
         </ul>
 
+        {% render 'cart-upsell' %}
+
         <div class="main-cart__footer">
           <button class="main-cart__update" type="submit" name="update">
             {{ 'cart.update' | t }}
@@ -53,6 +55,11 @@
               <strong>{{ cart.total_price | money }}</strong>
             </p>
             {% render 'legal-links', class_prefix: 'main-cart__legal', compact: true %}
+            <p class="main-cart__trust-line">
+              {% render 'icon', name: 'lock', size: 12 %}
+              Säker checkout · 14 dagars ångerrätt
+            </p>
+            {% render 'payment-icons', class_prefix: 'main-cart__payment', label: 'Betala enkelt med' %}
             <button class="main-cart__checkout" type="submit" name="checkout">
               {{ 'cart.checkout' | t }}
             </button>
@@ -108,9 +115,15 @@
     gap: 16px;
     align-items: center;
     padding: 20px;
-    border-radius: 16px;
-    background-color: var(--pp-surface, #14212a);
+    border-radius: 18px;
+    background: var(--pp-gradient-surface);
     border: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+    box-shadow: var(--pp-shadow-soft);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .main-cart__item:hover {
+    border-color: color-mix(in srgb, var(--pp-accent, #2dd4bf) 25%, transparent);
   }
 
   .main-cart__image {
@@ -177,13 +190,29 @@
   }
 
   .main-cart__summary {
-    padding: 24px;
-    border-radius: 16px;
-    background-color: var(--pp-surface, #14212a);
-    border: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+    padding: 28px 24px;
+    border-radius: 20px;
+    background: var(--pp-gradient-surface);
+    border: 1px solid color-mix(in srgb, var(--pp-accent, #2dd4bf) 18%, transparent);
+    box-shadow: var(--pp-shadow-soft);
     display: flex;
     flex-direction: column;
     gap: 16px;
+  }
+
+  .main-cart__trust-line {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .main-cart__trust-line svg {
+    color: var(--pp-accent, #2dd4bf);
   }
 
   .main-cart__subtotal {
@@ -219,11 +248,18 @@
     min-height: 54px;
     border: none;
     border-radius: 999px;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
-    color: var(--pp-bg-deep, #071014);
-    background-color: var(--pp-accent, #2dd4bf);
+    color: var(--pp-accent-ink, #071014);
+    background: var(--pp-gradient-accent);
+    box-shadow: var(--pp-shadow-glow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .main-cart__checkout:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 44px -16px color-mix(in srgb, var(--pp-accent, #2dd4bf) 75%, #000);
   }
 
   .main-cart__empty {

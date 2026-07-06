@@ -1,0 +1,293 @@
+{% comment %}
+  Wishlist and product compare drawers (localStorage-based).
+
+  Usage: {% render 'wishlist-compare-drawers' %}
+{% endcomment %}
+
+<div class="pp-drawer" data-wishlist-drawer hidden>
+  <div class="pp-drawer__backdrop" data-wishlist-close tabindex="-1"></div>
+  <aside class="pp-drawer__panel" role="dialog" aria-label="Önskelista" aria-modal="true" tabindex="-1">
+    <header class="pp-drawer__header">
+      <h2 class="pp-drawer__title">Önskelista</h2>
+      <button type="button" class="pp-drawer__close" data-wishlist-close aria-label="Stäng">
+        {% render 'icon', name: 'x', size: 20 %}
+      </button>
+    </header>
+    <div class="pp-drawer__body" data-wishlist-body>
+      <p class="pp-drawer__empty" data-wishlist-empty>Din önskelista är tom.</p>
+      <ul class="pp-drawer__list" role="list" data-wishlist-list hidden></ul>
+    </div>
+    <footer class="pp-drawer__footer">
+      <a class="pp-drawer__cta" href="{{ routes.all_products_collection_url }}">Fortsätt handla</a>
+    </footer>
+  </aside>
+</div>
+
+<div class="pp-drawer" data-compare-drawer hidden>
+  <div class="pp-drawer__backdrop" data-compare-close tabindex="-1"></div>
+  <aside class="pp-drawer__panel pp-drawer__panel--wide" role="dialog" aria-label="Jämför produkter" aria-modal="true" tabindex="-1">
+    <header class="pp-drawer__header">
+      <h2 class="pp-drawer__title">Jämför <span data-compare-count>0</span> produkter</h2>
+      <button type="button" class="pp-drawer__close" data-compare-close aria-label="Stäng">
+        {% render 'icon', name: 'x', size: 20 %}
+      </button>
+    </header>
+    <div class="pp-drawer__body" data-compare-body>
+      <p class="pp-drawer__empty" data-compare-empty>Din jämförelse är tom.</p>
+      <div class="pp-compare-table-wrap" data-compare-table-wrap hidden>
+        <table class="pp-compare-table" data-compare-table>
+          <tbody data-compare-tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <footer class="pp-drawer__footer">
+      <button type="button" class="pp-drawer__cta pp-drawer__cta--ghost" data-compare-clear>Rensa</button>
+      <a class="pp-drawer__cta" href="{{ routes.all_products_collection_url }}">Fortsätt handla</a>
+    </footer>
+  </aside>
+</div>
+
+{% stylesheet %}
+  .pp-drawer[hidden] {
+    display: none;
+  }
+
+  .pp-drawer:not([hidden]) {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+  }
+
+  .pp-drawer__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+  }
+
+  .pp-drawer__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: min(420px, 100%);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--pp-bg, #071014);
+    color: var(--pp-text, #f6f7f2);
+    border-left: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+    box-shadow: -20px 0 60px -20px rgba(0, 0, 0, 0.5);
+    animation: pp-drawer-in 0.25s ease;
+  }
+
+  .pp-drawer__panel--wide {
+    width: min(720px, 100%);
+  }
+
+  @keyframes pp-drawer-in {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+  .pp-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px;
+    border-bottom: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+  }
+
+  .pp-drawer__title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .pp-drawer__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--pp-text, #f6f7f2);
+    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 6%, transparent);
+  }
+
+  .pp-drawer__body {
+    flex: 1;
+    overflow: auto;
+    padding: 20px;
+  }
+
+  .pp-drawer__empty {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .pp-drawer__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pp-drawer__item {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 4%, transparent);
+    border: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+  }
+
+  .pp-drawer__item img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .pp-drawer__item-info a {
+    color: inherit;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .pp-drawer__item-price {
+    margin: 4px 0 0;
+    font-size: 0.82rem;
+    color: var(--pp-accent, #2dd4bf);
+  }
+
+  .pp-drawer__item-remove {
+    border: none;
+    background: transparent;
+    color: var(--pp-muted, #9aa8a2);
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  .pp-drawer__footer {
+    display: flex;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+  }
+
+  .pp-drawer__cta {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding-inline: 16px;
+    border-radius: var(--pp-radius-pill, 999px);
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    color: var(--pp-accent-ink, #071014);
+    background: var(--pp-accent, #2dd4bf);
+    border: none;
+    cursor: pointer;
+  }
+
+  .pp-drawer__cta--ghost {
+    flex: 0 0 auto;
+    color: var(--pp-text, #f6f7f2);
+    background: transparent;
+    border: 1px solid var(--pp-border, rgba(255, 255, 255, 0.12));
+  }
+
+  .pp-compare-table-wrap {
+    overflow-x: auto;
+  }
+
+  .pp-compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+
+  .pp-compare-table th,
+  .pp-compare-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .pp-compare-table th {
+    width: 120px;
+    color: var(--pp-muted, #9aa8a2);
+    font-weight: 500;
+  }
+
+  .pp-compare-table img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .site-header__badge-count {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    min-width: 16px;
+    height: 16px;
+    padding-inline: 3px;
+    border-radius: 999px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    color: var(--hdr-bg, #071014);
+    background: var(--hdr-accent, #2dd4bf);
+  }
+
+  .site-header__badge-count[hidden] {
+    display: none;
+  }
+
+  .main-product__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .main-product__action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: var(--pp-radius-pill, 999px);
+    border: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 12%, transparent);
+    background: color-mix(in srgb, var(--mp-text, #f6f7f2) 4%, transparent);
+    color: var(--mp-muted, #9aa8a2);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .main-product__action-btn.is-active,
+  .main-product__action-btn:hover {
+    border-color: color-mix(in srgb, var(--mp-accent, #2dd4bf) 45%, transparent);
+    color: var(--mp-accent, #2dd4bf);
+  }
+{% endstylesheet %}
+
+<script src="{{ 'wishlist-compare.js' | asset_url }}" defer></script>

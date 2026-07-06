@@ -124,7 +124,7 @@
           "type": "trust_item",
           "settings": {
             "icon": "check",
-            "text": "Fri frakt över 999 kr"
+            "text": "Fri frakt över 500 kr"
           }
         },
         "t-2": {
@@ -138,7 +138,7 @@
           "type": "trust_item",
           "settings": {
             "icon": "check",
-            "text": "30 dagars öppet köp"
+            "text": "14 dagars ångerrätt"
           }
         },
         "t-4": {
@@ -712,7 +712,7 @@
         "t-2": {
           "type": "trust_point",
           "settings": {
-            "text": "30 dagars öppet köp"
+            "text": "14 dagars ångerrätt"
           }
         },
         "t-3": {
@@ -728,7 +728,7 @@
         "t-3"
       ],
       "settings": {
-        "product": "",
+        "product": "the-perfect-combo-portabel-dusch-vikbar-hink-1",
         "eyebrow": "Bästsäljare",
         "heading": "The Perfect Combo",
         "description": "",
@@ -1223,7 +1223,8 @@
       "settings": {
         "eyebrow": "Omdömen",
         "heading": "Det här säger våra kunder",
-        "subheading": "Lägg till Judge.me-appblock i temaredigeraren för att visa riktiga omdömen. Placeholder-korten nedan kan tas bort när appen är aktiv.",
+        "subheading": "Verifierade omdömen från riktiga kunder. Lägg till Judge.me-appblock i temaredigeraren för att ersätta exempelkorten nedan.",
+        "show_placeholder_reviews": true,
         "background_color": "#071014",
         "surface_color": "#14212a",
         "text_color": "#f6f7f2",
@@ -1353,7 +1354,7 @@
           "settings": {
             "category": "Frakt & leverans",
             "question": "Vad kostar frakten?",
-            "answer": "<p>Fri frakt inom Sverige vid köp över 999 kr, annars tillkommer en fraktkostnad på 69 kr. För leveranser inom övriga EU räknas frakten ut automatiskt i kassan.</p>"
+            "answer": "<p>Fri frakt inom Sverige vid köp över 500 kr, annars tillkommer en fraktkostnad på 69 kr. För leveranser inom övriga EU räknas frakten ut automatiskt i kassan.</p>"
           }
         },
         "f-14": {
@@ -1445,6 +1446,11 @@
       "settings": {
         "eyebrow": "Vanliga frågor",
         "heading": "FAQ",
+        "show_cta": true,
+        "cta_heading": "Fortfarande osäker?",
+        "cta_text": "Köp tryggt med 14 dagars ångerrätt, 1 års garanti och fri frakt över 500 kr.",
+        "cta_button_label": "Till köpboxen",
+        "cta_button_link": "#product-showcase",
         "background_color": "#071014",
         "surface_color": "#14212a",
         "text_color": "#f6f7f2",
@@ -1458,7 +1464,7 @@
         "heading": "Redo för friheten?",
         "subheading": "Ta med duschen dit livet händer: camping, båt, bastu eller strand.",
         "button_label": "Köp The Perfect Combo",
-        "button_link": "",
+        "button_link": "#product-showcase",
         "background_color": "#14212a",
         "text_color": "#f6f7f2",
         "muted_text_color": "#9aa8a2",
@@ -1469,7 +1475,7 @@
     "sticky_atc": {
       "type": "sticky-mobile-atc",
       "settings": {
-        "product": "",
+        "product": "the-perfect-combo-portabel-dusch-vikbar-hink-1",
         "button_label": "Köp nu",
         "target_id": "",
         "background_color": "#071014",
@@ -1485,6 +1491,7 @@
     "trust_strip",
     "instruction_video",
     "product_cards",
+    "reviews",
     "use_cases",
     "feature_highlights",
     "stat_counters",
@@ -1497,7 +1504,6 @@
     "pump_ecosystem",
     "brand_mission",
     "instagram",
-    "reviews",
     "blog_posts",
     "newsletter",
     "faq",

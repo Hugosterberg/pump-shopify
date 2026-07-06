@@ -70,12 +70,32 @@
           {% endfor %}
         </ul>
       {% else %}
+        {%- assign featured = all_products['the-perfect-combo-portabel-dusch-vikbar-hink-1'] -%}
         <div class="cart-drawer__empty" data-cart-drawer-empty>
-          <p>Varukorgen är tom.</p>
+          <span class="cart-drawer__empty-icon" aria-hidden="true">{% render 'icon', name: 'droplets', size: 32 %}</span>
+          <p class="cart-drawer__empty-title">Varukorgen är tom</p>
+          <p class="cart-drawer__empty-text">Du är ett steg från duschfrihet var du än är.</p>
+          {% if featured != blank %}
+            <a class="cart-drawer__empty-featured" href="{{ featured.url }}">
+              {% if featured.featured_image %}
+                {{
+                  featured.featured_image
+                  | image_url: width: 200
+                  | image_tag: loading: 'lazy', widths: '100, 200', sizes: '80px', alt: featured.title
+                }}
+              {% endif %}
+              <span class="cart-drawer__empty-featured-info">
+                <strong>{{ featured.title }}</strong>
+                <span>{{ featured.price | money }}</span>
+              </span>
+            </a>
+          {% endif %}
           <a class="cart-drawer__continue" href="{{ routes.all_products_collection_url }}">Fortsätt handla</a>
         </div>
       {% endif %}
     </div>
+
+    {% render 'cart-upsell' %}
 
     <footer class="cart-drawer__footer" data-cart-drawer-footer{% if cart.item_count == 0 %} hidden{% endif %}>
       <div data-cart-drawer-shipping>
@@ -86,6 +106,11 @@
         <strong data-cart-drawer-subtotal>{{ cart.total_price | money }}</strong>
       </p>
       {% render 'legal-links', class_prefix: 'cart-drawer__legal', compact: true %}
+      <p class="cart-drawer__trust-line">
+        {% render 'icon', name: 'lock', size: 12 %}
+        Säker checkout · 14 dagars ångerrätt
+      </p>
+      {% render 'payment-icons', class_prefix: 'cart-drawer__payment', label: '' %}
       <a class="cart-drawer__checkout" href="/checkout" data-cart-checkout>
         Gå till kassan
       </a>
@@ -292,8 +317,98 @@
 
   .cart-drawer__empty {
     text-align: center;
-    padding: 40px 12px;
+    padding: 32px 12px 40px;
     color: var(--pp-muted, #9aa8a2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cart-drawer__empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    color: var(--pp-accent, #2dd4bf);
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 12%, transparent);
+  }
+
+  .cart-drawer__empty-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--pp-text, #f6f7f2);
+  }
+
+  .cart-drawer__empty-text {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    max-width: 260px;
+  }
+
+  .cart-drawer__empty-featured {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 280px;
+    margin-top: 8px;
+    padding: 12px;
+    border-radius: 14px;
+    text-decoration: none;
+    text-align: left;
+    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 4%, transparent);
+    border: 1px solid color-mix(in srgb, var(--pp-accent, #2dd4bf) 25%, transparent);
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .cart-drawer__empty-featured:hover {
+    border-color: color-mix(in srgb, var(--pp-accent, #2dd4bf) 45%, transparent);
+    transform: translateY(-1px);
+  }
+
+  .cart-drawer__empty-featured img {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+
+  .cart-drawer__empty-featured-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .cart-drawer__empty-featured-info strong {
+    font-size: 0.88rem;
+    color: var(--pp-text, #f6f7f2);
+  }
+
+  .cart-drawer__empty-featured-info span {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--pp-accent, #2dd4bf);
+  }
+
+  .cart-drawer__trust-line {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .cart-drawer__trust-line svg {
+    color: var(--pp-accent, #2dd4bf);
   }
 
   .cart-drawer__continue {
@@ -400,17 +515,62 @@
 {% endstylesheet %}
 
 <script>
+  {%- liquid
+    assign combo = all_products['the-perfect-combo-portabel-dusch-vikbar-hink-1']
+    assign shower = all_products['portabel-dusch']
+    assign bucket = all_products['portabel-hink']
+  -%}
   window.PumpCart = {
     moneyFormat: {{ shop.money_format | json }},
     freeShippingThreshold: {{ settings.free_shipping_threshold | default: 999 | times: 100 | json }},
+    upsellProducts: {
+      combo: {
+        handle: {{ combo.handle | json }},
+        title: {{ combo.title | json }},
+        variantId: {{ combo.selected_or_first_available_variant.id | json }},
+        price: {{ combo.selected_or_first_available_variant.price | json }},
+        compareAtPrice: {{ combo.compare_at_price | default: 0 | json }},
+        image: {{ combo.featured_image | image_url: width: 160 | json }},
+        label: 'Komplettera med Perfect Combo',
+        badge: 'Bästsäljare'
+      },
+      shower: {
+        handle: {{ shower.handle | json }},
+        title: {{ shower.title | json }},
+        variantId: {{ shower.selected_or_first_available_variant.id | json }},
+        price: {{ shower.selected_or_first_available_variant.price | json }},
+        compareAtPrice: {{ shower.compare_at_price | default: 0 | json }},
+        image: {{ shower.featured_image | image_url: width: 160 | json }},
+        label: 'Komplettera med duschen',
+        badge: 'Rekommenderat'
+      },
+      bucket: {
+        handle: {{ bucket.handle | json }},
+        title: {{ bucket.title | json }},
+        variantId: {{ bucket.selected_or_first_available_variant.id | json }},
+        price: {{ bucket.selected_or_first_available_variant.price | json }},
+        compareAtPrice: {{ bucket.compare_at_price | default: 0 | json }},
+        image: {{ bucket.featured_image | image_url: width: 160 | json }},
+        label: 'Komplettera med hinken',
+        badge: 'Rekommenderat'
+      }
+    },
     strings: {
       added: 'Produkten lades till i varukorgen',
       error: 'Kunde inte uppdatera varukorgen. Försök igen.',
       empty: 'Varukorgen är tom.',
+      emptyText: 'Du är ett steg från duschfrihet var du än är.',
       checkout: 'Gå till kassan',
       continue: 'Fortsätt handla',
       subtotal: 'Delsumma',
       remove: 'Ta bort'
+    },
+    featuredProduct: {
+      handle: {{ combo.handle | json }},
+      title: {{ combo.title | json }},
+      price: {{ combo.price | json }},
+      url: {{ combo.url | json }},
+      image: {{ combo.featured_image | image_url: width: 200 | json }}
     }
   };
 </script>

@@ -1,11 +1,21 @@
 {% comment %}
   Country and language selector (Shopify Markets / localization).
 
-  Usage: {% render 'localization-form', class_prefix: 'localization-form' %}
+  Params:
+  - class_prefix (optional)
+  - form_id (optional, default: LocalizationForm)
+  - compact (optional, boolean — inline selects without submit button label)
+  - show_label (optional, default: true)
+
+  Usage:
+    {% render 'localization-form', class_prefix: 'site-header__localization', compact: true, form_id: 'HeaderLocalizationForm' %}
 {% endcomment %}
 
 {%- liquid
   assign class_prefix = class_prefix | default: 'localization-form'
+  assign form_id = form_id | default: 'LocalizationForm'
+  assign compact = compact | default: false
+  assign show_label = show_label | default: true
   assign show_countries = false
   assign show_languages = false
 
@@ -18,12 +28,14 @@
 -%}
 
 {%- if show_countries or show_languages -%}
-  {% form 'localization', class: class_prefix, id: 'FooterLocalizationForm' %}
-    <p class="{{ class_prefix }}__label">Region &amp; språk</p>
-    <div class="{{ class_prefix }}__fields">
+  {% form 'localization', class: class_prefix, id: form_id %}
+    {%- if show_label and compact == false -%}
+      <p class="{{ class_prefix }}__label">Region &amp; språk</p>
+    {%- endif -%}
+    <div class="{{ class_prefix }}__fields{% if compact %} {{ class_prefix }}__fields--compact{% endif %}">
       {%- if show_countries -%}
-        <label class="visually-hidden" for="FooterCountrySelect">Land/region</label>
-        <select id="FooterCountrySelect" name="country_code" class="{{ class_prefix }}__select">
+        <label class="visually-hidden" for="{{ form_id }}-CountrySelect">Land/region</label>
+        <select id="{{ form_id }}-CountrySelect" name="country_code" class="{{ class_prefix }}__select" aria-label="Land och valuta">
           {%- for country in localization.available_countries -%}
             <option
               value="{{ country.iso_code }}"
@@ -31,15 +43,19 @@
                 selected
               {% endif %}
             >
-              {{ country.name }} ({{ country.currency.iso_code }})
+              {%- if compact -%}
+                {{ country.name }} | {{ country.currency.iso_code }} {{ country.currency.symbol }}
+              {%- else -%}
+                {{ country.name }} ({{ country.currency.iso_code }})
+              {%- endif -%}
             </option>
           {%- endfor -%}
         </select>
       {%- endif -%}
 
       {%- if show_languages -%}
-        <label class="visually-hidden" for="FooterLanguageSelect">Språk</label>
-        <select id="FooterLanguageSelect" name="locale_code" class="{{ class_prefix }}__select">
+        <label class="visually-hidden" for="{{ form_id }}-LanguageSelect">Språk</label>
+        <select id="{{ form_id }}-LanguageSelect" name="locale_code" class="{{ class_prefix }}__select" aria-label="Språk">
           {%- for language in localization.available_languages -%}
             <option
               value="{{ language.iso_code }}"
@@ -53,7 +69,62 @@
         </select>
       {%- endif -%}
 
-      <button type="submit" class="{{ class_prefix }}__submit">Uppdatera</button>
+      <button type="submit" class="{{ class_prefix }}__submit{% if compact %} visually-hidden{% endif %}">
+        {%- if compact -%}Uppdatera{%- else -%}Uppdatera{%- endif -%}
+      </button>
     </div>
   {% endform %}
+{%- elsif compact -%}
+  <div class="{{ class_prefix }}__fallback" aria-label="Region">
+    <span>{{ localization.country.name }} | {{ localization.country.currency.iso_code }}</span>
+  </div>
 {%- endif -%}
+
+{% stylesheet %}
+  .localization-form__fields--compact,
+  [class*='__localization__fields--compact'] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .localization-form__fields--compact select,
+  [class*='__localization__fields--compact'] select {
+    min-height: 34px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 12%, transparent);
+    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 4%, transparent);
+    color: var(--pp-text, #f6f7f2);
+    font-size: 0.78rem;
+    max-width: 160px;
+  }
+
+  .site-header__localization {
+    display: none;
+  }
+
+  .site-header__localization__fallback {
+    font-size: 0.78rem;
+    color: var(--hdr-muted, #9aa8a2);
+    white-space: nowrap;
+  }
+
+  @media screen and (min-width: 990px) {
+    .site-header__localization {
+      display: block;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    document.querySelectorAll('.localization-form__fields--compact select, [class*="__localization__fields--compact"] select').forEach(function (select) {
+      select.addEventListener('change', function () {
+        const form = select.closest('form');
+        if (form) form.requestSubmit();
+      });
+    });
+  })();
+{% endjavascript %}

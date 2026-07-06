@@ -33,8 +33,14 @@
         {% for block in section.blocks %}
           {% liquid
             assign product = block.settings.product
+            assign is_featured = block.settings.featured
+            if is_featured == false and product != blank
+              if product.handle contains 'perfect-combo'
+                assign is_featured = true
+              endif
+            endif
           %}
-          <li class="product-cards__card" {{ block.shopify_attributes }}>
+          <li class="product-cards__card{% if is_featured %} product-cards__card--featured{% endif %}" {{ block.shopify_attributes }}>
             {% if product != blank %}
               {% assign variant = product.selected_or_first_available_variant %}
               <a class="product-cards__media" href="{{ product.url }}" aria-label="{{ product.title }}">
@@ -123,18 +129,36 @@
         </a>
       </div>
     {% endif %}
+
+    {% render 'trust-near-atc', class_prefix: 'product-cards__trust', show_payment_icons: false, compact: true %}
   </div>
 </div>
 
 {% stylesheet %}
   .product-cards {
-    padding-block: 52px;
+    position: relative;
+    padding-block: var(--pp-section-py, 52px);
     padding-inline: var(--page-margin, 20px);
     background-color: var(--pc-bg, #0b1117);
     color: var(--pc-text, #f6f7f2);
+    overflow: hidden;
+  }
+
+  .product-cards::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    width: min(900px, 90vw);
+    height: 400px;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, color-mix(in srgb, var(--pc-accent, #2dd4bf) 14%, transparent), transparent 68%);
+    pointer-events: none;
   }
 
   .product-cards__inner {
+    position: relative;
+    z-index: 1;
     max-width: var(--page-width, 90rem);
     margin-inline: auto;
   }
@@ -180,21 +204,45 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    border-radius: 18px;
+    border-radius: 20px;
     overflow: hidden;
-    background-color: color-mix(in srgb, var(--pc-surface, #14212a) 78%, transparent);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid color-mix(in srgb, var(--pc-text, #f6f7f2) 12%, transparent);
-    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--pc-text, #f6f7f2) 10%, transparent);
-    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    background: var(--pp-gradient-surface, linear-gradient(165deg, #1d2b35 0%, #14212a 100%));
+    border: 1px solid color-mix(in srgb, var(--pc-text, #f6f7f2) 10%, transparent);
+    box-shadow: var(--pp-shadow-soft);
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.22s ease, box-shadow 0.22s ease;
     transform-style: preserve-3d;
     will-change: transform;
   }
 
-  .product-cards__card:hover {
-    transform: translateY(-4px);
+  .product-cards__card--featured {
     border-color: color-mix(in srgb, var(--pc-accent, #2dd4bf) 45%, transparent);
+    box-shadow:
+      var(--pp-shadow-soft),
+      0 0 0 1px color-mix(in srgb, var(--pc-accent, #2dd4bf) 20%, transparent),
+      0 20px 50px -28px color-mix(in srgb, var(--pc-accent, #2dd4bf) 45%, #000);
+  }
+
+  .product-cards__card--featured::before {
+    content: 'Mest populär';
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 2;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--pp-accent-ink, #071014);
+    background: var(--pp-gradient-accent, linear-gradient(135deg, #2dd4bf, #4cc9f0));
+    box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--pc-accent, #2dd4bf) 80%, #000);
+  }
+
+  .product-cards__card:hover {
+    transform: translateY(-6px);
+    border-color: color-mix(in srgb, var(--pc-accent, #2dd4bf) 45%, transparent);
+    box-shadow: var(--pp-shadow-card);
   }
 
   .product-cards__card.is-tilting {
@@ -407,12 +455,18 @@
     text-decoration: none;
     color: var(--pc-text, #f6f7f2);
     border: 1px solid color-mix(in srgb, var(--pc-text, #f6f7f2) 28%, transparent);
-    transition: border-color 0.18s ease, color 0.18s ease;
+    transition: border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
   }
 
   .product-cards__view-all:hover {
     border-color: var(--pc-accent, #2dd4bf);
     color: var(--pc-accent, #2dd4bf);
+    transform: translateY(-1px);
+  }
+
+  .product-cards__trust--compact {
+    justify-content: center;
+    margin-top: 20px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -560,7 +614,8 @@
       "settings": [
         { "type": "product", "id": "product", "label": "Product" },
         { "type": "textarea", "id": "description", "label": "Short description" },
-        { "type": "text", "id": "badge", "label": "Badge (optional, overrides auto sale badge)" }
+        { "type": "text", "id": "badge", "label": "Badge (optional, overrides auto sale badge)" },
+        { "type": "checkbox", "id": "featured", "label": "Highlight as featured", "default": false, "info": "Auto-enabled for Perfect Combo if unchecked." }
       ]
     }
   ],

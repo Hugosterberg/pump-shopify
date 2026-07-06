@@ -48,6 +48,10 @@
         </div>
 
         <div class="product-showcase__buy">
+          <div class="product-showcase__badges">
+            <span class="product-showcase__badge">Bästsäljare</span>
+            <span class="product-showcase__badge product-showcase__badge--muted">Leverans 2–5 dagar</span>
+          </div>
           <h3 class="product-showcase__title">{{ showcase_product.title }}</h3>
 
           <div class="product-showcase__price">
@@ -55,6 +59,8 @@
               <span class="product-showcase__price-compare">
                 <s>{{ showcase_product.compare_at_price | money }}</s>
               </span>
+              {% assign saving = showcase_product.compare_at_price | minus: showcase_product.price | times: 100.0 | divided_by: showcase_product.compare_at_price | round %}
+              <span class="product-showcase__save">Spara {{ saving }}%</span>
             {% endif %}
             <span class="product-showcase__price-current">{{ showcase_product.price | money }}</span>
           </div>
@@ -136,6 +142,9 @@
 
               {{ form | payment_button }}
             {% endform %}
+
+            {% render 'trust-near-atc', class_prefix: 'product-showcase__trust-atc' %}
+            {% render 'legal-links', class_prefix: 'product-showcase__legal', compact: true %}
           </div>
         </div>
       </div>
@@ -220,6 +229,42 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+  }
+
+  .product-showcase__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .product-showcase__badge {
+    display: inline-flex;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pshow-accent-ink, #071014);
+    background: var(--pshow-accent, #2dd4bf);
+  }
+
+  .product-showcase__badge--muted {
+    color: var(--pshow-muted, #9aa8a2);
+    text-transform: none;
+    font-weight: 600;
+    letter-spacing: 0;
+    background: color-mix(in srgb, var(--pshow-text, #f6f7f2) 6%, transparent);
+    border: 1px solid color-mix(in srgb, var(--pshow-text, #f6f7f2) 10%, transparent);
+  }
+
+  .product-showcase__save {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--pshow-accent-ink, #071014);
+    background: linear-gradient(135deg, var(--pshow-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 35%, var(--pshow-accent, #2dd4bf)));
   }
 
   .product-showcase__title {
@@ -457,7 +502,7 @@
       "name": "Product showcase",
       "blocks": [
         { "type": "trust_point", "settings": { "text": "Fri frakt" } },
-        { "type": "trust_point", "settings": { "text": "30 dagars öppet köp" } },
+        { "type": "trust_point", "settings": { "text": "14 dagars ångerrätt" } },
         { "type": "trust_point", "settings": { "text": "Säker betalning" } }
       ]
     }

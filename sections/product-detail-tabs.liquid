@@ -1,0 +1,264 @@
+<div
+  class="product-detail-tabs full-width"
+  style="
+    --pdt-bg: {{ section.settings.background_color }};
+    --pdt-surface: {{ section.settings.surface_color }};
+    --pdt-text: {{ section.settings.text_color }};
+    --pdt-muted: {{ section.settings.muted_text_color }};
+    --pdt-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="product-detail-tabs__inner">
+    {% if section.settings.heading != blank %}
+      <h2 class="product-detail-tabs__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class="product-detail-tabs__list">
+        {% for block in section.blocks %}
+          <details
+            class="product-detail-tabs__item"
+            {% if block.settings.open_by_default %}
+              open
+            {% endif %}
+            {{ block.shopify_attributes }}
+          >
+            <summary class="product-detail-tabs__summary">
+              <span class="product-detail-tabs__title">{{ block.settings.title }}</span>
+              <span class="product-detail-tabs__chevron" aria-hidden="true">{% render 'icon', name: 'arrow-down', size: 18 %}</span>
+            </summary>
+            <div class="product-detail-tabs__panel">
+              {% if block.settings.subtitle != blank %}
+                <p class="product-detail-tabs__subtitle">{{ block.settings.subtitle }}</p>
+              {% endif %}
+              {% if block.settings.content != blank %}
+                <div class="product-detail-tabs__content rte">{{ block.settings.content }}</div>
+              {% endif %}
+              {% if block.settings.list != blank %}
+                <ul class="product-detail-tabs__bullets" role="list">
+                  {% assign items = block.settings.list | newline_to_br | split: '<br />' %}
+                  {% for item in items %}
+                    {% assign trimmed = item | strip %}
+                    {% if trimmed != blank %}
+                      <li>{{ trimmed }}</li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </details>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .product-detail-tabs {
+    padding-block: 48px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--pdt-bg, #071014);
+    color: var(--pdt-text, #f6f7f2);
+  }
+
+  .product-detail-tabs__inner {
+    max-width: 720px;
+    margin-inline: auto;
+  }
+
+  .product-detail-tabs__heading {
+    margin: 0 0 24px;
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
+    letter-spacing: -0.02em;
+  }
+
+  .product-detail-tabs__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .product-detail-tabs__item {
+    border-radius: var(--pp-radius-md, 14px);
+    background: var(--pdt-surface, #14212a);
+    border: 1px solid color-mix(in srgb, var(--pdt-text, #f6f7f2) 8%, transparent);
+    overflow: hidden;
+  }
+
+  .product-detail-tabs__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .product-detail-tabs__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .product-detail-tabs__chevron {
+    flex-shrink: 0;
+    color: var(--pdt-muted, #9aa8a2);
+    transition: transform 0.2s ease;
+  }
+
+  .product-detail-tabs__item[open] .product-detail-tabs__chevron {
+    transform: rotate(180deg);
+    color: var(--pdt-accent, #2dd4bf);
+  }
+
+  .product-detail-tabs__panel {
+    padding: 0 20px 20px;
+    border-top: 1px solid color-mix(in srgb, var(--pdt-text, #f6f7f2) 6%, transparent);
+  }
+
+  .product-detail-tabs__subtitle {
+    margin: 16px 0 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--pdt-accent, #2dd4bf);
+  }
+
+  .product-detail-tabs__content {
+    margin-top: 16px;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--pdt-muted, #9aa8a2);
+  }
+
+  .product-detail-tabs__content p {
+    margin: 0 0 12px;
+  }
+
+  .product-detail-tabs__content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .product-detail-tabs__bullets {
+    margin: 12px 0 0;
+    padding-left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--pdt-muted, #9aa8a2);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product detail tabs",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Produktinformation"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#071014"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "Surface",
+      "default": "#14212A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "panel",
+      "name": "Panel",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Funktion"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle (optional)"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content"
+        },
+        {
+          "type": "textarea",
+          "id": "list",
+          "label": "Bullet list",
+          "info": "One item per line"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "Open by default",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product detail tabs",
+      "blocks": [
+        {
+          "type": "panel",
+          "settings": {
+            "title": "Funktion",
+            "subtitle": "Portabel dusch",
+            "list": "Lång batteritid (upp till 150 min)\nDigital display med temperatur och batteriprocent\nFlöde: upp till 8 L/min\nFungerar med kallt och varmt vatten (max 60°C)",
+            "open_by_default": true
+          }
+        },
+        {
+          "type": "panel",
+          "settings": {
+            "title": "Funktion",
+            "subtitle": "Portabel hink",
+            "list": "Vikbar design\nRymmer 20 liter\nSturdy bärhandtag i slitstark väv"
+          }
+        },
+        {
+          "type": "panel",
+          "settings": {
+            "title": "Material & skötsel",
+            "content": "<p><strong>Material:</strong></p><ul><li>Duschhuvud: ABS-plast</li><li>Spraypistol: ABS-plast</li><li>Vattenpump: ABS-plast och elektronik</li><li>Vattenslang: PVC</li><li>Portabel hink: Slitstark väv</li></ul><p><strong>Skötsel:</strong></p><ul><li>Låt alla delar torka helt innan förvaring.</li><li>Använd inte starka rengöringsmedel.</li></ul>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -17,12 +17,73 @@
       "type": "trust-strip",
       "blocks": {
         "t-0": { "type": "trust_item", "settings": { "icon": "truck", "text": "Snabb leverans från Sverige" } },
-        "t-1": { "type": "trust_item", "settings": { "icon": "check", "text": "Fri frakt över 999 kr" } },
+        "t-1": { "type": "trust_item", "settings": { "icon": "check", "text": "Fri frakt över 500 kr" } },
         "t-2": { "type": "trust_item", "settings": { "icon": "shield", "text": "1 års garanti ingår" } },
         "t-3": { "type": "trust_item", "settings": { "icon": "lock", "text": "Säker betalning" } }
       },
       "block_order": ["t-0", "t-1", "t-2", "t-3"],
       "settings": {}
+    },
+    "included": {
+      "type": "whats-included",
+      "blocks": {
+        "i-1": { "type": "item", "settings": { "item": "1× duschhuvud" } },
+        "i-2": { "type": "item", "settings": { "item": "1× spraypistolmunstycke" } },
+        "i-3": { "type": "item", "settings": { "item": "1× nätförvaringspåse" } },
+        "i-4": { "type": "item", "settings": { "item": "1× Type-C laddkabel" } },
+        "i-5": { "type": "item", "settings": { "item": "1× vattenslang (2 m)" } },
+        "i-6": { "type": "item", "settings": { "item": "1× 3-i-1 multifunktionskrok" } },
+        "i-7": { "type": "item", "settings": { "item": "1× portabel hink (20 liter, vikbar)" } }
+      },
+      "block_order": ["i-1", "i-2", "i-3", "i-4", "i-5", "i-6", "i-7"],
+      "settings": {
+        "heading": "Vad ingår?"
+      }
+    },
+    "detail_tabs": {
+      "type": "product-detail-tabs",
+      "blocks": {
+        "tab-1": {
+          "type": "panel",
+          "settings": {
+            "title": "Funktion",
+            "subtitle": "Portabel dusch",
+            "list": "Lång batteritid (upp till 150 min)\nDigital display med temperatur och batteriprocent\nFlöde: upp till 8 L/min\nFungerar med kallt och varmt vatten (max 60°C)",
+            "open_by_default": true
+          }
+        },
+        "tab-2": {
+          "type": "panel",
+          "settings": {
+            "title": "Funktion",
+            "subtitle": "Portabel hink",
+            "list": "Vikbar design\nRymmer 20 liter\nSturdy bärhandtag i slitstark väv"
+          }
+        },
+        "tab-3": {
+          "type": "panel",
+          "settings": {
+            "title": "Material & skötsel",
+            "content": "<p><strong>Material:</strong></p><ul><li>Duschhuvud: ABS-plast</li><li>Spraypistol: ABS-plast</li><li>Vattenpump: ABS-plast och elektronik</li><li>Vattenslang: PVC</li><li>Portabel hink: Slitstark väv</li></ul><p><strong>Skötsel:</strong></p><ul><li>Låt alla delar torka helt innan förvaring.</li><li>Använd inte starka rengöringsmedel.</li></ul>"
+          }
+        }
+      },
+      "block_order": ["tab-1", "tab-2", "tab-3"],
+      "settings": {}
+    },
+    "specs": {
+      "type": "product-specs",
+      "blocks": {
+        "sp-0": { "type": "spec", "settings": { "label": "Spänning", "value": "3,7 V" } },
+        "sp-1": { "type": "spec", "settings": { "label": "Batterikapacitet", "value": "6000 mAh" } },
+        "sp-2": { "type": "spec", "settings": { "label": "Drifttid", "value": "120–150 min" } },
+        "sp-3": { "type": "spec", "settings": { "label": "Laddning", "value": "USB-C" } },
+        "sp-4": { "type": "spec", "settings": { "label": "Laddningstid", "value": "4–5 timmar" } }
+      },
+      "block_order": ["sp-0", "sp-1", "sp-2", "sp-3", "sp-4"],
+      "settings": {
+        "heading": "Teknisk specifikation"
+      }
     },
     "benefits": {
       "type": "benefit-cards",
@@ -37,36 +98,6 @@
         "heading": "Varför The Portable Shower?"
       }
     },
-    "specs": {
-      "type": "product-specs",
-      "blocks": {
-        "sp-0": { "type": "spec", "settings": { "label": "Spänning", "value": "3,7 V" } },
-        "sp-1": { "type": "spec", "settings": { "label": "Batterikapacitet", "value": "6000 mAh" } },
-        "sp-2": { "type": "spec", "settings": { "label": "Drifttid", "value": "~150 min" } },
-        "sp-3": { "type": "spec", "settings": { "label": "Flöde", "value": "Upp till 8 L/min" } },
-        "sp-4": { "type": "spec", "settings": { "label": "Laddning", "value": "USB-C" } },
-        "sp-7": { "type": "spec", "settings": { "label": "Laddningstid", "value": "4–5 timmar" } },
-        "sp-5": { "type": "spec", "settings": { "label": "Vattentemperatur", "value": "Upp till 60°C" } },
-        "sp-6": { "type": "spec", "settings": { "label": "Vikt", "value": "Ca 1 kg" } }
-      },
-      "block_order": ["sp-0", "sp-1", "sp-2", "sp-3", "sp-4", "sp-7", "sp-5", "sp-6"],
-      "settings": {}
-    },
-    "included": {
-      "type": "whats-included",
-      "blocks": {
-        "i-1": { "type": "item", "settings": { "item": "1× portabel dusch med digital display" } },
-        "i-2": { "type": "item", "settings": { "item": "1× duschmunstycke" } },
-        "i-3": { "type": "item", "settings": { "item": "1× spraypistolmunstycke" } },
-        "i-4": { "type": "item", "settings": { "item": "1× vattenslang (2 m)" } },
-        "i-5": { "type": "item", "settings": { "item": "1× Type-C laddkabel" } },
-        "i-6": { "type": "item", "settings": { "item": "1× 3-i-1 multifunktionskrok" } },
-        "i-7": { "type": "item", "settings": { "item": "1× nätförvaringspåse" } },
-        "i-8": { "type": "item", "settings": { "item": "1× portabel hink (20 liter, vikbar)" } }
-      },
-      "block_order": ["i-1", "i-2", "i-3", "i-4", "i-5", "i-6", "i-7", "i-8"],
-      "settings": {}
-    },
     "how_it_works": {
       "type": "how-it-works",
       "blocks": {
@@ -77,13 +108,51 @@
       "block_order": ["s-1", "s-2", "s-3"],
       "settings": {}
     },
+    "comparison": {
+      "type": "comparison-section",
+      "blocks": {
+        "c-1": { "type": "row", "settings": { "comparison_set": "common", "feature": "Portabel & laddningsbar", "us_has": true, "them_has": false } },
+        "c-2": { "type": "row", "settings": { "comparison_set": "common", "feature": "Digital temperaturdisplay", "us_has": true, "them_has": false } },
+        "c-3": { "type": "row", "settings": { "comparison_set": "common", "feature": "~150 min batteritid", "us_has": true, "them_has": false, "them_note": "Kräver eluttag" } },
+        "c-4": { "type": "row", "settings": { "comparison_set": "common", "feature": "Ingen installation", "us_has": true, "them_has": false } },
+        "c-5": { "type": "row", "settings": { "comparison_set": "common", "feature": "Väger ca 1 kg", "us_has": true, "them_has": false } },
+        "c-6": { "type": "row", "settings": { "comparison_set": "common", "feature": "Duscha var du vill", "us_has": true, "them_has": false } }
+      },
+      "block_order": ["c-1", "c-2", "c-3", "c-4", "c-5", "c-6"],
+      "settings": {
+        "eyebrow": "Jämförelse",
+        "heading": "Duschkit från pump vs vanliga lösningar"
+      }
+    },
     "reviews": {
       "type": "review-cards",
       "blocks": {
-        "r-1": { "type": "review", "settings": { "quote": "Smidig att ta med sig och fungerar perfekt efter en varm sommardag på fjället.", "author": "Anna", "context": "Camping" } },
-        "r-2": { "type": "review", "settings": { "quote": "Toppen att ha i bastun i vår stuga ute i skärgården!", "author": "Erik", "context": "Bastu" } }
+        "r-1": { "type": "review", "settings": { "quote": "Vilken grej! Kommer vara en svalkare i nöden under många soldagar framöver.", "author": "Martin", "context": "The Portable Shower" } },
+        "r-2": { "type": "review", "settings": { "quote": "Mycket nöjd! Smidig att ta med sig och fungerar perfekt efter en varm sommardag på fjället.", "author": "Gunnar", "context": "The Portable Shower" } },
+        "r-3": { "type": "review", "settings": { "quote": "Toppen att ha i bastun i vår stuga ute i skärgården!", "author": "Caroline", "context": "The Perfect Combo" } }
       },
-      "block_order": ["r-1", "r-2"],
+      "block_order": ["r-1", "r-2", "r-3"],
+      "settings": {
+        "eyebrow": "Kundrecensioner",
+        "heading": "Det här säger våra kunder",
+        "subheading": "Installera Judge.me i temaredigeraren och lägg till appblock här för att ersätta exempelkorten.",
+        "show_placeholder_reviews": true
+      }
+    },
+    "feature_icons": {
+      "type": "product-feature-icons",
+      "blocks": {
+        "f-1": { "type": "feature", "settings": { "icon": "spray", "title": "Kraftfull stråle" } },
+        "f-2": { "type": "feature", "settings": { "icon": "thermometer", "title": "Inbyggd termometer" } },
+        "f-3": { "type": "feature", "settings": { "icon": "battery", "title": "Lång batteritid" } },
+        "f-4": { "type": "feature", "settings": { "icon": "sparkles", "title": "Digital display" } },
+        "f-5": { "type": "feature", "settings": { "icon": "sliders", "title": "Justerbart tryck" } }
+      },
+      "block_order": ["f-1", "f-2", "f-3", "f-4", "f-5"],
+      "settings": {}
+    },
+    "recently_viewed": {
+      "type": "recently-viewed",
       "settings": {}
     },
     "related": {
@@ -95,10 +164,21 @@
       "blocks": {
         "f-1": { "type": "faq", "settings": { "question": "Hur länge räcker batteriet?", "answer": "<p>Med full laddning får du ~150 minuters drift.</p>" } },
         "f-2": { "type": "faq", "settings": { "question": "Fungerar den med varmt vatten?", "answer": "<p>Ja, upp till 60°C.</p>" } },
-        "f-3": { "type": "faq", "settings": { "question": "Vad ingår?", "answer": "<p>Dusch, hink, munstycke, slang, laddkabel och tillbehör.</p>" } }
+        "f-3": { "type": "faq", "settings": { "question": "Vad ingår?", "answer": "<p>Dusch, hink, munstycke, slang, laddkabel och tillbehör.</p>" } },
+        "f-4": { "type": "faq", "settings": { "category": "Returer & garanti", "question": "Kan jag returnera produkten?", "answer": "<p>Ja. Du har 14 dagars ångerrätt från det att du tagit emot produkten. Produkten ska vara oanvänd och i originalförpackning.</p>" } },
+        "f-5": { "type": "faq", "settings": { "category": "Frakt & leverans", "question": "Hur lång är leveranstiden?", "answer": "<p>2–5 arbetsdagar inom Sverige. Fri frakt vid köp över 500 kr.</p>" } }
       },
-      "block_order": ["f-1", "f-2", "f-3"],
+      "block_order": ["f-1", "f-2", "f-3", "f-4", "f-5"],
       "settings": {}
+    },
+    "final_cta": {
+      "type": "final-cta",
+      "settings": {
+        "heading": "Redo att duscha var du vill?",
+        "subheading": "Köp med 14 dagars ångerrätt, 1 års garanti och fri frakt över 500 kr.",
+        "button_label": "Till köpboxen",
+        "button_link": "#main-product"
+      }
     },
     "sticky_atc": {
       "type": "sticky-mobile-atc",
@@ -108,14 +188,18 @@
   "order": [
     "main",
     "trust",
-    "benefits",
-    "specs",
     "included",
+    "detail_tabs",
+    "specs",
+    "benefits",
     "how_it_works",
+    "comparison",
     "reviews",
+    "feature_icons",
+    "recently_viewed",
     "related",
     "faq",
+    "final_cta",
     "sticky_atc"
   ]
 }
-

@@ -15,6 +15,13 @@
       "type": "footer",
       "settings": {
         "show_payment_icons": true,
+        "show_trust_highlights": true,
+        "trust_warranty_title": "1 års garanti",
+        "trust_warranty_text": "Vi strävar efter att erbjuda saker som håller.",
+        "trust_shipping_title": "Fri frakt",
+        "trust_shipping_text": "Fri frakt på order över 500 kr inom Sverige.",
+        "legal_business_name": "PUMP GROUP AB",
+        "legal_org_number": "5595263111",
         "tagline": "Portabel komfort överallt. Smarta lösningar för livet utomhus.",
         "contact_email": "info@pumpportable.com",
         "instagram_url": "https://www.instagram.com/pumpportable_",

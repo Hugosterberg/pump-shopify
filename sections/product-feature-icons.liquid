@@ -1,0 +1,180 @@
+<div
+  class="product-feature-icons full-width"
+  style="
+    --pfi-bg: {{ section.settings.background_color }};
+    --pfi-text: {{ section.settings.text_color }};
+    --pfi-muted: {{ section.settings.muted_text_color }};
+    --pfi-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="product-feature-icons__inner">
+    {% if section.blocks.size > 0 %}
+      <ul class="product-feature-icons__list" role="list">
+        {% for block in section.blocks %}
+          <li class="product-feature-icons__item" {{ block.shopify_attributes }}>
+            <span class="product-feature-icons__icon" aria-hidden="true">
+              {% render 'icon', name: block.settings.icon, size: 28 %}
+            </span>
+            {% if block.settings.title != blank %}
+              <span class="product-feature-icons__label">{{ block.settings.title }}</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .product-feature-icons {
+    padding-block: 40px;
+    padding-inline: var(--page-margin, 20px);
+    background-color: var(--pfi-bg, #101820);
+    color: var(--pfi-text, #f6f7f2);
+    border-block: 1px solid color-mix(in srgb, var(--pfi-text, #f6f7f2) 6%, transparent);
+  }
+
+  .product-feature-icons__inner {
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+  }
+
+  .product-feature-icons__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 16px;
+  }
+
+  .product-feature-icons__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    padding: 16px 12px;
+    border-radius: var(--pp-radius-md, 14px);
+    background: color-mix(in srgb, var(--pfi-text, #f6f7f2) 3%, transparent);
+    border: 1px solid color-mix(in srgb, var(--pfi-text, #f6f7f2) 7%, transparent);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .product-feature-icons__item:hover {
+    border-color: color-mix(in srgb, var(--pfi-accent, #2dd4bf) 35%, transparent);
+    transform: translateY(-2px);
+  }
+
+  .product-feature-icons__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    color: var(--pfi-accent, #2dd4bf);
+    background: color-mix(in srgb, var(--pfi-accent, #2dd4bf) 12%, transparent);
+    box-shadow: 0 8px 24px -12px color-mix(in srgb, var(--pfi-accent, #2dd4bf) 50%, transparent);
+  }
+
+  .product-feature-icons__label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--pfi-text, #f6f7f2);
+    max-width: 12ch;
+  }
+
+  @media screen and (min-width: 600px) {
+    .product-feature-icons__list {
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-feature-icons__item {
+      transition: none;
+    }
+
+    .product-feature-icons__item:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product feature icons",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#101820"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "spray", "label": "Spray / beam" },
+            { "value": "thermometer", "label": "Thermometer" },
+            { "value": "battery", "label": "Battery" },
+            { "value": "sparkles", "label": "Display" },
+            { "value": "sliders", "label": "Adjustable" },
+            { "value": "droplet", "label": "Water" },
+            { "value": "shower", "label": "Shower" },
+            { "value": "bolt", "label": "Power" }
+          ],
+          "default": "spray"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Kraftfull stråle"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product feature icons",
+      "blocks": [
+        { "type": "feature", "settings": { "icon": "spray", "title": "Kraftfull stråle" } },
+        { "type": "feature", "settings": { "icon": "thermometer", "title": "Inbyggd termometer" } },
+        { "type": "feature", "settings": { "icon": "battery", "title": "Lång batteritid" } },
+        { "type": "feature", "settings": { "icon": "sparkles", "title": "Digital display" } },
+        { "type": "feature", "settings": { "icon": "sliders", "title": "Justerbart tryck" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

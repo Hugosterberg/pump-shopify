@@ -28,9 +28,24 @@
     data-on-product-page="{% if request.page_type == 'product' %}true{% else %}false{% endif %}"
   >
     <div class="sticky-mobile-atc__inner">
+      {% if sticky_product.featured_image %}
+        <a class="sticky-mobile-atc__thumb" href="#{{ target_id }}" aria-hidden="true" tabindex="-1">
+          {{
+            sticky_product.featured_image
+            | image_url: width: 120
+            | image_tag: loading: 'lazy', widths: '56, 120', sizes: '48px', alt: ''
+          }}
+        </a>
+      {% endif %}
       <div class="sticky-mobile-atc__info">
         <span class="sticky-mobile-atc__title">{{ sticky_product.title }}</span>
-        <span class="sticky-mobile-atc__price" data-sticky-price>{{ sticky_variant.price | money }}</span>
+        <div class="sticky-mobile-atc__meta">
+          <span class="sticky-mobile-atc__price" data-sticky-price>{{ sticky_variant.price | money }}</span>
+          {% if sticky_product.compare_at_price > sticky_product.price %}
+            <s class="sticky-mobile-atc__compare">{{ sticky_product.compare_at_price | money }}</s>
+          {% endif %}
+        </div>
+        {% render 'trust-near-atc', class_prefix: 'sticky-mobile-atc__trust', compact: true %}
       </div>
       {% if request.page_type == 'product' %}
         <button type="button" class="sticky-mobile-atc__btn" data-sticky-atc-submit data-default-label="{{ section.settings.button_label | default: 'Lägg i varukorg' | escape }}">
@@ -52,7 +67,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 100;
+    z-index: 150;
     padding: 12px var(--page-margin, 16px);
     padding-bottom: max(12px, env(safe-area-inset-bottom));
     background-color: color-mix(in srgb, var(--satc-bg, #071014) 92%, transparent);
@@ -72,15 +87,43 @@
     margin-inline: auto;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
+    gap: 12px;
+  }
+
+  .sticky-mobile-atc__thumb {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--satc-text, #f6f7f2) 12%, transparent);
+    box-shadow: 0 4px 12px -6px rgb(0 0 0 / 50%);
+  }
+
+  .sticky-mobile-atc__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .sticky-mobile-atc__info {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+  }
+
+  .sticky-mobile-atc__meta {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .sticky-mobile-atc__compare {
+    font-size: 0.75rem;
+    color: color-mix(in srgb, var(--satc-text, #f6f7f2) 55%, transparent);
   }
 
   .sticky-mobile-atc__title {

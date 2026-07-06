@@ -1,5 +1,9 @@
+{% comment %}
+  Trust strip — horizontal row of trust signals with premium pill styling.
+{% endcomment %}
+
 <div
-  class="trust-strip full-width"
+  class="trust-strip full-width pp-accent-line"
   style="
     --ts-bg: {{ section.settings.background_color }};
     --ts-text: {{ section.settings.text_color }};
@@ -13,9 +17,9 @@
         {% for block in section.blocks %}
           <li class="trust-strip__item" {{ block.shopify_attributes }}>
             <span class="trust-strip__icon" aria-hidden="true">
-              {% render 'icon', name: block.settings.icon | default: 'check', size: 18 %}
+              {% render 'icon', name: block.settings.icon | default: 'check', size: 16 %}
             </span>
-            <span>{{ block.settings.text }}</span>
+            <span class="trust-strip__text">{{ block.settings.text }}</span>
           </li>
         {% endfor %}
       </ul>
@@ -25,10 +29,10 @@
 
 {% stylesheet %}
   .trust-strip {
-    padding-block: 20px;
+    position: relative;
+    padding-block: 18px;
     padding-inline: var(--page-margin, 20px);
     background-color: var(--ts-bg, #101820);
-    border-block: 1px solid color-mix(in srgb, var(--ts-text, #f6f7f2) 6%, transparent);
     color: var(--ts-text, #f6f7f2);
   }
 
@@ -44,32 +48,53 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 12px 28px;
+    gap: 10px;
   }
 
   .trust-strip__item {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.88rem;
-    font-weight: 500;
-    color: var(--ts-muted, #9aa8a2);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ts-text, #f6f7f2);
+    background: color-mix(in srgb, var(--ts-text, #f6f7f2) 5%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ts-text, #f6f7f2) 9%, transparent);
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  }
+
+  .trust-strip__item:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--ts-accent, #2dd4bf) 35%, transparent);
+    background: color-mix(in srgb, var(--ts-accent, #2dd4bf) 8%, transparent);
   }
 
   .trust-strip__icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     border-radius: 999px;
     color: var(--ts-accent, #2dd4bf);
-    background-color: color-mix(in srgb, var(--ts-accent, #2dd4bf) 14%, transparent);
+    background-color: color-mix(in srgb, var(--ts-accent, #2dd4bf) 16%, transparent);
+  }
+
+  .trust-strip__text {
+    white-space: nowrap;
+  }
+
+  @media screen and (max-width: 749px) {
+    .trust-strip__text {
+      white-space: normal;
+    }
   }
 
   @media screen and (min-width: 750px) {
     .trust-strip__list {
-      gap: 12px 40px;
+      gap: 12px 14px;
     }
   }
 {% endstylesheet %}
@@ -141,8 +166,8 @@
     {
       "name": "Trust strip",
       "blocks": [
-        { "type": "trust_item", "settings": { "icon": "truck", "text": "Fri frakt över 999 kr" } },
-        { "type": "trust_item", "settings": { "icon": "shield", "text": "30 dagars öppet köp" } },
+        { "type": "trust_item", "settings": { "icon": "truck", "text": "Fri frakt över 500 kr" } },
+        { "type": "trust_item", "settings": { "icon": "shield", "text": "14 dagars ångerrätt" } },
         { "type": "trust_item", "settings": { "icon": "coins", "text": "Säker betalning" } },
         { "type": "trust_item", "settings": { "icon": "usb", "text": "USB-C laddning" } }
       ]

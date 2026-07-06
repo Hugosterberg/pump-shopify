@@ -1,0 +1,11 @@
+{% comment %}
+  Single announcement message with optional icon.
+  Params: block (announcement-bar message block)
+{% endcomment %}
+
+{% if block.settings.icon != blank and block.settings.icon != 'none' %}
+  <span class="announcement-bar__icon" aria-hidden="true">
+    {% render 'icon', name: block.settings.icon, size: 14 %}
+  </span>
+{% endif %}
+{{ block.settings.text }}

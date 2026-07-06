@@ -64,7 +64,7 @@
 
   function renderShippingBar(cart) {
     if (!shippingWrap) return;
-    const threshold = Number(config.freeShippingThreshold || 99900);
+    const threshold = Number(config.freeShippingThreshold || 50000);
     if (threshold <= 0) {
       shippingWrap.innerHTML = '';
       return;
@@ -93,6 +93,90 @@
     }
   }
 
+  function renderUpsell(cart) {
+    const upsellWrap = root.querySelector('[data-cart-drawer-upsell]');
+    if (!upsellWrap || !config.upsellProducts) return;
+
+    const handles = cart.items.map(function (item) {
+      return item.handle;
+    });
+
+    if (!handles.length || handles.indexOf('the-perfect-combo-portabel-dusch-vikbar-hink-1') !== -1) {
+      upsellWrap.hidden = true;
+      upsellWrap.innerHTML = '';
+      return;
+    }
+
+    let product = null;
+    let label = '';
+    let badge = 'Rekommenderat';
+
+    if (handles.indexOf('portabel-dusch') !== -1 && handles.indexOf('portabel-hink') !== -1) {
+      product = config.upsellProducts.combo;
+      label = 'Uppgradera till Perfect Combo';
+      badge = 'Spara mer';
+    } else if (handles.indexOf('portabel-dusch') !== -1) {
+      product = config.upsellProducts.bucket;
+      label = product.label;
+      badge = product.badge || badge;
+    } else if (handles.indexOf('portabel-hink') !== -1) {
+      product = config.upsellProducts.shower;
+      label = product.label;
+      badge = product.badge || badge;
+    } else {
+      product = config.upsellProducts.combo;
+      label = product.label;
+      badge = product.badge || 'Bästsäljare';
+    }
+
+    if (!product || !product.variantId) {
+      upsellWrap.hidden = true;
+      upsellWrap.innerHTML = '';
+      return;
+    }
+
+    const image = product.image
+      ? '<a class="cart-upsell__image" href="/products/' +
+        escapeHtml(product.handle) +
+        '"><img src="' +
+        escapeHtml(product.image) +
+        '" alt="" loading="lazy" width="64" height="64"></a>'
+      : '';
+
+    const compare =
+      product.compareAtPrice && product.compareAtPrice > product.price
+        ? '<s class="cart-upsell__compare">' + escapeHtml(formatMoney(product.compareAtPrice)) + '</s>'
+        : '';
+
+    upsellWrap.hidden = false;
+    upsellWrap.innerHTML =
+      '<div class="cart-upsell__header"><span class="cart-upsell__spark" aria-hidden="true">✦</span>' +
+      '<p class="cart-upsell__label">' +
+      escapeHtml(label) +
+      '</p></div>' +
+      '<div class="cart-upsell__card">' +
+      '<span class="cart-upsell__badge">' +
+      escapeHtml(badge) +
+      '</span>' +
+      image +
+      '<div class="cart-upsell__info">' +
+      '<a class="cart-upsell__title" href="/products/' +
+      escapeHtml(product.handle) +
+      '">' +
+      escapeHtml(product.title) +
+      '</a>' +
+      '<div class="cart-upsell__prices">' +
+      compare +
+      '<span class="cart-upsell__price">' +
+      escapeHtml(formatMoney(product.price)) +
+      '</span></div></div>' +
+      '<button type="button" class="cart-upsell__add" data-cart-upsell-add data-variant-id="' +
+      product.variantId +
+      '" aria-label="Lägg till ' +
+      escapeHtml(product.title) +
+      '"><span aria-hidden="true">+</span> Lägg till</button></div>';
+  }
+
   function renderCart(cart) {
     updateHeaderCount(cart.item_count);
 
@@ -113,14 +197,40 @@
     if (!body) return;
 
     if (!cart.items.length) {
+      const featured = config.featuredProduct;
+      let featuredHtml = '';
+      if (featured && featured.handle) {
+        const img = featured.image
+          ? '<img src="' + escapeHtml(featured.image) + '" alt="" loading="lazy" width="64" height="64">'
+          : '';
+        featuredHtml =
+          '<a class="cart-drawer__empty-featured" href="' +
+          escapeHtml(featured.url || '/products/' + featured.handle) +
+          '">' +
+          img +
+          '<span class="cart-drawer__empty-featured-info"><strong>' +
+          escapeHtml(featured.title) +
+          '</strong><span>' +
+          escapeHtml(formatMoney(featured.price)) +
+          '</span></span></a>';
+      }
+
       body.innerHTML =
         '<div class="cart-drawer__empty" data-cart-drawer-empty>' +
-        '<p>' +
+        '<span class="cart-drawer__empty-icon" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span>' +
+        '<p class="cart-drawer__empty-title">' +
         escapeHtml(config.strings.empty) +
         '</p>' +
+        '<p class="cart-drawer__empty-text">' +
+        escapeHtml(config.strings.emptyText || '') +
+        '</p>' +
+        featuredHtml +
         '<a class="cart-drawer__continue" href="' +
         shopifyRoot() +
-        'collections/all">Fortsätt handla</a></div>';
+        'collections/all">' +
+        escapeHtml(config.strings.continue) +
+        '</a></div>';
+      renderUpsell(cart);
       return;
     }
 
@@ -189,6 +299,7 @@
       .join('');
 
     body.innerHTML = '<ul class="cart-drawer__items" role="list" data-cart-drawer-items>' + itemsHtml + '</ul>';
+    renderUpsell(cart);
   }
 
   function fetchCart() {
@@ -270,6 +381,7 @@
         renderCart(cart);
         pulseCartIcon();
         announce(config.strings.added);
+        document.dispatchEvent(new CustomEvent('pump:cart-add'));
         openDrawer();
         return cart;
       })
@@ -343,6 +455,17 @@
     const removeBtn = event.target.closest('[data-cart-remove]');
     if (removeBtn && root.contains(removeBtn)) {
       changeLine(removeBtn.dataset.line, 0);
+      return;
+    }
+
+    const upsellBtn = event.target.closest('[data-cart-upsell-add]');
+    if (upsellBtn && root.contains(upsellBtn)) {
+      const variantId = Number(upsellBtn.dataset.variantId);
+      if (!variantId) return;
+      upsellBtn.disabled = true;
+      addItems([{ id: variantId, quantity: 1 }]).finally(function () {
+        upsellBtn.disabled = false;
+      });
     }
   });
 

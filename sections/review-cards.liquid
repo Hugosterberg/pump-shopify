@@ -22,6 +22,47 @@
     {% endif %}
 
     {% assign review_blocks = section.blocks | where: 'type', 'review' %}
+    {% assign app_blocks = section.blocks | where: 'type', '@app' %}
+    {% assign show_placeholders = section.settings.show_placeholder_reviews %}
+
+    {% if app_blocks.size > 0 %}
+      {% assign show_placeholders = false %}
+    {% endif %}
+
+    {% if review_blocks.size > 0 and show_placeholders %}
+      {%- liquid
+        assign rating_sum = 0
+        assign rating_count = 0
+        for block in review_blocks
+          if block.settings.rating > 0
+            assign rating_sum = rating_sum | plus: block.settings.rating
+            assign rating_count = rating_count | plus: 1
+          endif
+        endfor
+        if rating_count > 0
+          assign avg_rating = rating_sum | times: 1.0 | divided_by: rating_count | round: 1
+          assign avg_rounded = avg_rating | round
+        else
+          assign avg_rating = 5
+          assign avg_rounded = 5
+          assign rating_count = review_blocks.size
+        endif
+      -%}
+      <div class="review-cards__summary">
+        <div class="review-cards__summary-score">
+          <span class="review-cards__summary-number">{{ avg_rating }}</span>
+          <div class="review-cards__summary-stars" role="img" aria-label="{{ avg_rating }} av 5 stjärnor">
+            {% for i in (1..5) %}
+              <span class="review-cards__star{% if i > avg_rounded %} review-cards__star--empty{% endif %}" aria-hidden="true">★</span>
+            {% endfor %}
+          </div>
+        </div>
+        <p class="review-cards__summary-text">
+          Baserat på <strong>{{ review_blocks.size }} omdömen</strong>
+          {% if section.settings.summary_note != blank %} · {{ section.settings.summary_note }}{% endif %}
+        </p>
+      </div>
+    {% endif %}
 
     {% for block in section.blocks %}
       {% case block.type %}
@@ -32,7 +73,7 @@
       {% endcase %}
     {% endfor %}
 
-    {% if review_blocks.size > 0 %}
+    {% if review_blocks.size > 0 and show_placeholders %}
       <ul class="review-cards__list" role="list">
         {% for block in section.blocks %}
           {% if block.type == 'review' %}
@@ -45,7 +86,10 @@
                 </div>
               {% endif %}
               {% if block.settings.quote != blank %}
-                <blockquote class="review-cards__quote">{{ block.settings.quote }}</blockquote>
+                <blockquote class="review-cards__quote">
+                  <span class="review-cards__quote-mark" aria-hidden="true">"</span>
+                  {{ block.settings.quote }}
+                </blockquote>
               {% endif %}
               <footer class="review-cards__footer">
                 {% if block.settings.author != blank %}
@@ -54,6 +98,7 @@
                 {% if block.settings.context != blank %}
                   <span class="review-cards__context">{{ block.settings.context }}</span>
                 {% endif %}
+                <span class="review-cards__verified">Verifierat köp</span>
               </footer>
             </li>
           {% endif %}
@@ -104,6 +149,53 @@
     line-height: 1.6;
   }
 
+  .review-cards__summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    padding: 20px 24px;
+    border-radius: 20px;
+    background: linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--rc-accent, #2dd4bf) 10%, var(--rc-surface, #14212a)),
+      var(--rc-surface, #14212a)
+    );
+    border: 1px solid color-mix(in srgb, var(--rc-accent, #2dd4bf) 22%, transparent);
+    box-shadow: 0 12px 32px -20px color-mix(in srgb, var(--rc-accent, #2dd4bf) 50%, #000);
+  }
+
+  .review-cards__summary-score {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .review-cards__summary-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--rc-text, #f6f7f2);
+  }
+
+  .review-cards__summary-stars {
+    display: flex;
+    gap: 2px;
+    font-size: 1.1rem;
+  }
+
+  .review-cards__summary-text {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--rc-muted, #9aa8a2);
+  }
+
+  .review-cards__summary-text strong {
+    color: var(--rc-text, #f6f7f2);
+  }
+
   .review-cards__list {
     list-style: none;
     margin: 0;
@@ -114,19 +206,21 @@
   }
 
   .review-cards__card {
-    padding: 22px 22px;
-    border-radius: 16px;
+    position: relative;
+    padding: 24px 22px 20px;
+    border-radius: 18px;
     background-color: var(--rc-surface, #14212a);
     border: 1px solid color-mix(in srgb, var(--rc-text, #f6f7f2) 8%, transparent);
     display: flex;
     flex-direction: column;
     gap: 12px;
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .review-cards__card:hover {
     transform: translateY(-4px);
     border-color: color-mix(in srgb, var(--rc-accent, #2dd4bf) 40%, transparent);
+    box-shadow: 0 16px 40px -24px color-mix(in srgb, var(--rc-accent, #2dd4bf) 45%, #000);
   }
 
   .review-cards__stars {
@@ -145,11 +239,24 @@
   }
 
   .review-cards__quote {
+    position: relative;
     margin: 0;
+    padding-top: 4px;
     font-size: 1rem;
     line-height: 1.65;
     font-style: normal;
     color: var(--rc-text, #f6f7f2);
+  }
+
+  .review-cards__quote-mark {
+    position: absolute;
+    top: -8px;
+    left: -4px;
+    font-size: 2.5rem;
+    line-height: 1;
+    font-weight: 800;
+    color: color-mix(in srgb, var(--rc-accent, #2dd4bf) 35%, transparent);
+    pointer-events: none;
   }
 
   .review-cards__footer {
@@ -168,6 +275,23 @@
   .review-cards__context {
     font-size: 0.82rem;
     color: var(--rc-muted, #9aa8a2);
+  }
+
+  .review-cards__verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--rc-accent, #2dd4bf);
+  }
+
+  .review-cards__verified::before {
+    content: '✓';
+    font-size: 0.7rem;
   }
 
   @media screen and (min-width: 750px) {
@@ -214,6 +338,19 @@
       "id": "subheading",
       "label": "Subheading",
       "default": "Ersätt med riktiga omdömen från era kunder."
+    },
+    {
+      "type": "text",
+      "id": "summary_note",
+      "label": "Summary note",
+      "default": "Verifierade köpare"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_placeholder_reviews",
+      "label": "Show placeholder review cards",
+      "info": "Turn off when Judge.me app block is added to this section.",
+      "default": true
     },
     {
       "type": "color",

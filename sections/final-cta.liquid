@@ -23,6 +23,12 @@
         {{ section.settings.button_label }}
       </a>
     {% endif %}
+
+    <div class="final-cta__trust">
+      {% render 'trust-near-atc', class_prefix: 'final-cta__trust-atc', show_payment_icons: false %}
+    </div>
+
+    {% render 'payment-icons', class_prefix: 'final-cta__payment', label: 'Betala enkelt med' %}
   </div>
 </div>
 
@@ -41,7 +47,7 @@
   }
 
   .final-cta__inner {
-    max-width: 560px;
+    max-width: 720px;
     margin-inline: auto;
     display: flex;
     flex-direction: column;
@@ -86,12 +92,29 @@
     font-size: 1rem;
     text-decoration: none;
     color: var(--fcta-accent-ink, #071014);
-    background-color: var(--fcta-accent, #2dd4bf);
-    transition: transform 0.15s ease;
+    background: linear-gradient(135deg, var(--fcta-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 30%, var(--fcta-accent, #2dd4bf)));
+    box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--fcta-accent, #2dd4bf) 80%, #000);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
 
   .final-cta__btn:hover {
     transform: translateY(-2px);
+    box-shadow: 0 14px 36px -10px color-mix(in srgb, var(--fcta-accent, #2dd4bf) 90%, #000);
+  }
+
+  .final-cta__trust {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .final-cta__trust-atc-wrap {
+    border-top: 0;
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  .final-cta__payment {
+    margin-top: 4px;
   }
 
   @media (prefers-reduced-motion: reduce) {

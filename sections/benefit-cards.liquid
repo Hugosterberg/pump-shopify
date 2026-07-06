@@ -91,17 +91,20 @@
 
   .benefit-cards__card {
     padding: 28px 24px;
-    border-radius: 16px;
-    background-color: var(--bc-surface, #14212a);
+    border-radius: 18px;
+    background: var(--pp-gradient-surface);
     border: 1px solid color-mix(in srgb, var(--bc-text, #f6f7f2) 8%, transparent);
+    box-shadow: var(--pp-shadow-soft);
     display: flex;
     flex-direction: column;
     gap: 12px;
-    transition: transform 0.15s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .benefit-cards__card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--bc-accent, #2dd4bf) 35%, transparent);
+    box-shadow: var(--pp-shadow-card);
   }
 
   .benefit-cards__icon {

@@ -1,36 +1,73 @@
-{% if section.settings.text != blank %}
+{% liquid
+  assign message_blocks = section.blocks | where: 'type', 'message'
+  assign has_blocks = false
+  if message_blocks.size > 0
+    assign has_blocks = true
+  endif
+%}
+
+{% if has_blocks or section.settings.text != blank %}
   <div
-    class="announcement-bar full-width"
+    class="announcement-bar full-width{% if has_blocks and message_blocks.size > 1 %} announcement-bar--rotate{% endif %}"
     style="
       --ab-bg: {{ section.settings.background_color }};
       --ab-text: {{ section.settings.text_color }};
       --ab-accent: {{ section.settings.accent_color }};
+      --ab-count: {{ message_blocks.size | default: 1 }};
     "
-  >
-  <div class="announcement-bar__inner">
-    {% if section.settings.link != blank %}
-      <a class="announcement-bar__link" href="{{ section.settings.link }}">
-        {{ section.settings.text }}
-      </a>
-    {% else %}
-      <p class="announcement-bar__text">{{ section.settings.text }}</p>
+    {% if has_blocks and message_blocks.size > 1 %}
+      data-announcement-rotate
+      data-interval="{{ section.settings.rotate_interval | default: 5 }}"
     {% endif %}
-  </div>
+  >
+    <div class="announcement-bar__inner">
+      {% if has_blocks %}
+        <div class="announcement-bar__track">
+          {% for block in message_blocks %}
+            <div class="announcement-bar__slide" {{ block.shopify_attributes }}>
+              {% if block.settings.link != blank %}
+                <a class="announcement-bar__link" href="{{ block.settings.link }}">
+                  {% render 'announcement-message', block: block %}
+                </a>
+              {% else %}
+                <p class="announcement-bar__text">
+                  {% render 'announcement-message', block: block %}
+                </p>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        {% if section.settings.link != blank %}
+          <a class="announcement-bar__link" href="{{ section.settings.link }}">
+            {{ section.settings.text }}
+          </a>
+        {% else %}
+          <p class="announcement-bar__text">{{ section.settings.text }}</p>
+        {% endif %}
+      {% endif %}
+    </div>
   </div>
 {% endif %}
 
 {% stylesheet %}
   .announcement-bar {
     padding: 10px var(--page-margin, 20px);
-    background: linear-gradient(90deg, var(--ab-bg, #14212a), color-mix(in srgb, var(--ab-accent, #2dd4bf) 8%, var(--ab-bg, #14212a)), var(--ab-bg, #14212a));
+    background: linear-gradient(
+      90deg,
+      var(--ab-bg, #14212a),
+      color-mix(in srgb, var(--ab-accent, #2dd4bf) 10%, var(--ab-bg, #14212a)),
+      var(--ab-bg, #14212a)
+    );
     background-size: 200% 100%;
     animation: pp-shimmer 12s linear infinite;
     color: var(--ab-text, #f6f7f2);
     text-align: center;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     font-weight: 500;
     letter-spacing: 0.02em;
     border-bottom: 1px solid var(--pp-border);
+    overflow: hidden;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -44,9 +81,37 @@
     margin-inline: auto;
   }
 
+  .announcement-bar__track {
+    position: relative;
+    min-height: 1.4em;
+  }
+
+  .announcement-bar--rotate .announcement-bar__slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+  }
+
+  .announcement-bar--rotate .announcement-bar__slide.is-active {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
   .announcement-bar__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     color: inherit;
     text-decoration: none;
+    transition: color 0.15s ease;
   }
 
   .announcement-bar__link:hover {
@@ -54,25 +119,75 @@
   }
 
   .announcement-bar__text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     margin: 0;
   }
+
+  .announcement-bar__icon {
+    display: inline-flex;
+    color: var(--ab-accent, #2dd4bf);
+  }
 {% endstylesheet %}
+
+{% if has_blocks and message_blocks.size > 1 %}
+  <script>
+    (function () {
+      const root = document.querySelector('[data-announcement-rotate]');
+      if (!root) return;
+
+      const slides = root.querySelectorAll('.announcement-bar__slide');
+      if (slides.length < 2) return;
+
+      let index = 0;
+      const interval = Number(root.dataset.interval || 5) * 1000;
+
+      function show(i) {
+        slides.forEach(function (slide, n) {
+          slide.classList.toggle('is-active', n === i);
+        });
+      }
+
+      show(0);
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      window.setInterval(function () {
+        index = (index + 1) % slides.length;
+        show(index);
+      }, interval);
+    })();
+  </script>
+{% endif %}
 
 {% schema %}
 {
   "name": "Announcement bar",
   "tag": "section",
+  "max_blocks": 4,
   "settings": [
     {
       "type": "text",
       "id": "text",
-      "label": "Text",
+      "label": "Text (fallback if no blocks)",
       "default": "Fri frakt på beställningar över 999 kr"
     },
     {
       "type": "url",
       "id": "link",
-      "label": "Link"
+      "label": "Link (fallback)"
+    },
+    {
+      "type": "range",
+      "id": "rotate_interval",
+      "label": "Rotation interval",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5
     },
     {
       "type": "color",
@@ -93,9 +208,46 @@
       "default": "#2DD4BF"
     }
   ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "truck",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "check", "label": "Check" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "bolt", "label": "Bolt" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Fri frakt över 999 kr"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
   "presets": [
     {
-      "name": "Announcement bar"
+      "name": "Announcement bar",
+      "blocks": [
+        { "type": "message", "settings": { "icon": "truck", "text": "Fri frakt över 999 kr" } },
+        { "type": "message", "settings": { "icon": "shield", "text": "1 års garanti · 14 dagars ångerrätt" } },
+        { "type": "message", "settings": { "icon": "bolt", "text": "Leverans 2–5 arbetsdagar från Sverige" } }
+      ]
     }
   ]
 }

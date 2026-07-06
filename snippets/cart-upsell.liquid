@@ -1,0 +1,228 @@
+{% comment %}
+  Cart drawer upsell — suggests combo or complementary product.
+  Initial server render; cart-drawer.js updates via PumpCart.upsellProducts.
+{% endcomment %}
+
+{%- liquid
+  assign combo = all_products['the-perfect-combo-portabel-dusch-vikbar-hink-1']
+  assign shower = all_products['portabel-dusch']
+  assign bucket = all_products['portabel-hink']
+
+  assign cart_handles = ''
+  for item in cart.items
+    assign cart_handles = cart_handles | append: item.product.handle | append: ','
+  endfor
+
+  assign upsell_product = blank
+  assign upsell_label = ''
+  assign upsell_badge = 'Rekommenderat'
+
+  unless cart_handles contains 'the-perfect-combo-portabel-dusch-vikbar-hink-1'
+    if cart_handles contains 'portabel-dusch' and cart_handles contains 'portabel-hink'
+      assign upsell_product = combo
+      assign upsell_label = 'Uppgradera till Perfect Combo'
+      assign upsell_badge = 'Spara mer'
+    elsif cart_handles contains 'portabel-dusch'
+      assign upsell_product = bucket
+      assign upsell_label = 'Komplettera med hinken'
+    elsif cart_handles contains 'portabel-hink'
+      assign upsell_product = shower
+      assign upsell_label = 'Komplettera med duschen'
+    elsif cart.item_count > 0
+      assign upsell_product = combo
+      assign upsell_label = 'Komplettera med Perfect Combo'
+      assign upsell_badge = 'Bästsäljare'
+    endif
+  endunless
+-%}
+
+<div class="cart-upsell" data-cart-drawer-upsell{% if upsell_product == blank %} hidden{% endif %}>
+  {% if upsell_product != blank %}
+    {% assign upsell_variant = upsell_product.selected_or_first_available_variant %}
+    <div class="cart-upsell__header">
+      <span class="cart-upsell__spark" aria-hidden="true">✦</span>
+      <p class="cart-upsell__label">{{ upsell_label }}</p>
+    </div>
+    <div class="cart-upsell__card">
+      <span class="cart-upsell__badge">{{ upsell_badge }}</span>
+      {% if upsell_product.featured_image %}
+        <a class="cart-upsell__image" href="{{ upsell_product.url }}">
+          {{
+            upsell_product.featured_image
+            | image_url: width: 160
+            | image_tag: loading: 'lazy', widths: '80, 160', sizes: '64px', alt: upsell_product.title
+          }}
+        </a>
+      {% endif %}
+      <div class="cart-upsell__info">
+        <a class="cart-upsell__title" href="{{ upsell_product.url }}">{{ upsell_product.title }}</a>
+        <div class="cart-upsell__prices">
+          {% if upsell_product.compare_at_price > upsell_product.price %}
+            <s class="cart-upsell__compare">{{ upsell_product.compare_at_price | money }}</s>
+          {% endif %}
+          <span class="cart-upsell__price">{{ upsell_variant.price | money }}</span>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="cart-upsell__add"
+        data-cart-upsell-add
+        data-variant-id="{{ upsell_variant.id }}"
+        aria-label="Lägg till {{ upsell_product.title }}"
+      >
+        <span aria-hidden="true">+</span>
+        Lägg till
+      </button>
+    </div>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .cart-upsell {
+    padding: 16px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pp-accent, #2dd4bf) 8%, transparent) 0%,
+      transparent 100%
+    );
+    border-top: 1px solid color-mix(in srgb, var(--pp-accent, #2dd4bf) 18%, transparent);
+  }
+
+  .cart-upsell[hidden] {
+    display: none;
+  }
+
+  .cart-upsell__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .cart-upsell__spark {
+    color: var(--pp-accent, #2dd4bf);
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+
+  .cart-upsell__label {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pp-text, #f6f7f2);
+  }
+
+  .cart-upsell__card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--pp-surface, #14212a) 90%, #fff 10%);
+    border: 1px solid color-mix(in srgb, var(--pp-accent, #2dd4bf) 22%, transparent);
+    box-shadow: 0 8px 24px -16px color-mix(in srgb, var(--pp-accent, #2dd4bf) 50%, #000);
+  }
+
+  .cart-upsell__badge {
+    position: absolute;
+    top: -8px;
+    left: 12px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pp-accent-ink, #071014);
+    background: var(--pp-accent, #2dd4bf);
+    box-shadow: 0 4px 12px -4px color-mix(in srgb, var(--pp-accent, #2dd4bf) 80%, #000);
+  }
+
+  .cart-upsell__image {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    margin-top: 4px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 10%, transparent);
+  }
+
+  .cart-upsell__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cart-upsell__info {
+    flex: 1;
+    min-width: 0;
+    padding-top: 6px;
+  }
+
+  .cart-upsell__title {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--pp-text, #f6f7f2);
+    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .cart-upsell__prices {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .cart-upsell__compare {
+    font-size: 0.78rem;
+    color: var(--pp-muted, #9aa8a2);
+  }
+
+  .cart-upsell__price {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--pp-accent, #2dd4bf);
+  }
+
+  .cart-upsell__add {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: var(--pp-radius-pill, 999px);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--pp-accent-ink, #071014);
+    background: linear-gradient(135deg, var(--pp-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 30%, var(--pp-accent, #2dd4bf)));
+    box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--pp-accent, #2dd4bf) 80%, #000);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .cart-upsell__add span {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .cart-upsell__add:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px -8px color-mix(in srgb, var(--pp-accent, #2dd4bf) 90%, #000);
+  }
+
+  .cart-upsell__add:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+{% endstylesheet %}

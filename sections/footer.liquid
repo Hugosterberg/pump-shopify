@@ -126,6 +126,27 @@
       {% endif %}
     </div>
 
+    {% if section.settings.show_trust_highlights %}
+      <div class="site-footer__trust-highlights">
+        {% if section.settings.trust_warranty_title != blank %}
+          <div class="site-footer__trust-item">
+            <h3 class="site-footer__trust-title">{{ section.settings.trust_warranty_title }}</h3>
+            {% if section.settings.trust_warranty_text != blank %}
+              <p class="site-footer__trust-text">{{ section.settings.trust_warranty_text }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
+        {% if section.settings.trust_shipping_title != blank %}
+          <div class="site-footer__trust-item">
+            <h3 class="site-footer__trust-title">{{ section.settings.trust_shipping_title }}</h3>
+            {% if section.settings.trust_shipping_text != blank %}
+              <p class="site-footer__trust-text">{{ section.settings.trust_shipping_text }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
     {% if section.settings.show_legal_links %}
       <div class="site-footer__legal-row">
         {% render 'legal-business-info',
@@ -277,6 +298,41 @@
     gap: 24px;
     padding-top: 24px;
     border-top: 1px solid color-mix(in srgb, var(--ftr-text, #f6f7f2) 6%, transparent);
+  }
+
+  .site-footer__trust-highlights {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-top: 28px;
+    border-top: 1px solid color-mix(in srgb, var(--ftr-text, #f6f7f2) 8%, transparent);
+  }
+
+  .site-footer__trust-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .site-footer__trust-title {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--ftr-text, #f6f7f2);
+  }
+
+  .site-footer__trust-text {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--ftr-muted, #9aa8a2);
+  }
+
+  @media screen and (min-width: 750px) {
+    .site-footer__trust-highlights {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+    }
   }
 
   .legal-business {
@@ -609,6 +665,40 @@
       "id": "newsletter_success",
       "label": "Success message",
       "default": "Tack! Du är nu anmäld."
+    },
+    {
+      "type": "header",
+      "content": "Trust highlights"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trust_highlights",
+      "label": "Show warranty & shipping highlights",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "trust_warranty_title",
+      "label": "Warranty title",
+      "default": "1 års garanti"
+    },
+    {
+      "type": "text",
+      "id": "trust_warranty_text",
+      "label": "Warranty text",
+      "default": "Vi strävar efter att erbjuda saker som håller."
+    },
+    {
+      "type": "text",
+      "id": "trust_shipping_title",
+      "label": "Shipping title",
+      "default": "Fri frakt"
+    },
+    {
+      "type": "text",
+      "id": "trust_shipping_text",
+      "label": "Shipping text",
+      "default": "Fri frakt på order över 500 kr inom Sverige."
     },
     {
       "type": "header",

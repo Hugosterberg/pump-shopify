@@ -8,5 +8,10 @@
  * ------------------------------------------------------------
  */
 {
-  "current": {}
+  "current": {
+    "free_shipping_threshold": 500,
+    "enable_cookie_banner": true,
+    "cookie_banner_text": "Vi använder cookies för att ge dig bästa möjliga upplevelse på vår webbplats.",
+    "cookie_banner_button": "Acceptera cookies"
+  }
 }

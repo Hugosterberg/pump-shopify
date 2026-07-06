@@ -106,16 +106,17 @@
     gap: 20px;
     align-items: flex-start;
     padding: 26px 24px;
-    border-radius: 18px;
-    background-color: var(--hiw-surface, #14212a);
+    border-radius: 20px;
+    background: var(--pp-gradient-surface);
     border: 1px solid color-mix(in srgb, var(--hiw-text, #f6f7f2) 8%, transparent);
-    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--pp-shadow-soft);
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
   }
 
   .how-it-works__step:hover {
-    transform: translateY(-4px);
+    transform: translateY(-5px);
     border-color: color-mix(in srgb, var(--hiw-accent, #2dd4bf) 45%, transparent);
-    box-shadow: 0 20px 46px -26px color-mix(in srgb, var(--hiw-accent, #2dd4bf) 85%, #000);
+    box-shadow: var(--pp-shadow-card);
   }
 
   .how-it-works__badge {

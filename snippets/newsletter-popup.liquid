@@ -3,6 +3,7 @@
 {% endcomment %}
 
 {% unless settings.newsletter_popup_enabled == false %}
+  {% unless request.page_type == 'product' or request.page_type == 'cart' %}
   {% assign newsletter_popup_subscribed = false %}
 
   <div
@@ -274,7 +275,8 @@
       if (!root) return;
 
       const storageKey = 'pump-newsletter-popup';
-      const delaySec = Number(root.dataset.delay || 8) * 1000;
+      const sessionKey = 'pump-atc-session';
+      const delaySec = Number(root.dataset.delay || 25) * 1000;
       const subscribed = {{ newsletter_popup_subscribed | json }};
 
       if (subscribed) {
@@ -282,9 +284,17 @@
         return;
       }
 
-      if (localStorage.getItem(storageKey) === 'dismissed' || localStorage.getItem(storageKey) === 'subscribed') {
+      if (
+        localStorage.getItem(storageKey) === 'dismissed' ||
+        localStorage.getItem(storageKey) === 'subscribed' ||
+        sessionStorage.getItem(sessionKey) === '1'
+      ) {
         return;
       }
+
+      document.addEventListener('pump:cart-add', function () {
+        sessionStorage.setItem(sessionKey, '1');
+      });
 
       function closePopup(persist) {
         root.hidden = true;
@@ -314,4 +324,5 @@
       window.setTimeout(openPopup, delaySec);
     })();
   </script>
+  {% endunless %}
 {% endunless %}
