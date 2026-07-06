@@ -228,11 +228,18 @@
           </button>
 
           {{ form | payment_button }}
-
-          {% render 'trust-near-atc', class_prefix: 'main-product__trust-atc' %}
-          {% render 'product-upsell', product: product %}
-          {% render 'legal-links', class_prefix: 'main-product__legal', compact: true %}
         {% endform %}
+
+        <div class="main-product__buy-trust">
+          {% render 'trust-near-atc', class_prefix: 'main-product__trust-atc', show_payment_icons: false %}
+          {% render 'payment-icons', class_prefix: 'main-product__payment', label: 'Betala enkelt med' %}
+        </div>
+
+        {% render 'product-upsell', product: product %}
+
+        <div class="main-product__buy-legal">
+          {% render 'legal-links', class_prefix: 'main-product__legal', compact: true %}
+        </div>
       </div>
     </div>
   </div>
@@ -520,6 +527,7 @@
     font-size: clamp(1.75rem, 4vw, 2.25rem);
     line-height: 1.15;
     letter-spacing: -0.02em;
+    text-wrap: balance;
   }
 
   .main-product__reviews-slot {
@@ -536,12 +544,15 @@
   .main-product__badge {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     padding: 6px 12px;
     border-radius: 999px;
-    font-size: 0.78rem;
+    font-size: clamp(0.68rem, 2vw, 0.75rem);
     font-weight: 600;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
+    text-wrap: balance;
     border: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 10%, transparent);
     background: color-mix(in srgb, var(--mp-text, #f6f7f2) 4%, transparent);
     color: var(--mp-muted, #9aa8a2);
@@ -644,14 +655,110 @@
   }
 
   .main-product__form-wrap {
-    padding: 28px 24px;
+    padding: clamp(22px, 4vw, 28px);
     border-radius: var(--pp-radius-lg, 20px);
     background: linear-gradient(165deg, color-mix(in srgb, var(--mp-surface, #14212a) 92%, #fff 8%) 0%, var(--mp-surface, #14212a) 100%);
     border: 1px solid var(--pp-border);
     box-shadow: var(--pp-shadow-soft);
     display: flex;
     flex-direction: column;
+    gap: 0;
+  }
+
+  .main-product__form {
+    display: flex;
+    flex-direction: column;
     gap: 14px;
+    margin: 0;
+  }
+
+  .main-product__buy-trust {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--mp-text, #f6f7f2) 3%, transparent);
+    border: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 8%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .main-product__buy-trust .pp-trust-atc-wrap {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .main-product__buy-trust .pp-trust-atc:not(.pp-trust-atc--compact) {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .main-product__buy-trust .pp-trust-atc__chip {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    min-height: 0;
+    border-radius: 12px;
+    border-color: color-mix(in srgb, var(--mp-text, #f6f7f2) 8%, transparent);
+    background: color-mix(in srgb, var(--mp-bg, #071014) 55%, var(--mp-surface, #14212a));
+  }
+
+  .main-product__buy-trust .pp-trust-atc__chip-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    margin: 0;
+  }
+
+  .main-product__buy-trust .pp-trust-atc__chip-text {
+    align-items: flex-start;
+    text-align: left;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .main-product__buy-trust .pp-trust-atc__chip-text strong {
+    font-size: 0.82rem;
+    line-height: 1.25;
+  }
+
+  .main-product__buy-trust .pp-trust-atc__chip-text span {
+    font-size: 0.74rem;
+    line-height: 1.35;
+  }
+
+  .main-product__buy-trust .main-product__payment {
+    padding-top: 14px;
+    border-top: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 8%, transparent);
+  }
+
+  .main-product__buy-trust .pp-payment-icons__grid {
+    gap: 6px;
+  }
+
+  .main-product__buy-trust .pp-payment-icons__pill {
+    min-width: 50px;
+    min-height: 32px;
+    padding: 5px 8px;
+  }
+
+  .main-product__buy-trust .pp-payment-icons__pill svg {
+    height: 18px;
+    max-width: 40px;
+  }
+
+  @media screen and (min-width: 560px) {
+    .main-product__buy-trust .pp-trust-atc:not(.pp-trust-atc--compact) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .main-product__buy-legal {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 6%, transparent);
   }
 
   .main-product__label {
@@ -674,7 +781,13 @@
   }
 
   .main-product__qty-row {
-    max-width: 120px;
+    max-width: 140px;
+  }
+
+  .main-product__qty {
+    text-align: center;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
 
   .main-product__submit {
@@ -704,7 +817,36 @@
   }
 
   .main-product__form-wrap .shopify-payment-button {
-    margin-top: 8px;
+    margin-top: 4px;
+  }
+
+  /* Shopify can inject a second payment-icon row under Shop Pay — hide it; we show icons in buy-trust */
+  .main-product__form-wrap .shopify-payment-button__more-options ~ ul,
+  .main-product__form-wrap .shopify-payment-button__more-options ~ div[class*='icon'],
+  .main-product__form-wrap .shopify-payment-button ul:not([class*='more-options']) {
+    display: none !important;
+  }
+
+  .main-product__form-wrap .shopify-payment-button__more-options,
+  .main-product__form-wrap .shopify-payment-button__button--hidden + a,
+  .main-product__form-wrap .shopify-payment-button a[href*='checkout'] {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    text-align: center;
+    color: var(--mp-muted, #9aa8a2) !important;
+    text-decoration: underline !important;
+    text-underline-offset: 3px !important;
+    background: transparent !important;
+    border: none !important;
+    min-height: auto !important;
+    padding: 0 !important;
+  }
+
+  .main-product__form-wrap .shopify-payment-button__more-options:hover,
+  .main-product__form-wrap .shopify-payment-button a[href*='checkout']:hover {
+    color: var(--mp-accent, #2dd4bf) !important;
   }
 
   .main-product__form-wrap .shopify-payment-button__button,
@@ -727,16 +869,31 @@
   }
 
   .main-product__legal {
-    margin: 4px 0 0;
-    font-size: 0.78rem;
-    line-height: 1.55;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px 10px;
+    font-size: 0.72rem;
+    line-height: 1.45;
     color: var(--mp-muted, #9aa8a2);
+    text-align: center;
   }
 
   .main-product__legal a {
-    color: var(--mp-text, #f6f7f2);
-    text-decoration: underline;
-    text-underline-offset: 2px;
+    color: var(--mp-muted, #9aa8a2);
+    text-decoration: none;
+    padding: 4px 0;
+    transition: color 0.15s ease;
+  }
+
+  .main-product__legal a:hover {
+    color: var(--mp-accent, #2dd4bf);
+  }
+
+  .main-product__legal span[aria-hidden='true'] {
+    color: color-mix(in srgb, var(--mp-muted, #9aa8a2) 45%, transparent);
   }
 
   .main-product__app {
@@ -759,10 +916,9 @@
       grid-column: 1 / -1;
     }
 
-    .main-product__trust {
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 12px 20px;
+    .main-product__buy-trust .pp-trust-atc:not(.pp-trust-atc--compact) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
     }
   }
 {% endstylesheet %}

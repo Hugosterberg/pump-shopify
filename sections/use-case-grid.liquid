@@ -127,6 +127,7 @@
   .use-case-grid__card {
     display: flex;
     flex-direction: column;
+    height: 100%;
     border-radius: 16px;
     overflow: hidden;
     background-color: var(--uc-surface, #14212a);
@@ -174,6 +175,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    flex: 1;
   }
 
   .use-case-grid__icon {
@@ -197,15 +199,18 @@
 
   .use-case-grid__title {
     margin: 0;
-    font-size: 1.05rem;
+    font-size: clamp(0.98rem, 2.4vw, 1.05rem);
     font-weight: 600;
+    line-height: 1.25;
+    text-wrap: balance;
   }
 
   .use-case-grid__text {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: clamp(0.84rem, 2.2vw, 0.9rem);
     line-height: 1.5;
     color: var(--uc-muted, #9aa8a2);
+    text-wrap: pretty;
   }
 
   /* Mobile 2-col: if the last card is alone on its row, let it span the

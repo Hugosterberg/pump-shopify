@@ -4,50 +4,52 @@
   Params:
   - class_prefix (optional, default: trust-atc)
   - compact (optional, boolean — horizontal pills for sticky bar)
+  - dense (optional, boolean — keep pills inline on small screens)
   - show_payment_icons (optional, default: true)
 {% endcomment %}
 
 {%- liquid
   assign class_prefix = class_prefix | default: 'trust-atc'
   assign compact = compact | default: false
+  assign dense = dense | default: false
   assign show_payment_icons = show_payment_icons | default: true
 -%}
 
 {% if compact %}
-  <div class="{{ class_prefix }} {{ class_prefix }}--compact" aria-label="Köpgarantier">
-    <span class="{{ class_prefix }}__pill">
-      <span class="{{ class_prefix }}__pill-icon" aria-hidden="true">{% render 'icon', name: 'truck', size: 12 %}</span>
-      Fri frakt {% render 'free-shipping-text', format: 'short' %} kr+
+  <div class="pp-trust-atc pp-trust-atc--compact{% if dense %} pp-trust-atc--dense{% endif %} {{ class_prefix }} {{ class_prefix }}--compact" aria-label="Köpgarantier">
+    <span class="pp-trust-atc__pill {{ class_prefix }}__pill">
+      <span class="pp-trust-atc__pill-icon {{ class_prefix }}__pill-icon" aria-hidden="true">{% render 'icon', name: 'truck', size: 14 %}</span>
+      <span class="pp-trust-atc__pill-text">Fri frakt {% render 'free-shipping-text', format: 'short' %} kr+</span>
     </span>
-    <span class="{{ class_prefix }}__pill">
-      <span class="{{ class_prefix }}__pill-icon" aria-hidden="true">{% render 'icon', name: 'shield', size: 12 %}</span>
-      1 års garanti
+    <span class="pp-trust-atc__pill {{ class_prefix }}__pill">
+      <span class="pp-trust-atc__pill-icon {{ class_prefix }}__pill-icon" aria-hidden="true">{% render 'icon', name: 'shield', size: 14 %}</span>
+      <span class="pp-trust-atc__pill-text">1 års garanti</span>
     </span>
-    <span class="{{ class_prefix }}__pill">
-      <span class="{{ class_prefix }}__pill-icon" aria-hidden="true">{% render 'icon', name: 'check', size: 12 %}</span>
-      14 dagars ångerrätt
+    <span class="pp-trust-atc__pill {{ class_prefix }}__pill">
+      <span class="pp-trust-atc__pill-icon {{ class_prefix }}__pill-icon" aria-hidden="true">{% render 'icon', name: 'check', size: 14 %}</span>
+      <span class="pp-trust-atc__pill-text">14 dagars ångerrätt</span>
     </span>
   </div>
 {% else %}
-  <div class="{{ class_prefix }}-wrap">
-    <ul class="{{ class_prefix }}" role="list">
-      <li class="{{ class_prefix }}__chip">
-        <span class="{{ class_prefix }}__chip-icon" aria-hidden="true">{% render 'icon', name: 'truck', size: 16 %}</span>
-        <span class="{{ class_prefix }}__chip-text">
+  <div class="pp-trust-atc-wrap {{ class_prefix }}-wrap">
+    <ul class="pp-trust-atc {{ class_prefix }}" role="list">
+      <li class="pp-trust-atc__chip {{ class_prefix }}__chip">
+        <span class="pp-trust-atc__chip-icon {{ class_prefix }}__chip-icon" aria-hidden="true">{% render 'icon', name: 'truck', size: 16 %}</span>
+        <span class="pp-trust-atc__chip-text {{ class_prefix }}__chip-text">
           <strong>Leverans 2–5 dagar</strong>
           <span>Fri frakt över {% render 'free-shipping-text', format: 'short' %} kr</span>
         </span>
       </li>
-      <li class="{{ class_prefix }}__chip">
-        <span class="{{ class_prefix }}__chip-icon" aria-hidden="true">{% render 'icon', name: 'shield', size: 16 %}</span>
-        <span class="{{ class_prefix }}__chip-text">
+      <li class="pp-trust-atc__chip {{ class_prefix }}__chip">
+        <span class="pp-trust-atc__chip-icon {{ class_prefix }}__chip-icon" aria-hidden="true">{% render 'icon', name: 'shield', size: 16 %}</span>
+        <span class="pp-trust-atc__chip-text {{ class_prefix }}__chip-text">
           <strong>1 års garanti</strong>
           <span>14 dagars ångerrätt</span>
         </span>
       </li>
-      <li class="{{ class_prefix }}__chip">
-        <span class="{{ class_prefix }}__chip-icon" aria-hidden="true">{% render 'icon', name: 'lock', size: 16 %}</span>
-        <span class="{{ class_prefix }}__chip-text">
+      <li class="pp-trust-atc__chip {{ class_prefix }}__chip">
+        <span class="pp-trust-atc__chip-icon {{ class_prefix }}__chip-icon" aria-hidden="true">{% render 'icon', name: 'lock', size: 16 %}</span>
+        <span class="pp-trust-atc__chip-text {{ class_prefix }}__chip-text">
           <strong>Säker betalning</strong>
           <span>Klarna, kort &amp; mer</span>
         </span>
@@ -55,22 +57,20 @@
     </ul>
 
     {% if show_payment_icons %}
-      <div class="{{ class_prefix }}__divider" aria-hidden="true"></div>
+      <div class="pp-trust-atc__divider {{ class_prefix }}__divider" aria-hidden="true"></div>
       {% render 'payment-icons', class_prefix: class_prefix | append: '__payment', label: 'Betala enkelt med' %}
     {% endif %}
   </div>
 {% endif %}
 
 {% stylesheet %}
-  .trust-atc-wrap,
-  [class*='__trust-atc-wrap'] {
+  .pp-trust-atc-wrap {
     margin-top: 4px;
     padding-top: 16px;
     border-top: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 8%, transparent);
   }
 
-  .trust-atc,
-  [class*='__trust-atc']:not([class*='__trust-atc__']):not([class*='__trust-atc--']):not([class*='__trust-atc-wrap']) {
+  .pp-trust-atc:not(.pp-trust-atc--compact) {
     display: grid;
     grid-template-columns: 1fr;
     gap: 8px;
@@ -79,33 +79,31 @@
     list-style: none;
   }
 
-  @media screen and (min-width: 480px) {
-    .trust-atc,
-    [class*='__trust-atc']:not([class*='__trust-atc__']):not([class*='__trust-atc--']):not([class*='__trust-atc-wrap']) {
-      grid-template-columns: repeat(3, 1fr);
+  @media screen and (min-width: 768px) {
+    .pp-trust-atc:not(.pp-trust-atc--compact) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: stretch;
     }
   }
 
-  .trust-atc__chip,
-  [class*='__trust-atc__chip'] {
+  .pp-trust-atc__chip {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
-    padding: 12px 12px;
+    height: 100%;
+    padding: 12px;
     border-radius: 12px;
     background: color-mix(in srgb, var(--pp-text, #f6f7f2) 4%, transparent);
     border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 7%, transparent);
     transition: border-color 0.2s ease, background 0.2s ease;
   }
 
-  .trust-atc__chip:hover,
-  [class*='__trust-atc__chip']:hover {
+  .pp-trust-atc__chip:hover {
     border-color: color-mix(in srgb, var(--pp-accent, #2dd4bf) 35%, transparent);
     background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 6%, transparent);
   }
 
-  .trust-atc__chip-icon,
-  [class*='__trust-atc__chip-icon'] {
+  .pp-trust-atc__chip-icon {
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
@@ -117,63 +115,104 @@
     background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 14%, transparent);
   }
 
-  .trust-atc__chip-text,
-  [class*='__trust-atc__chip-text'] {
+  .pp-trust-atc__chip-text {
     display: flex;
     flex-direction: column;
     gap: 2px;
     min-width: 0;
   }
 
-  .trust-atc__chip-text strong,
-  [class*='__trust-atc__chip-text'] strong {
-    font-size: 0.82rem;
+  .pp-trust-atc__chip-text strong {
+    font-size: clamp(0.76rem, 2.2vw, 0.82rem);
     font-weight: 600;
-    line-height: 1.25;
+    line-height: 1.3;
     color: var(--pp-text, #f6f7f2);
+    text-wrap: balance;
   }
 
-  .trust-atc__chip-text span,
-  [class*='__trust-atc__chip-text'] span {
-    font-size: 0.74rem;
-    line-height: 1.35;
+  .pp-trust-atc__chip-text span {
+    font-size: clamp(0.7rem, 2vw, 0.74rem);
+    line-height: 1.4;
     color: var(--pp-muted, #9aa8a2);
+    text-wrap: pretty;
   }
 
-  .trust-atc__divider,
-  [class*='__trust-atc__divider'] {
+  .pp-trust-atc__divider {
     height: 1px;
     margin: 12px 0 4px;
     background: color-mix(in srgb, var(--pp-text, #f6f7f2) 8%, transparent);
   }
 
-  .trust-atc--compact,
-  [class*='__trust-atc--compact'] {
+  /* Compact pills — icon + text inline */
+  .pp-trust-atc--compact {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 4px;
+    align-items: stretch;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
   }
 
-  .trust-atc__pill,
-  [class*='__trust-atc__pill'] {
+  .pp-trust-atc__pill {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
+    justify-content: flex-start;
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 14px 8px 8px;
     border-radius: 999px;
-    font-size: 0.65rem;
+    font-size: clamp(0.74rem, 2.2vw, 0.82rem);
     font-weight: 600;
-    letter-spacing: 0.01em;
-    color: var(--pp-muted, #9aa8a2);
-    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 6%, transparent);
-    border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 8%, transparent);
-    white-space: nowrap;
+    line-height: 1.25;
+    color: var(--pp-text, #f6f7f2);
+    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 5%, transparent);
+    border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 10%, transparent);
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
   }
 
-  .trust-atc__pill-icon,
-  [class*='__trust-atc__pill-icon'] {
+  .pp-trust-atc__pill:hover {
+    border-color: color-mix(in srgb, var(--pp-accent, #2dd4bf) 35%, transparent);
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 8%, transparent);
+    transform: translateY(-1px);
+  }
+
+  .pp-trust-atc__pill-icon {
+    flex-shrink: 0;
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
     color: var(--pp-accent, #2dd4bf);
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 14%, transparent);
+  }
+
+  .pp-trust-atc__pill-text {
+    text-wrap: balance;
+    text-align: left;
+  }
+
+  @media screen and (max-width: 479px) {
+    .pp-trust-atc--compact:not(.pp-trust-atc--dense) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .pp-trust-atc--compact:not(.pp-trust-atc--dense) .pp-trust-atc__pill {
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pp-trust-atc__pill,
+    .pp-trust-atc__chip {
+      transition: none;
+    }
+
+    .pp-trust-atc__pill:hover {
+      transform: none;
+    }
   }
 {% endstylesheet %}

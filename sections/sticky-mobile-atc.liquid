@@ -45,7 +45,7 @@
             <s class="sticky-mobile-atc__compare">{{ sticky_product.compare_at_price | money }}</s>
           {% endif %}
         </div>
-        {% render 'trust-near-atc', class_prefix: 'sticky-mobile-atc__trust', compact: true %}
+        {% render 'trust-near-atc', class_prefix: 'sticky-mobile-atc__trust', compact: true, dense: true %}
       </div>
       {% if request.page_type == 'product' %}
         <button type="button" class="sticky-mobile-atc__btn" data-sticky-atc-submit data-default-label="{{ section.settings.button_label | default: 'Lägg i varukorg' | escape }}">
@@ -113,6 +113,32 @@
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+    overflow: hidden;
+  }
+
+  .sticky-mobile-atc .pp-trust-atc--compact {
+    gap: 3px;
+    margin-top: 2px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .sticky-mobile-atc .pp-trust-atc__pill {
+    font-size: 0.58rem;
+    min-height: 0;
+    padding: 2px 6px 2px 4px;
+    gap: 4px;
+    border-radius: 999px;
+  }
+
+  .sticky-mobile-atc .pp-trust-atc__pill-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sticky-mobile-atc .pp-trust-atc__pill-icon svg {
+    width: 10px;
+    height: 10px;
   }
 
   .sticky-mobile-atc__meta {

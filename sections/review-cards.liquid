@@ -211,6 +211,7 @@
 
   .review-cards__card {
     position: relative;
+    height: 100%;
     padding: 24px 22px 20px;
     border-radius: 18px;
     background-color: var(--rc-surface, #14212a);
@@ -246,10 +247,12 @@
     position: relative;
     margin: 0;
     padding-top: 4px;
-    font-size: 1rem;
-    line-height: 1.65;
+    font-size: clamp(0.92rem, 2.4vw, 1rem);
+    line-height: 1.6;
     font-style: normal;
     color: var(--rc-text, #f6f7f2);
+    text-wrap: pretty;
+    flex: 1;
   }
 
   .review-cards__quote-mark {

@@ -129,14 +129,18 @@
           assign view_all_url = routes.all_products_collection_url
         endif
       %}
-      <div class="product-cards__footer">
+      <div class="product-cards__closing">
         <a class="product-cards__view-all" href="{{ view_all_url }}">
           {{ section.settings.view_all_label | default: 'Visa alla produkter' }}
+          <span class="product-cards__view-all-icon" aria-hidden="true">→</span>
         </a>
+        {% render 'trust-near-atc', class_prefix: 'product-cards__trust', show_payment_icons: false, compact: true %}
+      </div>
+    {% else %}
+      <div class="product-cards__closing product-cards__closing--trust-only">
+        {% render 'trust-near-atc', class_prefix: 'product-cards__trust', show_payment_icons: false, compact: true %}
       </div>
     {% endif %}
-
-    {% render 'trust-near-atc', class_prefix: 'product-cards__trust', show_payment_icons: false, compact: true %}
   </div>
 </div>
 
@@ -330,9 +334,10 @@
 
   .product-cards__title {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: clamp(1.05rem, 2.6vw, 1.2rem);
     font-weight: 600;
-    line-height: 1.25;
+    line-height: 1.3;
+    text-wrap: balance;
   }
 
   .product-cards__title a {
@@ -359,10 +364,11 @@
 
   .product-cards__desc {
     margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.6;
+    font-size: clamp(0.84rem, 2.2vw, 0.9rem);
+    line-height: 1.55;
     color: var(--pc-muted, #9aa8a2);
     flex: 1;
+    text-wrap: pretty;
   }
 
   .product-cards__actions {
@@ -445,34 +451,97 @@
     }
   }
 
-  .product-cards__footer {
-    margin-top: 36px;
+  .product-cards__closing {
+    margin-top: 40px;
+    padding: clamp(24px, 4vw, 32px);
+    border-radius: var(--pp-radius-lg, 20px);
     text-align: center;
+    background: linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--pc-surface, #14212a) 88%, #fff 12%) 0%,
+      var(--pc-surface, #14212a) 100%
+    );
+    border: 1px solid color-mix(in srgb, var(--pc-text, #f6f7f2) 10%, transparent);
+    box-shadow: var(--pp-shadow-soft);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .product-cards__closing--trust-only {
+    padding-block: 20px;
   }
 
   .product-cards__view-all {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 50px;
-    padding-inline: 30px;
+    gap: 10px;
+    min-height: 52px;
+    padding-inline: 32px;
     border-radius: 999px;
     font-weight: 600;
+    font-size: clamp(0.92rem, 2.4vw, 1rem);
     text-decoration: none;
     color: var(--pc-text, #f6f7f2);
-    border: 1px solid color-mix(in srgb, var(--pc-text, #f6f7f2) 28%, transparent);
-    transition: border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    border: 1px solid color-mix(in srgb, var(--pc-text, #f6f7f2) 22%, transparent);
+    background: color-mix(in srgb, var(--pc-text, #f6f7f2) 4%, transparent);
+    transition:
+      border-color 0.18s ease,
+      color 0.18s ease,
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .product-cards__view-all-icon {
+    display: inline-flex;
+    transition: transform 0.18s ease;
   }
 
   .product-cards__view-all:hover {
-    border-color: var(--pc-accent, #2dd4bf);
+    border-color: color-mix(in srgb, var(--pc-accent, #2dd4bf) 55%, transparent);
     color: var(--pc-accent, #2dd4bf);
     transform: translateY(-1px);
+    box-shadow: 0 12px 32px -20px color-mix(in srgb, var(--pc-accent, #2dd4bf) 70%, #000);
   }
 
-  .product-cards__trust--compact {
-    justify-content: center;
-    margin-top: 20px;
+  .product-cards__view-all:hover .product-cards__view-all-icon {
+    transform: translateX(3px);
+  }
+
+  .product-cards__closing .pp-trust-atc--compact {
+    width: 100%;
+    max-width: 52rem;
+    gap: 10px;
+  }
+
+  @media screen and (min-width: 640px) {
+    .product-cards__closing .pp-trust-atc--compact {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .product-cards__closing .pp-trust-atc__pill {
+      justify-content: center;
+      padding-inline: 12px;
+      text-align: center;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 88px;
+      border-radius: 16px;
+    }
+
+    .product-cards__closing .pp-trust-atc__pill-icon {
+      width: 36px;
+      height: 36px;
+    }
+
+    .product-cards__closing .pp-trust-atc__pill-text {
+      text-align: center;
+      font-size: 0.78rem;
+      line-height: 1.3;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

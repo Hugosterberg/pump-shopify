@@ -12,14 +12,14 @@
 -%}
 
 {% if shop.enabled_payment_types.size > 0 %}
-  <div class="{{ class_prefix }}">
+  <div class="pp-payment-icons {{ class_prefix }}">
     {% if label != blank %}
-      <span class="{{ class_prefix }}__label">{{ label }}</span>
+      <span class="pp-payment-icons__label {{ class_prefix }}__label">{{ label }}</span>
     {% endif %}
-    <div class="{{ class_prefix }}__icons" aria-hidden="true">
+    <div class="pp-payment-icons__grid {{ class_prefix }}__icons" aria-hidden="true">
       {% for type in shop.enabled_payment_types %}
-        <span class="{{ class_prefix }}__pill">
-          {{ type | payment_type_svg_tag: class: class_prefix | append: '__icon' }}
+        <span class="pp-payment-icons__pill {{ class_prefix }}__pill">
+          {{ type | payment_type_svg_tag }}
         </span>
       {% endfor %}
     </div>
@@ -27,48 +27,56 @@
 {% endif %}
 
 {% stylesheet %}
-  .payment-icons,
-  [class*='__payment']:not([class*='__payment__']) {
+  .pp-payment-icons {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     gap: 10px;
+    width: 100%;
   }
 
-  .payment-icons__label,
-  [class*='__payment__label'] {
+  .pp-payment-icons__label {
     font-size: 0.72rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
+    text-align: center;
     color: var(--pp-muted, #9aa8a2);
   }
 
-  .payment-icons__icons,
-  [class*='__payment__icons'] {
+  .pp-payment-icons__grid {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
   }
 
-  .payment-icons__pill,
-  [class*='__payment__pill'] {
+  .pp-payment-icons__pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 5px 8px;
-    border-radius: 8px;
-    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 6%, transparent);
-    border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 8%, transparent);
+    min-width: 54px;
+    min-height: 36px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 0;
+    line-height: 0;
+    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 5%, transparent);
+    border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 9%, transparent);
+    transition: border-color 0.18s ease, background 0.18s ease;
   }
 
-  .payment-icons__icon,
-  [class*='__payment__icon'] {
+  .pp-payment-icons__pill:hover {
+    border-color: color-mix(in srgb, var(--pp-accent, #2dd4bf) 30%, transparent);
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 6%, transparent);
+  }
+
+  .pp-payment-icons__pill svg {
     height: 20px;
     width: auto;
+    max-width: 44px;
     display: block;
-    opacity: 0.92;
+    opacity: 0.95;
   }
 {% endstylesheet %}

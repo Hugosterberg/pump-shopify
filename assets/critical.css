@@ -185,6 +185,41 @@ body {
 .shopify-section [class$='__subheading'] {
   max-width: 52ch;
   margin-inline: auto;
+  text-wrap: pretty;
+  line-height: 1.55;
+}
+
+/* Equal-height cards in section grids */
+.shopify-section [class*='__grid'],
+.shopify-section ul[class*='__list']:not([class*='__trust']):not([class*='__nav']) {
+  align-items: stretch;
+}
+
+.shopify-section [class*='__grid'] > *,
+.shopify-section ul[class*='__list']:not([class*='__trust']):not([class*='__nav']) > li {
+  min-width: 0;
+}
+
+.shopify-section [class*='__card'] {
+  height: 100%;
+}
+
+.shopify-section [class*='__title'],
+.shopify-section [class*='__heading']:not([class*='__section']) {
+  text-wrap: balance;
+}
+
+.shopify-section [class*='__label']:not([class*='__form']),
+.shopify-section [class*='__chip-text'] strong,
+.shopify-section [class*='__badge-label'] {
+  text-wrap: balance;
+}
+
+.shopify-section [class*='__text'],
+.shopify-section [class*='__desc'],
+.shopify-section [class*='__description'],
+.shopify-section [class*='__note'] {
+  text-wrap: pretty;
 }
 
 @media screen and (min-width: 750px) {

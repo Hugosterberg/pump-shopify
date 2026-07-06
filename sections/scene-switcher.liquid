@@ -167,7 +167,7 @@
 
   .scenes__labels {
     position: relative;
-    height: 2em;
+    min-height: 2.6em;
     margin-top: 10px;
   }
 
@@ -175,13 +175,15 @@
     position: absolute;
     left: 0;
     top: 0;
+    max-width: 100%;
     font-size: clamp(1.1rem, 3vw, 1.6rem);
     font-weight: 700;
+    line-height: 1.2;
     color: var(--scn-accent, #2dd4bf);
     opacity: 0;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
-    white-space: nowrap;
+    text-wrap: balance;
   }
 
   @media screen and (min-width: 750px) {

@@ -46,13 +46,17 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px 16px;
+    align-items: stretch;
   }
 
   .product-feature-icons__item {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
     gap: 12px;
+    height: 100%;
+    min-height: 118px;
     text-align: center;
     padding: 16px 12px;
     border-radius: var(--pp-radius-md, 14px);
@@ -79,11 +83,13 @@
   }
 
   .product-feature-icons__label {
-    font-size: 0.82rem;
+    font-size: clamp(0.76rem, 2.4vw, 0.82rem);
     font-weight: 600;
     line-height: 1.35;
     color: var(--pfi-text, #f6f7f2);
-    max-width: 12ch;
+    max-width: 100%;
+    text-wrap: balance;
+    hyphens: auto;
   }
 
   @media screen and (min-width: 600px) {

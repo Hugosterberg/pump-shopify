@@ -25,10 +25,8 @@
     {% endif %}
 
     <div class="final-cta__trust">
-      {% render 'trust-near-atc', class_prefix: 'final-cta__trust-atc', show_payment_icons: false %}
+      {% render 'trust-near-atc', class_prefix: 'final-cta__trust-atc', show_payment_icons: false, compact: true %}
     </div>
-
-    {% render 'payment-icons', class_prefix: 'final-cta__payment', label: 'Betala enkelt med' %}
   </div>
 </div>
 
@@ -107,14 +105,15 @@
     margin-top: 8px;
   }
 
+  .final-cta__trust .pp-trust-atc--compact {
+    justify-content: center;
+    gap: 8px;
+  }
+
   .final-cta__trust-atc-wrap {
     border-top: 0;
     padding-top: 0;
     margin-top: 0;
-  }
-
-  .final-cta__payment {
-    margin-top: 4px;
   }
 
   @media (prefers-reduced-motion: reduce) {

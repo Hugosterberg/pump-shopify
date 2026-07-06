@@ -324,12 +324,17 @@
 
   .product-showcase__badge {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 5px 12px;
     border-radius: 999px;
-    font-size: 0.75rem;
+    font-size: clamp(0.68rem, 2vw, 0.75rem);
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    line-height: 1.2;
+    text-align: center;
+    text-wrap: balance;
     color: var(--pshow-accent-ink, #071014);
     background: var(--pshow-accent, #2dd4bf);
   }
@@ -356,6 +361,7 @@
     margin: 0;
     font-size: clamp(1.4rem, 3vw, 1.75rem);
     line-height: 1.2;
+    text-wrap: balance;
   }
 
   .product-showcase__price {
@@ -392,10 +398,12 @@
   }
 
   .product-showcase__trust-item {
-    font-size: 0.88rem;
+    font-size: clamp(0.82rem, 2.2vw, 0.88rem);
+    line-height: 1.4;
     padding-left: 20px;
     position: relative;
     color: var(--pshow-text, #f6f7f2);
+    text-wrap: pretty;
   }
 
   .product-showcase__trust-item::before {
