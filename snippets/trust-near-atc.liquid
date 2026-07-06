@@ -12,7 +12,10 @@
   assign class_prefix = class_prefix | default: 'trust-atc'
   assign compact = compact | default: false
   assign dense = dense | default: false
-  assign show_payment_icons = show_payment_icons | default: true
+  assign render_payment_icons = true
+  if show_payment_icons == false
+    assign render_payment_icons = false
+  endif
 -%}
 
 {% if compact %}
@@ -56,9 +59,9 @@
       </li>
     </ul>
 
-    {% if show_payment_icons %}
+    {% if render_payment_icons %}
       <div class="pp-trust-atc__divider {{ class_prefix }}__divider" aria-hidden="true"></div>
-      {% render 'payment-icons', class_prefix: class_prefix | append: '__payment', label: 'Betala enkelt med' %}
+      {% render 'payment-icons', class_prefix: class_prefix | append: '__payment', label: 'Betala enkelt med', inline_row: true %}
     {% endif %}
   </div>
 {% endif %}

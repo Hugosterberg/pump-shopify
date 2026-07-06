@@ -4,17 +4,29 @@
   Params:
   - class_prefix (optional, default: payment-icons)
   - label (optional, default: Betalningsmetoder)
+  - inline_row (optional, boolean — fit all icons on one row)
 {% endcomment %}
 
 {%- liquid
   assign class_prefix = class_prefix | default: 'payment-icons'
-  assign label = label | default: 'Betalningsmetoder'
+  assign use_inline_row = false
+  if inline_row == true
+    assign use_inline_row = true
+  endif
+
+  assign show_label = true
+  assign display_label = label
+  if label == ''
+    assign show_label = false
+  elsif label == blank
+    assign display_label = 'Betalningsmetoder'
+  endif
 -%}
 
 {% if shop.enabled_payment_types.size > 0 %}
-  <div class="pp-payment-icons {{ class_prefix }}">
-    {% if label != blank %}
-      <span class="pp-payment-icons__label {{ class_prefix }}__label">{{ label }}</span>
+  <div class="pp-payment-icons{% if use_inline_row %} pp-payment-icons--inline-row{% endif %} {{ class_prefix }}">
+    {% if show_label %}
+      <span class="pp-payment-icons__label {{ class_prefix }}__label">{{ display_label }}</span>
     {% endif %}
     <div class="pp-payment-icons__grid {{ class_prefix }}__icons" aria-hidden="true">
       {% for type in shop.enabled_payment_types %}
@@ -78,5 +90,33 @@
     max-width: 44px;
     display: block;
     opacity: 0.95;
+  }
+
+  .pp-payment-icons--inline-row .pp-payment-icons__grid {
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: clamp(3px, 0.7vw, 6px);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .pp-payment-icons--inline-row .pp-payment-icons__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pp-payment-icons--inline-row .pp-payment-icons__pill {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 52px;
+    min-height: 28px;
+    padding: 3px 4px;
+    border-radius: 7px;
+  }
+
+  .pp-payment-icons--inline-row .pp-payment-icons__pill svg {
+    height: clamp(12px, 2.4vw, 16px);
+    max-width: 100%;
+    width: auto;
   }
 {% endstylesheet %}

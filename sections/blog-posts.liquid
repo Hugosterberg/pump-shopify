@@ -22,7 +22,7 @@
         <p class="blog-posts__eyebrow">{{ section.settings.eyebrow }}</p>
       {% endif %}
       {% if section.settings.heading != blank %}
-        <h2 class="blog-posts__heading">{{ section.settings.heading | replace: 'pump', '<span class="brand-mark">pump</span>' | raw }}</h2>
+        <h2 class="blog-posts__heading">{% render 'brand-mark-text', text: section.settings.heading %}</h2>
       {% endif %}
     </header>
 

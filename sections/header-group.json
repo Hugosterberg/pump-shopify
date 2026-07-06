@@ -52,8 +52,6 @@
       "type": "header",
       "settings": {
         "show_localization": true,
-        "show_wishlist": true,
-        "show_compare": true,
         "show_cta": true,
         "cta_label": "Köp nu"
       }

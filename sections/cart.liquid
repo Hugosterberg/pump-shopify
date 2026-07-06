@@ -7,7 +7,7 @@
     <h1 class="main-cart__title">{{ 'cart.title' | t }}</h1>
 
     {% if cart.item_count > 0 %}
-      {% render 'free-shipping-bar', class_prefix: 'main-cart__shipping' %}
+      {% render 'free-shipping-bar', class_prefix: 'main-cart__shipping', compact: true %}
       <form class="main-cart__form" action="{{ routes.cart_url }}" method="post">
         <ul class="main-cart__items" role="list">
           {% for item in cart.items %}

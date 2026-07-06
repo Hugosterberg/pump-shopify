@@ -87,8 +87,9 @@
 
 <script>
   (function () {
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) return;
+    function initMotionFx() {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) return;
 
     /* ---- Scroll reveal ---- */
     function collectRevealTargets() {
@@ -221,5 +222,13 @@
         spawnRipple(area, x, y);
       });
     });
+
+    }
+
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(initMotionFx, { timeout: 2000 });
+    } else {
+      setTimeout(initMotionFx, 1);
+    }
   })();
 </script>

@@ -2,6 +2,294 @@
   Global newsletter popup — delay + localStorage dismiss. Enabled via theme settings.
 {% endcomment %}
 
+{% stylesheet %}
+  .newsletter-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 16px;
+    pointer-events: none;
+  }
+
+  .newsletter-popup:not([hidden]) {
+    pointer-events: auto;
+  }
+
+  .newsletter-popup[hidden] {
+    display: none;
+  }
+
+  body.newsletter-popup-open {
+    overflow: hidden;
+  }
+
+  .newsletter-popup__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgb(4 8 12 / 45%);
+    backdrop-filter: blur(6px);
+    animation: newsletter-popup-backdrop 0.4s ease;
+    pointer-events: auto;
+  }
+
+  @keyframes newsletter-popup-backdrop {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .newsletter-popup__dialog {
+    position: relative;
+    isolation: isolate;
+    width: min(100%, 360px);
+    padding: 24px 22px 20px;
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 10%, transparent);
+    background: var(--pp-surface, #14212a);
+    color: var(--pp-text, #f6f7f2);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--pp-accent, #2dd4bf) 8%, transparent),
+      0 24px 48px -20px rgb(0 0 0 / 75%);
+    animation: newsletter-popup-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: auto;
+  }
+
+  .newsletter-popup__dialog::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      120% 80% at 50% -20%,
+      color-mix(in srgb, var(--pp-accent, #2dd4bf) 14%, transparent),
+      transparent 55%
+    );
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  @keyframes newsletter-popup-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .newsletter-popup__close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--pp-muted, #9aa8a2);
+    background: transparent;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  .newsletter-popup__close:hover {
+    color: var(--pp-text, #f6f7f2);
+    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 6%, transparent);
+  }
+
+  .newsletter-popup__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pp-accent, #2dd4bf);
+  }
+
+  .newsletter-popup__eyebrow::before {
+    content: '';
+    width: 18px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--pp-accent, #2dd4bf), transparent);
+    opacity: 0.85;
+  }
+
+  .newsletter-popup__heading {
+    margin: 0 0 8px;
+    padding-right: 28px;
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .newsletter-popup__subheading {
+    margin: 0 0 22px;
+    max-width: 32ch;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    color: var(--pp-muted, #9aa8a2);
+    text-wrap: pretty;
+  }
+
+  .newsletter-popup__field {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding: 4px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 10%, transparent);
+    background: color-mix(in srgb, var(--pp-bg, #071014) 55%, transparent);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .newsletter-popup__field:focus-within {
+    border-color: color-mix(in srgb, var(--pp-accent, #2dd4bf) 45%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pp-accent, #2dd4bf) 12%, transparent);
+  }
+
+  .newsletter-popup__input {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 14px 0 16px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--pp-text, #f6f7f2);
+    font-size: 0.9rem;
+  }
+
+  .newsletter-popup__input::placeholder {
+    color: color-mix(in srgb, var(--pp-muted, #9aa8a2) 85%, transparent);
+  }
+
+  .newsletter-popup__input:focus {
+    outline: none;
+  }
+
+  .newsletter-popup__submit {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--pp-accent-ink, #071014);
+    background: var(--pp-accent, #2dd4bf);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .newsletter-popup__submit:hover {
+    transform: scale(1.04);
+    box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--pp-accent, #2dd4bf) 55%, transparent);
+  }
+
+  .newsletter-popup__submit svg {
+    display: block;
+  }
+
+  .newsletter-popup__consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 14px 0 0;
+    font-size: 0.72rem;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--pp-muted, #9aa8a2) 92%, transparent);
+    cursor: pointer;
+  }
+
+  .newsletter-popup__consent input {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    margin-top: 2px;
+    flex-shrink: 0;
+    accent-color: var(--pp-accent, #2dd4bf);
+    cursor: pointer;
+  }
+
+  .newsletter-popup__consent a {
+    color: color-mix(in srgb, var(--pp-text, #f6f7f2) 75%, transparent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .newsletter-popup__success {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 4px 0 0;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--pp-text, #f6f7f2);
+  }
+
+  .newsletter-popup__success-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    color: var(--pp-accent, #2dd4bf);
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 14%, transparent);
+  }
+
+  .newsletter-popup__error {
+    margin: 10px 0 0;
+    font-size: 0.78rem;
+    color: #f59e0b;
+  }
+
+  .newsletter-popup .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .newsletter-popup {
+      padding: 24px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .newsletter-popup__backdrop,
+    .newsletter-popup__dialog {
+      animation: none;
+    }
+
+    .newsletter-popup__submit:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
 {% unless settings.newsletter_popup_enabled == false %}
   {% unless request.page_type == 'product' or request.page_type == 'cart' %}
   {% assign newsletter_popup_subscribed = false %}
@@ -21,12 +309,10 @@
       aria-labelledby="NewsletterPopupTitle"
     >
       <button type="button" class="newsletter-popup__close" data-newsletter-close aria-label="Stäng">
-        {% render 'icon', name: 'x', size: 20 %}
+        {% render 'icon', name: 'x', size: 18 %}
       </button>
 
-      <span class="newsletter-popup__icon" aria-hidden="true">
-        {% render 'icon', name: 'mail', size: 24 %}
-      </span>
+      <p class="newsletter-popup__eyebrow">Nyhetsbrev</p>
 
       <h2 id="NewsletterPopupTitle" class="newsletter-popup__heading">
         {{ settings.newsletter_popup_heading | default: 'Få 10% rabatt på din första order' }}
@@ -35,7 +321,7 @@
         <p class="newsletter-popup__subheading">{{ settings.newsletter_popup_subheading }}</p>
       {% else %}
         <p class="newsletter-popup__subheading">
-          Anmäl dig till nyhetsbrevet — tips, lanseringar och erbjudanden. Vi skickar bara det som är värt att läsa.
+          Ett mejl i taget. Inga spam-kedjor — bara det viktiga.
         </p>
       {% endif %}
 
@@ -47,20 +333,13 @@
         <input type="hidden" name="contact[tags]" value="newsletter,popup">
 
         {% if form.posted_successfully? %}
-          <p class="newsletter-popup__success">{{ settings.newsletter_popup_success | default: 'Tack! Kolla inkorgen snart.' }}</p>
-        {% else %}
-          <label class="newsletter-popup__consent">
-            <input type="checkbox" name="contact[accepts_marketing]" value="true" required>
-            <span>
-              Jag godkänner att få nyhetsbrev via e-post
-              {%- if shop.privacy_policy != blank -%}
-                och har läst <a href="{{ shop.privacy_policy.url }}">{{ shop.privacy_policy.title | downcase }}</a>.
-              {%- else -%}
-                .
-              {%- endif -%}
+          <p class="newsletter-popup__success">
+            <span class="newsletter-popup__success-icon" aria-hidden="true">
+              {% render 'icon', name: 'check', size: 16 %}
             </span>
-          </label>
-
+            <span>{{ settings.newsletter_popup_success | default: 'Tack! Kolla inkorgen snart.' }}</span>
+          </p>
+        {% else %}
           <div class="newsletter-popup__field">
             <label class="visually-hidden" for="NewsletterPopupEmail">E-post</label>
             <input
@@ -69,14 +348,24 @@
               type="email"
               name="contact[email]"
               value="{{ form.email }}"
-              placeholder="{{ settings.newsletter_popup_placeholder | default: 'Din e-post' }}"
+              placeholder="{{ settings.newsletter_popup_placeholder | default: 'din@epost.se' }}"
               autocomplete="email"
               required
             >
-            <button class="newsletter-popup__submit" type="submit">
-              {{ settings.newsletter_popup_button | default: 'Prenumerera' }}
+            <button class="newsletter-popup__submit" type="submit" aria-label="{{ settings.newsletter_popup_button | default: 'Prenumerera' }}">
+              {% render 'icon', name: 'arrow-right', size: 18 %}
             </button>
           </div>
+
+          <label class="newsletter-popup__consent">
+            <input type="checkbox" name="contact[accepts_marketing]" value="true" required>
+            <span>
+              Jag godkänner nyhetsbrev via e-post
+              {%- if shop.privacy_policy != blank -%}
+                · <a href="{{ shop.privacy_policy.url }}">{{ shop.privacy_policy.title | downcase }}</a>
+              {%- endif -%}
+            </span>
+          </label>
 
           {%- if form.errors -%}
             <p class="newsletter-popup__error">{{ form.errors | default_errors }}</p>
@@ -85,189 +374,6 @@
       {% endform %}
     </div>
   </div>
-
-  {% stylesheet %}
-    .newsletter-popup {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-    }
-
-    .newsletter-popup[hidden] {
-      display: none;
-    }
-
-    body.newsletter-popup-open {
-      overflow: hidden;
-    }
-
-    .newsletter-popup__backdrop {
-      position: absolute;
-      inset: 0;
-      background: rgb(7 16 20 / 76%);
-      backdrop-filter: blur(8px);
-    }
-
-    .newsletter-popup__dialog {
-      position: relative;
-      width: min(100%, 440px);
-      padding: 32px 28px 28px;
-      border-radius: var(--pp-radius-lg, 24px);
-      border: 1px solid var(--pp-border);
-      background: linear-gradient(165deg, var(--pp-surface-light, #1d2b35) 0%, var(--pp-surface, #14212a) 42%);
-      color: var(--pp-text, #f6f7f2);
-      box-shadow: var(--pp-shadow-soft);
-      animation: pp-fade-up 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .newsletter-popup__dialog::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 12%;
-      right: 12%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--pp-accent, #2dd4bf), transparent);
-      opacity: 0.7;
-    }
-
-    .newsletter-popup__close {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
-      height: 36px;
-      border: none;
-      border-radius: 999px;
-      cursor: pointer;
-      color: var(--pp-muted, #9aa8a2);
-      background: color-mix(in srgb, var(--pp-text, #f6f7f2) 6%, transparent);
-    }
-
-    .newsletter-popup__icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 48px;
-      height: 48px;
-      margin-bottom: 14px;
-      border-radius: 999px;
-      color: var(--pp-accent, #2dd4bf);
-      background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 14%, transparent);
-    }
-
-    .newsletter-popup__heading {
-      margin: 0 0 10px;
-      font-size: clamp(1.35rem, 3vw, 1.75rem);
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .newsletter-popup__subheading {
-      margin: 0 0 20px;
-      font-size: 0.92rem;
-      line-height: 1.6;
-      color: var(--pp-muted, #9aa8a2);
-    }
-
-    .newsletter-popup__consent {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 14px;
-      font-size: 0.82rem;
-      line-height: 1.45;
-      color: var(--pp-muted, #9aa8a2);
-      cursor: pointer;
-    }
-
-    .newsletter-popup__consent input {
-      margin-top: 3px;
-      flex-shrink: 0;
-    }
-
-    .newsletter-popup__consent a {
-      color: var(--pp-text, #f6f7f2);
-      text-decoration: underline;
-      text-underline-offset: 2px;
-    }
-
-    .newsletter-popup__field {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .newsletter-popup__input {
-      min-height: 50px;
-      padding: 0 16px;
-      border-radius: 999px;
-      border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 15%, transparent);
-      background: var(--pp-bg, #071014);
-      color: var(--pp-text, #f6f7f2);
-    }
-
-    .newsletter-popup__submit {
-      min-height: 50px;
-      border: none;
-      border-radius: var(--pp-radius-pill, 999px);
-      font-weight: 600;
-      cursor: pointer;
-      color: var(--pp-accent-ink, #071014);
-      background: linear-gradient(135deg, var(--pp-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 30%, var(--pp-accent, #2dd4bf)));
-      box-shadow: var(--pp-shadow-glow);
-      transition: transform var(--pp-transition, 0.2s ease), box-shadow var(--pp-transition, 0.2s ease);
-    }
-
-    .newsletter-popup__submit:hover {
-      transform: translateY(-1px);
-    }
-
-    .newsletter-popup__close:hover {
-      color: var(--pp-text, #f6f7f2);
-      background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 16%, transparent);
-    }
-
-    .newsletter-popup__success {
-      margin: 0;
-      font-weight: 600;
-      color: var(--pp-accent, #2dd4bf);
-    }
-
-    .newsletter-popup__error {
-      margin: 12px 0 0;
-      font-size: 0.85rem;
-      color: #f59e0b;
-    }
-
-    .newsletter-popup .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    @media screen and (min-width: 480px) {
-      .newsletter-popup__field {
-        flex-direction: row;
-      }
-
-      .newsletter-popup__input {
-        flex: 1;
-      }
-    }
-  {% endstylesheet %}
 
   <script>
     (function () {

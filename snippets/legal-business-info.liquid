@@ -10,7 +10,7 @@
   assign show_address = show_address | default: true
 -%}
 
-{%- if display_name != blank or display_org != blank or shop.email != blank or shop.phone != blank or shop.address -%}
+{%- if display_name != blank or display_org != blank or shop.email != blank or shop.address -%}
   <div class="legal-business">
     {%- if display_name != blank -%}
       <p class="legal-business__name">{{ display_name }}</p>
@@ -21,17 +21,21 @@
     {%- endif -%}
 
     {%- if show_address and shop.address -%}
-      <p class="legal-business__address">{{ shop.address | format_address }}</p>
+      <p class="legal-business__address">
+        {%- if shop.address.address1 != blank -%}
+          {{ shop.address.address1 -}}
+        {%- endif -%}
+        {%- if shop.address.zip != blank or shop.address.city != blank -%}
+          {%- if shop.address.address1 != blank -%}, {% endif -%}
+          {{- shop.address.zip }} {{ shop.address.city -}}
+        {%- endif -%}
+      </p>
     {%- endif -%}
 
-    <p class="legal-business__contact">
-      {%- if shop.email != blank -%}
+    {%- if shop.email != blank -%}
+      <p class="legal-business__contact">
         <a href="mailto:{{ shop.email }}">{{ shop.email }}</a>
-      {%- endif -%}
-      {%- if shop.phone != blank -%}
-        {%- if shop.email != blank -%}<span aria-hidden="true"> · </span>{%- endif -%}
-        <a href="tel:{{ shop.phone | replace: ' ', '' }}">{{ shop.phone }}</a>
-      {%- endif -%}
-    </p>
+      </p>
+    {%- endif -%}
   </div>
 {%- endif -%}

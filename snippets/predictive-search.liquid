@@ -212,6 +212,7 @@
 
 <script>
   (function () {
+    function initPredictiveSearch() {
     const root = document.querySelector('[data-predictive-search]');
     if (!root) return;
 
@@ -242,7 +243,18 @@
     }
 
     function formatMoney(cents) {
-      return (cents / 100).toFixed(0) + ' kr';
+      if (window.PumpTheme && window.PumpTheme.moneyFormat && typeof Shopify !== 'undefined' && typeof Shopify.formatMoney === 'function') {
+        return Shopify.formatMoney(cents, window.PumpTheme.moneyFormat);
+      }
+      return (cents / 100).toLocaleString('sv-SE') + ' kr';
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
     }
 
     function renderResults(products) {
@@ -260,17 +272,18 @@
       results.hidden = false;
       results.innerHTML = products
         .map(function (product) {
+          const title = escapeHtml(product.title || '');
           const image = product.featured_image && product.featured_image.url
-            ? '<img class="predictive-search__thumb" src="' + product.featured_image.url + '" alt="" loading="lazy">'
+            ? '<img class="predictive-search__thumb" src="' + escapeHtml(product.featured_image.url) + '" alt="' + title + '" loading="lazy" decoding="async" width="48" height="48">'
             : '';
-          const price = product.price ? '<span class="predictive-search__price">' + formatMoney(product.price) + '</span>' : '';
+          const price = product.price ? '<span class="predictive-search__price">' + escapeHtml(formatMoney(product.price)) + '</span>' : '';
           return (
             '<a class="predictive-search__item" href="' +
-            product.url +
+            escapeHtml(product.url) +
             '">' +
             image +
             '<span><span class="predictive-search__name">' +
-            product.title +
+            title +
             '</span>' +
             price +
             '</span></a>'
@@ -324,6 +337,13 @@
           fetchSuggestions(input.value.trim());
         }, 250);
       });
+    }
+    }
+
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(initPredictiveSearch, { timeout: 2500 });
+    } else {
+      setTimeout(initPredictiveSearch, 1);
     }
   })();
 </script>

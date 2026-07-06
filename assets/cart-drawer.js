@@ -48,6 +48,13 @@
         el.hidden = true;
       }
     });
+
+    document.querySelectorAll('[data-cart-open]').forEach(function (btn) {
+      btn.setAttribute(
+        'aria-label',
+        count > 0 ? 'Varukorg, ' + count + (count === 1 ? ' artikel' : ' artiklar') : 'Varukorg'
+      );
+    });
   }
 
   function pulseCartIcon() {
@@ -140,7 +147,9 @@
         escapeHtml(product.handle) +
         '"><img src="' +
         escapeHtml(product.image) +
-        '" alt="" loading="lazy" width="64" height="64"></a>'
+        '" alt="' +
+        escapeHtml(product.title) +
+        '" loading="lazy" decoding="async" width="64" height="64"></a>'
       : '';
 
     const compare =
@@ -201,7 +210,7 @@
       let featuredHtml = '';
       if (featured && featured.handle) {
         const img = featured.image
-          ? '<img src="' + escapeHtml(featured.image) + '" alt="" loading="lazy" width="64" height="64">'
+          ? '<img src="' + escapeHtml(featured.image) + '" alt="' + escapeHtml(featured.title) + '" loading="lazy" decoding="async" width="64" height="64">'
           : '';
         featuredHtml =
           '<a class="cart-drawer__empty-featured" href="' +
@@ -237,7 +246,7 @@
     const itemsHtml = cart.items
       .map(function (item, index) {
         const image = item.image
-          ? '<img src="' + escapeHtml(item.image) + '" alt="" loading="lazy" width="72" height="72">'
+          ? '<img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.product_title) + '" loading="lazy" decoding="async" width="72" height="72">'
           : '';
         const variant =
           item.variant_title && item.variant_title !== 'Default Title'

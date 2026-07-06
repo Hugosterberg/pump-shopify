@@ -1,0 +1,15 @@
+{% comment %}
+  Renders text with the first "pump" wrapped in .brand-mark (no raw filter).
+
+  Usage: {% render 'brand-mark-text', text: section.settings.heading %}
+{% endcomment %}
+{%- liquid
+  assign brand_parts = text | split: 'pump'
+  if brand_parts.size > 1
+    echo brand_parts[0]
+    echo '<span class="brand-mark">pump</span>'
+    echo brand_parts[1]
+  else
+    echo text
+  endif
+-%}

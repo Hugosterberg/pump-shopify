@@ -81,20 +81,6 @@
         %}
       {% endif %}
 
-      {% if section.settings.show_wishlist %}
-        <button type="button" class="site-header__icon-btn" data-wishlist-open aria-label="Önskelista">
-          {% render 'icon', name: 'sparkles', size: 20 %}
-          <span class="site-header__badge-count" data-wishlist-count hidden>0</span>
-        </button>
-      {% endif %}
-
-      {% if section.settings.show_compare %}
-        <button type="button" class="site-header__icon-btn" data-compare-open aria-label="Jämför produkter">
-          {% render 'icon', name: 'sliders', size: 20 %}
-          <span class="site-header__badge-count" data-compare-count hidden>0</span>
-        </button>
-      {% endif %}
-
       {% if section.settings.show_cta and section.settings.cta_label != blank %}
         <a class="site-header__cta" href="{{ section.settings.cta_link | default: '#product-showcase' }}">
           {{ section.settings.cta_label }}
@@ -113,9 +99,14 @@
         {% render 'icon', name: 'search', size: 22 %}
       </button>
 
-      <button type="button" class="site-header__icon-btn site-header__cart" data-cart-open aria-label="Varukorg">
+      <button
+        type="button"
+        class="site-header__icon-btn site-header__cart"
+        data-cart-open
+        aria-label="Varukorg{% if cart.item_count > 0 %}, {{ cart.item_count }} {% if cart.item_count == 1 %}artikel{% else %}artiklar{% endif %}{% endif %}"
+      >
         {{ 'icon-cart.svg' | inline_asset_content }}
-        <span class="site-header__cart-count" data-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>{{ cart.item_count }}</span>
+        <span class="site-header__cart-count" data-cart-count aria-hidden="true"{% if cart.item_count == 0 %} hidden{% endif %}>{{ cart.item_count }}</span>
       </button>
 
       {% if section.settings.menu != blank %}
@@ -445,13 +436,6 @@
     width: 100%;
   }
 
-  @media screen and (max-width: 749px) {
-    .site-header__icon-btn[data-wishlist-open],
-    .site-header__icon-btn[data-compare-open] {
-      display: none;
-    }
-  }
-
   @media screen and (min-width: 990px) {
     .site-header__inner {
       min-height: 72px;
@@ -522,18 +506,6 @@
       "type": "checkbox",
       "id": "show_localization",
       "label": "Show country & language selector",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_wishlist",
-      "label": "Show wishlist button",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_compare",
-      "label": "Show compare button",
       "default": true
     },
     {

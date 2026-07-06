@@ -17,13 +17,21 @@
       {{ settings.type_primary_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
     {% endunless %}
 
-    {% # Alexandria — brand logotype font, used for the PUMP wordmark (--font-brand) %}
+    {% # Alexandria — brand logotype font; non-blocking load so LCP isn't delayed %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&display=swap"
+      media="print"
+      onload="this.media='all'"
     >
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&display=swap"
+      >
+    </noscript>
 
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
@@ -53,9 +61,9 @@
     {% render 'newsletter-popup' %}
     {% render 'predictive-search' %}
     {% render 'cart-drawer' %}
-    {% render 'wishlist-compare-drawers' %}
     {% render 'cookie-consent' %}
     {% render 'motion-fx' %}
+    <script src="{{ 'recently-viewed-track.js' | asset_url }}" defer></script>
   </body>
 </html>
 

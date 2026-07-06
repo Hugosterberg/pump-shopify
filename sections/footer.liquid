@@ -136,18 +136,28 @@
       <div class="site-footer__trust-highlights">
         {% if section.settings.trust_warranty_title != blank %}
           <div class="site-footer__trust-item">
-            <h3 class="site-footer__trust-title">{{ section.settings.trust_warranty_title }}</h3>
-            {% if section.settings.trust_warranty_text != blank %}
-              <p class="site-footer__trust-text">{{ section.settings.trust_warranty_text }}</p>
-            {% endif %}
+            <span class="site-footer__trust-icon" aria-hidden="true">
+              {% render 'icon', name: 'shield', size: 18 %}
+            </span>
+            <div class="site-footer__trust-body">
+              <h3 class="site-footer__trust-title">{{ section.settings.trust_warranty_title }}</h3>
+              {% if section.settings.trust_warranty_text != blank %}
+                <p class="site-footer__trust-text">{{ section.settings.trust_warranty_text }}</p>
+              {% endif %}
+            </div>
           </div>
         {% endif %}
         {% if section.settings.trust_shipping_title != blank %}
           <div class="site-footer__trust-item">
-            <h3 class="site-footer__trust-title">{{ section.settings.trust_shipping_title }}</h3>
-            {% if section.settings.trust_shipping_text != blank %}
-              <p class="site-footer__trust-text">{{ section.settings.trust_shipping_text }}</p>
-            {% endif %}
+            <span class="site-footer__trust-icon" aria-hidden="true">
+              {% render 'icon', name: 'truck', size: 18 %}
+            </span>
+            <div class="site-footer__trust-body">
+              <h3 class="site-footer__trust-title">{{ section.settings.trust_shipping_title }}</h3>
+              {% if section.settings.trust_shipping_text != blank %}
+                <p class="site-footer__trust-text">{{ section.settings.trust_shipping_text }}</p>
+              {% endif %}
+            </div>
           </div>
         {% endif %}
       </div>
@@ -318,8 +328,28 @@
 
   .site-footer__trust-item {
     display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .site-footer__trust-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    color: var(--ftr-accent, #2dd4bf);
+    background: color-mix(in srgb, var(--ftr-accent, #2dd4bf) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ftr-accent, #2dd4bf) 28%, transparent);
+  }
+
+  .site-footer__trust-body {
+    display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
   }
 
   .site-footer__trust-title {

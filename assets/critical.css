@@ -424,3 +424,9 @@ textarea,
   );
   pointer-events: none;
 }
+
+/* Skip paint for far below-fold sections until scrolled near */
+main .shopify-section:nth-child(n + 4) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 520px;
+}

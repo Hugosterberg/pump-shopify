@@ -34,7 +34,6 @@
     assign word_competitors = section.settings.flip_word_competitors | default: 'kända konkurrenter'
     assign word_common = section.settings.flip_word_common | default: 'vanliga lösningar'
     assign heading_prefix = section.settings.heading | default: 'Duschkit från pump vs'
-    assign heading_prefix = heading_prefix | replace: 'pump', '<span class="brand-mark">pump</span>'
   -%}
 
   <div class="comparison-section__inner">
@@ -55,7 +54,7 @@
             <p class="comparison-section__eyebrow">{{ section.settings.eyebrow }}</p>
           {% endif %}
           <h2 class="comparison-section__heading">
-            {{ heading_prefix | raw }}
+            {% render 'brand-mark-text', text: heading_prefix %}
             {% if can_flip %}
               <label class="comparison-flip__headword" for="cmp-flip-{{ section.id }}" title="Byt jämförelse">
                 <span class="comparison-flip__word comparison-flip__word--front">{{ word_competitors }}</span>
