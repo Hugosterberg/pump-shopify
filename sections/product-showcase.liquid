@@ -48,22 +48,6 @@
           {% endif %}
         </div>
 
-        <div class="product-showcase__price-card">
-          <div class="product-showcase__price" data-product-showcase-price>
-            {% if current_variant.compare_at_price > current_variant.price %}
-              <span class="product-showcase__price-compare" data-price-compare>
-                <s>{{ current_variant.compare_at_price | money }}</s>
-              </span>
-              {% assign saving = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round %}
-              <span class="product-showcase__save" data-save-badge>Spara {{ saving }}%</span>
-            {% else %}
-              <span class="product-showcase__price-compare" data-price-compare hidden></span>
-              <span class="product-showcase__save" data-save-badge hidden></span>
-            {% endif %}
-            <span class="product-showcase__price-current" data-price-current>{{ current_variant.price | money }}</span>
-          </div>
-        </div>
-
         <div class="product-showcase__buy">
           <div class="product-showcase__meta">
             <span class="product-showcase__badge">Bästsäljare</span>
@@ -76,7 +60,24 @@
               I lager
             </span>
           </div>
-          <h3 class="product-showcase__title">{{ showcase_product.title }}</h3>
+
+          <div class="product-showcase__head">
+            <h3 class="product-showcase__title">{{ showcase_product.title }}</h3>
+
+            <div class="product-showcase__price" data-product-showcase-price>
+              {% if current_variant.compare_at_price > current_variant.price %}
+                <span class="product-showcase__price-compare" data-price-compare>
+                  <s>{{ current_variant.compare_at_price | money }}</s>
+                </span>
+                {% assign saving = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round %}
+                <span class="product-showcase__save" data-save-badge>Spara {{ saving }}%</span>
+              {% else %}
+                <span class="product-showcase__price-compare" data-price-compare hidden></span>
+                <span class="product-showcase__save" data-save-badge hidden></span>
+              {% endif %}
+              <span class="product-showcase__price-current" data-price-current>{{ current_variant.price | money }}</span>
+            </div>
+          </div>
 
           <div class="product-showcase__offer">
             {% render 'free-shipping-bar', class_prefix: 'product-showcase__shipping', compact: true, embedded: true %}
@@ -293,39 +294,19 @@
 
   .product-showcase__grid {
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      'media'
-      'price'
-      'buy';
-    gap: 0;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
     align-items: start;
   }
 
   .product-showcase__media {
     position: relative;
-    grid-area: media;
+    min-width: 0;
     border-radius: 20px;
     overflow: hidden;
     background-color: var(--pshow-surface, #14212a);
     border: 1px solid color-mix(in srgb, var(--pshow-text, #f6f7f2) 8%, transparent);
     aspect-ratio: 1;
-  }
-
-  .product-showcase__price-card {
-    grid-area: price;
-    position: relative;
-    z-index: 2;
-    width: fit-content;
-    max-width: calc(100% - 8px);
-    margin: -22px 0 16px 12px;
-    padding: 12px 16px 14px;
-    border-radius: 16px;
-    border: 1px solid color-mix(in srgb, var(--pshow-accent, #2dd4bf) 22%, transparent);
-    background: color-mix(in srgb, var(--pshow-surface, #14212a) 94%, #000 6%);
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--pshow-text, #f6f7f2) 6%, transparent),
-      0 20px 40px -24px rgb(0 0 0 / 70%);
   }
 
   .product-showcase__image {
@@ -343,9 +324,8 @@
   }
 
   .product-showcase__buy {
-    grid-area: buy;
     min-width: 0;
-    margin-top: 4px;
+    max-width: 100%;
     padding: clamp(20px, 3.5vw, 28px);
     border-radius: var(--pp-radius-lg, 20px);
     background:
@@ -357,7 +337,16 @@
       inset 0 1px 0 color-mix(in srgb, var(--pshow-text, #f6f7f2) 6%, transparent);
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
+    overflow: clip;
+    isolation: isolate;
+  }
+
+  .product-showcase__head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
   }
 
   .product-showcase__meta {
@@ -449,20 +438,21 @@
   }
 
   .product-showcase__price {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    grid-template-areas:
-      'compare . save'
-      'current current current';
-    align-items: end;
-    gap: 2px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 12px;
     margin: 0;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid color-mix(in srgb, var(--pshow-accent, #2dd4bf) 20%, transparent);
+    background: color-mix(in srgb, var(--pshow-accent, #2dd4bf) 6%, transparent);
   }
 
   .product-showcase__price-compare {
-    grid-area: compare;
-    font-size: 0.95rem;
-    color: color-mix(in srgb, var(--pshow-muted, #9aa8a2) 90%, transparent);
+    font-size: 0.92rem;
+    color: var(--pshow-muted, #9aa8a2);
+    order: 1;
   }
 
   .product-showcase__price-compare s {
@@ -474,17 +464,14 @@
   }
 
   .product-showcase__save {
-    grid-area: save;
-    justify-self: end;
-    align-self: center;
-    padding: 4px 10px;
+    order: 2;
+    padding: 3px 9px;
     border-radius: 999px;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.03em;
     color: var(--pshow-accent-ink, #071014);
-    background: linear-gradient(135deg, var(--pshow-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 35%, var(--pshow-accent, #2dd4bf)));
-    box-shadow: 0 4px 16px -6px color-mix(in srgb, var(--pshow-accent, #2dd4bf) 55%, transparent);
+    background: var(--pshow-accent, #2dd4bf);
   }
 
   .product-showcase__save[hidden] {
@@ -492,28 +479,14 @@
   }
 
   .product-showcase__price-current {
-    grid-area: current;
-    font-size: clamp(2rem, 6vw, 2.65rem);
+    flex: 1 1 100%;
+    order: 3;
+    font-size: clamp(2rem, 5.5vw, 2.75rem);
     font-weight: 800;
     letter-spacing: -0.04em;
     line-height: 1;
     font-variant-numeric: tabular-nums;
-    color: var(--pshow-accent, #2dd4bf);
-    text-shadow: 0 0 28px color-mix(in srgb, var(--pshow-accent, #2dd4bf) 35%, transparent);
-  }
-
-  @supports (-webkit-background-clip: text) {
-    .product-showcase__price-current {
-      background: linear-gradient(
-        120deg,
-        var(--pshow-text, #f6f7f2) 0%,
-        var(--pshow-accent, #2dd4bf) 100%
-      );
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: var(--pshow-accent, #2dd4bf);
-      -webkit-text-fill-color: transparent;
-    }
+    color: var(--pshow-text, #f6f7f2);
   }
 
   .product-showcase__description {
@@ -531,7 +504,9 @@
     display: flex;
     flex-direction: column;
     gap: 0;
-    margin-top: 4px;
+    margin-top: 2px;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .product-showcase__form {
@@ -539,6 +514,8 @@
     flex-direction: column;
     gap: 16px;
     margin: 0;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .product-showcase__checkout-actions {
@@ -546,6 +523,9 @@
     flex-direction: column;
     gap: 0;
     margin-top: 4px;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
   }
 
   .product-showcase__checkout-divider {
@@ -742,11 +722,17 @@
     display: flex;
     flex-direction: column;
     gap: 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .product-showcase__purchase .shopify-payment-button__button,
   .product-showcase__purchase .shopify-payment-button button {
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
     min-height: 54px !important;
     border-radius: var(--pp-radius-pill, 999px) !important;
     font-weight: 600 !important;
@@ -756,6 +742,12 @@
     color: var(--pshow-text, #f6f7f2) !important;
     box-shadow: inset 0 1px 0 color-mix(in srgb, var(--pshow-text, #f6f7f2) 8%, transparent) !important;
     transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    box-sizing: border-box !important;
+  }
+
+  .product-showcase__purchase .shopify-payment-button iframe {
+    max-width: 100% !important;
+    width: 100% !important;
   }
 
   .product-showcase__purchase .shopify-payment-button__button:hover,
@@ -830,26 +822,13 @@
     }
 
     .product-showcase__grid {
-      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-      grid-template-areas:
-        'media buy'
-        'price buy';
-      column-gap: 24px;
-      row-gap: 0;
-      align-items: start;
-    }
-
-    .product-showcase__price-card {
-      margin: -26px 0 0 16px;
-      align-self: start;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 28px;
+      align-items: center;
     }
 
     .product-showcase__price-current {
-      font-size: clamp(2.25rem, 3.8vw, 2.85rem);
-    }
-
-    .product-showcase__buy {
-      margin-top: 0;
+      font-size: clamp(2.25rem, 3.5vw, 3rem);
     }
   }
 
