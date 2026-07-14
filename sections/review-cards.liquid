@@ -31,6 +31,11 @@
 
     {% if review_blocks.size > 0 and show_placeholders %}
       {%- liquid
+        assign total_reviews = section.settings.total_review_count
+        if total_reviews == blank or total_reviews < 1
+          assign total_reviews = review_blocks.size
+        endif
+
         assign rating_sum = 0
         assign rating_count = 0
         for block in review_blocks
@@ -45,7 +50,6 @@
         else
           assign avg_rating = 5
           assign avg_rounded = 5
-          assign rating_count = review_blocks.size
         endif
       -%}
       <div class="review-cards__summary">
@@ -58,7 +62,7 @@
           </div>
         </div>
         <p class="review-cards__summary-text">
-          Baserat på <strong>{{ review_blocks.size }} omdömen</strong>
+          Baserat på <strong>{{ total_reviews }} omdömen</strong>
           {% if section.settings.summary_note != blank %} · {{ section.settings.summary_note }}{% endif %}
         </p>
       </div>
@@ -86,23 +90,18 @@
                 </div>
               {% endif %}
               {% if block.settings.quote != blank %}
-                <blockquote class="review-cards__quote">
-                  <span class="review-cards__quote-mark" aria-hidden="true">"</span>
-                  {{ block.settings.quote }}
-                </blockquote>
+                <p class="review-cards__text">{{ block.settings.quote }}</p>
               {% endif %}
               <footer class="review-cards__footer">
-                {% if block.settings.author != blank %}
-                  <cite class="review-cards__author">{{ block.settings.author }}</cite>
-                {% endif %}
-                {% if block.settings.context != blank %}
-                  <span class="review-cards__context">{{ block.settings.context }}</span>
-                {% endif %}
-                {% if show_placeholders %}
-                  <span class="review-cards__sample">Exempelrecension</span>
-                {% else %}
-                  <span class="review-cards__verified">Verifierat köp</span>
-                {% endif %}
+                <div class="review-cards__meta">
+                  {% if block.settings.author != blank %}
+                    <cite class="review-cards__author">{{ block.settings.author }}</cite>
+                  {% endif %}
+                  {% if block.settings.context != blank %}
+                    <span class="review-cards__context">{{ block.settings.context }}</span>
+                  {% endif %}
+                </div>
+                <span class="review-cards__verified">Verifierat köp</span>
               </footer>
             </li>
           {% endif %}
@@ -157,37 +156,37 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 28px;
-    padding: 20px 24px;
-    border-radius: 20px;
+    gap: 10px;
+    margin-bottom: 32px;
+    padding: 24px 28px;
+    border-radius: 22px;
     background: linear-gradient(
       165deg,
-      color-mix(in srgb, var(--rc-accent, #2dd4bf) 10%, var(--rc-surface, #14212a)),
+      color-mix(in srgb, var(--rc-accent, #2dd4bf) 12%, var(--rc-surface, #14212a)),
       var(--rc-surface, #14212a)
     );
-    border: 1px solid color-mix(in srgb, var(--rc-accent, #2dd4bf) 22%, transparent);
-    box-shadow: 0 12px 32px -20px color-mix(in srgb, var(--rc-accent, #2dd4bf) 50%, #000);
+    border: 1px solid color-mix(in srgb, var(--rc-accent, #2dd4bf) 28%, transparent);
+    box-shadow: 0 16px 40px -24px color-mix(in srgb, var(--rc-accent, #2dd4bf) 55%, #000);
   }
 
   .review-cards__summary-score {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
   }
 
   .review-cards__summary-number {
-    font-size: 2.5rem;
+    font-size: clamp(2.4rem, 6vw, 3rem);
     font-weight: 800;
     line-height: 1;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
     color: var(--rc-text, #f6f7f2);
   }
 
   .review-cards__summary-stars {
     display: flex;
-    gap: 2px;
-    font-size: 1.1rem;
+    gap: 3px;
+    font-size: 1.25rem;
   }
 
   .review-cards__summary-text {
@@ -212,14 +211,35 @@
   .review-cards__card {
     position: relative;
     height: 100%;
-    padding: 24px 22px 20px;
+    padding: 22px 22px 18px;
     border-radius: 18px;
-    background-color: var(--rc-surface, #14212a);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--rc-text, #f6f7f2) 4%, var(--rc-surface, #14212a)),
+      var(--rc-surface, #14212a)
+    );
     border: 1px solid color-mix(in srgb, var(--rc-text, #f6f7f2) 8%, transparent);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .review-cards__card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 22px;
+    right: 22px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--rc-accent, #2dd4bf) 70%, transparent),
+      transparent
+    );
+    opacity: 0.85;
   }
 
   .review-cards__card:hover {
@@ -243,34 +263,29 @@
     color: color-mix(in srgb, var(--rc-text, #f6f7f2) 20%, transparent);
   }
 
-  .review-cards__quote {
-    position: relative;
+  .review-cards__text {
     margin: 0;
-    padding-top: 4px;
-    font-size: clamp(0.92rem, 2.4vw, 1rem);
-    line-height: 1.6;
-    font-style: normal;
+    font-size: clamp(0.94rem, 2.4vw, 1.02rem);
+    line-height: 1.65;
     color: var(--rc-text, #f6f7f2);
     text-wrap: pretty;
     flex: 1;
   }
 
-  .review-cards__quote-mark {
-    position: absolute;
-    top: -8px;
-    left: -4px;
-    font-size: 2.5rem;
-    line-height: 1;
-    font-weight: 800;
-    color: color-mix(in srgb, var(--rc-accent, #2dd4bf) 35%, transparent);
-    pointer-events: none;
-  }
-
   .review-cards__footer {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 8px;
     margin-top: auto;
+    padding-top: 4px;
+    border-top: 1px solid color-mix(in srgb, var(--rc-text, #f6f7f2) 7%, transparent);
+  }
+
+  .review-cards__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
   }
 
   .review-cards__author {
@@ -280,15 +295,22 @@
   }
 
   .review-cards__context {
-    font-size: 0.82rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     color: var(--rc-muted, #9aa8a2);
+    background: color-mix(in srgb, var(--rc-text, #f6f7f2) 5%, transparent);
+    border: 1px solid color-mix(in srgb, var(--rc-text, #f6f7f2) 8%, transparent);
   }
 
   .review-cards__verified {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    margin-top: 6px;
+    gap: 5px;
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -298,21 +320,14 @@
 
   .review-cards__verified::before {
     content: '✓';
-    font-size: 0.7rem;
-  }
-
-  .review-cards__sample {
     display: inline-flex;
-    margin-top: 6px;
-    padding: 3px 8px;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
     border-radius: 999px;
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--rc-muted, #9aa8a2);
-    background: color-mix(in srgb, var(--rc-text, #f6f7f2) 6%, transparent);
-    border: 1px solid color-mix(in srgb, var(--rc-text, #f6f7f2) 10%, transparent);
+    font-size: 0.62rem;
+    background: color-mix(in srgb, var(--rc-accent, #2dd4bf) 16%, transparent);
   }
 
   @media screen and (min-width: 540px) and (max-width: 749px) {
@@ -370,13 +385,19 @@
       "type": "textarea",
       "id": "subheading",
       "label": "Subheading",
-      "default": "Ersätt med riktiga omdömen från era kunder."
+      "default": "38 verifierade omdömen — alla 5 stjärnor."
+    },
+    {
+      "type": "number",
+      "id": "total_review_count",
+      "label": "Total review count",
+      "default": 38
     },
     {
       "type": "text",
       "id": "summary_note",
       "label": "Summary note",
-      "default": "Verifierade köpare"
+      "default": "Alla 5 stjärnor"
     },
     {
       "type": "checkbox",

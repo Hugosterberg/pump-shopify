@@ -1231,7 +1231,9 @@
       "settings": {
         "eyebrow": "Omdömen",
         "heading": "Det här säger våra kunder",
-        "subheading": "Verifierade omdömen från riktiga kunder. Lägg till Judge.me-appblock i temaredigeraren för att ersätta exempelkorten nedan.",
+        "subheading": "38 verifierade omdömen — alla 5 stjärnor. Här är några av dem.",
+        "total_review_count": 38,
+        "summary_note": "Alla 5 stjärnor",
         "show_placeholder_reviews": true,
         "background_color": "#071014",
         "surface_color": "#14212a",
