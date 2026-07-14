@@ -179,6 +179,7 @@
     position: sticky;
     top: 0;
     z-index: 200;
+    --header-height: 64px;
     background-color: var(--pp-glass, color-mix(in srgb, var(--hdr-bg, #071014) 88%, transparent));
     backdrop-filter: blur(16px) saturate(1.2);
     border-bottom: 1px solid var(--pp-border);
@@ -534,6 +535,10 @@
   }
 
   @media screen and (min-width: 990px) {
+    .site-header {
+      --header-height: 72px;
+    }
+
     .site-header__inner {
       min-height: 72px;
     }

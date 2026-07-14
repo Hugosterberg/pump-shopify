@@ -246,9 +246,13 @@
   .comparison-share {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 8px;
+    max-width: 100%;
     margin-top: 16px;
-    padding: 9px 15px;
+    min-height: 44px;
+    padding: 10px 15px;
     border-radius: 12px;
     border: 1px solid color-mix(in srgb, var(--cmp-text, #f6f7f2) 12%, transparent);
     background: color-mix(in srgb, var(--cmp-surface, #14212a) 55%, transparent);
@@ -485,7 +489,7 @@
 
   .comparison-section__th {
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: clamp(0.72rem, 2.5vw, 0.8rem);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--cmp-muted, #9aa8a2);

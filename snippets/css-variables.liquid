@@ -38,6 +38,13 @@
     --pp-gradient-accent: linear-gradient(135deg, var(--pp-accent), color-mix(in srgb, var(--pp-accent-blue) 32%, var(--pp-accent)));
     --pp-gradient-section-glow: radial-gradient(ellipse 80% 50% at 50% 0%, color-mix(in srgb, var(--pp-accent) 12%, transparent), transparent 70%);
     --pp-section-py: clamp(52px, 8vw, 80px);
+    --header-height: 64px;
+  }
+
+  @media screen and (min-width: 990px) {
+    :root {
+      --header-height: 72px;
+    }
   }
 {% endstyle %}
 

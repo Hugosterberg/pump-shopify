@@ -72,12 +72,13 @@ p:empty {
 }
 
 body.has-sticky-atc {
-  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
 }
 
 /** Theme styles below */
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -766,7 +767,23 @@ textarea,
 }
 
 /* Skip paint for far below-fold sections until scrolled near */
-main .shopify-section:nth-child(n + 4) {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 520px;
+@media screen and (min-width: 990px) {
+  main .shopify-section:nth-child(n + 6) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 520px;
+  }
+}
+
+/* Responsive polish — shared across homepage sections */
+@media screen and (max-width: 479px) {
+  .shopify-section [class$='__eyebrow']::before,
+  .shopify-section [class$='__eyebrow']::after {
+    width: 16px;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .pp-trust-atc:not(.pp-trust-atc--compact):not(.pp-trust-atc--inline) {
+    grid-template-columns: 1fr !important;
+  }
 }

@@ -807,9 +807,11 @@
     border: 0;
   }
 
-  .main-product__buy-trust .pp-trust-atc:not(.pp-trust-atc--compact) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+  @media screen and (min-width: 750px) {
+    .main-product__buy-trust .pp-trust-atc:not(.pp-trust-atc--compact) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
   }
 
   .main-product__buy-trust .pp-trust-atc__chip {
@@ -1065,11 +1067,6 @@
 
     .main-product__inner > .breadcrumbs {
       grid-column: 1 / -1;
-    }
-
-    .main-product__buy-trust .pp-trust-atc:not(.pp-trust-atc--compact) {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
     }
   }
 {% endstylesheet %}

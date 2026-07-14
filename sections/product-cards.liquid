@@ -339,8 +339,22 @@
     }
 
     .product-cards__grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 24px;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .product-cards__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .product-cards__card--featured::before {
+      top: auto;
+      bottom: 14px;
+      right: 14px;
     }
   }
 
@@ -410,11 +424,6 @@
   }
 
   @media screen and (min-width: 640px) {
-    .product-cards__closing .pp-trust-atc--compact {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
     .product-cards__closing .pp-trust-atc__pill {
       justify-content: center;
       padding-inline: 12px;
@@ -434,6 +443,13 @@
       text-align: center;
       font-size: 0.78rem;
       line-height: 1.3;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-cards__closing .pp-trust-atc--compact {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 

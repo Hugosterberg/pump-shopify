@@ -230,6 +230,19 @@
     .use-case-grid {
       padding-block: 68px;
     }
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .use-case-grid__list {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .use-case-grid {
+      padding-block: 68px;
+    }
 
     .use-case-grid__list {
       grid-template-columns: repeat(3, 1fr);

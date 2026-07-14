@@ -315,6 +315,18 @@
     border: 1px solid color-mix(in srgb, var(--rc-text, #f6f7f2) 10%, transparent);
   }
 
+  @media screen and (min-width: 540px) and (max-width: 749px) {
+    .review-cards__list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .review-cards__card:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      max-width: min(100%, 420px);
+      justify-self: center;
+    }
+  }
+
   @media screen and (min-width: 750px) {
     .review-cards {
       padding-block: 56px;
