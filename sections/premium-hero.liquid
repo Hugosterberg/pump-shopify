@@ -13,10 +13,11 @@
   assign hero_product = section.settings.featured_product
   if section.settings.use_live_price_badge and hero_product != blank
     assign hero_variant = hero_product.selected_or_first_available_variant
-    if hero_product.compare_at_price > hero_product.price
-      assign hero_badge = 'Just nu ' | append: hero_variant.price | money
+    assign hero_price = hero_variant.price | money
+    if hero_variant.compare_at_price > hero_variant.price
+      assign hero_badge = 'Just nu ' | append: hero_price
     else
-      assign hero_badge = 'Från ' | append: hero_variant.price | money
+      assign hero_badge = 'Från ' | append: hero_price
     endif
   endif
 %}
