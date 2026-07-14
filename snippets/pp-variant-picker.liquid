@@ -1,0 +1,87 @@
+{% comment %}
+  Premium variant picker — pill buttons synced to a hidden/native select.
+
+  @param {product} product
+  @param {variant} current_variant
+  @param {string} section_id - Unique section id for labels
+  @param {string} [select_class] - Extra classes on the select element
+{% endcomment %}
+
+{% liquid
+  assign picker_variant = current_variant | default: product.selected_or_first_available_variant
+%}
+
+{% if product.variants.size > 1 %}
+  <div class="pp-variant-picker">
+    <span class="pp-variant-picker__label" id="VariantLabel-{{ section_id }}">Variant</span>
+    <div class="pp-variant-picker__grid" role="group" aria-labelledby="VariantLabel-{{ section_id }}">
+      {% for variant in product.variants %}
+        <button
+          type="button"
+          class="pp-variant-picker__pill{% if variant.id == picker_variant.id %} is-selected{% endif %}"
+          data-variant-pill="{{ variant.id }}"
+          {% unless variant.available %}
+            disabled
+            aria-disabled="true"
+          {% endunless %}
+        >
+          {{ variant.title }}
+        </button>
+      {% endfor %}
+    </div>
+    <select
+      id="VariantSelect-{{ section_id }}"
+      class="pp-variant-picker__select{% if select_class != blank %} {{ select_class }}{% endif %}"
+      name="id"
+      data-variant-select
+      aria-hidden="true"
+      tabindex="-1"
+    >
+      {% for variant in product.variants %}
+        <option
+          value="{{ variant.id }}"
+          {% if variant.id == picker_variant.id %}
+            selected="selected"
+          {% endif %}
+          {% unless variant.available %}
+            disabled
+          {% endunless %}
+        >
+          {{ variant.title }}{% unless variant.available %} — slutsåld{% endunless %}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+{% else %}
+  <input type="hidden" name="id" value="{{ picker_variant.id }}">
+{% endif %}
+
+<script>
+  (function () {
+    var sectionId = {{ section_id | json }};
+    var picker = document.getElementById('VariantSelect-' + sectionId);
+    if (!picker) return;
+    var root = picker.closest('.pp-variant-picker');
+    if (!root) return;
+
+    root.querySelectorAll('[data-variant-pill]').forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        if (pill.disabled) return;
+        var id = pill.getAttribute('data-variant-pill');
+        if (!id || picker.value === id) return;
+
+        picker.value = id;
+        root.querySelectorAll('[data-variant-pill]').forEach(function (btn) {
+          btn.classList.toggle('is-selected', btn.getAttribute('data-variant-pill') === id);
+        });
+        picker.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    });
+
+    picker.addEventListener('change', function () {
+      root.querySelectorAll('[data-variant-pill]').forEach(function (btn) {
+        btn.classList.toggle('is-selected', btn.getAttribute('data-variant-pill') === picker.value);
+      });
+    });
+  })();
+</script>

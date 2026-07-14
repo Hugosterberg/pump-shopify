@@ -110,46 +110,68 @@
       </button>
 
       {% if section.settings.menu != blank %}
-        <details class="site-header__drawer">
-          <summary class="site-header__menu-toggle" aria-label="Öppna meny">
-            <span class="site-header__menu-icon" aria-hidden="true"></span>
-          </summary>
-          <nav class="site-header__drawer-nav" aria-label="Mobilmeny">
-            <ul role="list">
-              {% for link in section.settings.menu.links %}
-                <li>
-                  <a
-                    class="site-header__drawer-link"
-                    href="{{ link.url }}"
-                    {% if link.current %}
-                      aria-current="page"
-                    {% endif %}
-                  >
-                    {{ link.title }}
-                  </a>
-                </li>
-              {% endfor %}
-            </ul>
-            {% if section.settings.show_cta and section.settings.cta_label != blank %}
-              <a class="site-header__drawer-cta" href="{{ section.settings.cta_link | default: '#product-showcase' }}">
-                {{ section.settings.cta_label }}
-              </a>
-            {% endif %}
-            {% if section.settings.show_localization %}
-              <div class="site-header__drawer-localization">
-                {% render 'localization-form',
-                  class_prefix: 'site-header__drawer-loc',
-                  form_id: 'DrawerLocalizationForm',
-                  compact: true,
-                  show_label: false
-                %}
-              </div>
-            {% endif %}
-          </nav>
-        </details>
+        <button
+          type="button"
+          class="site-header__menu-toggle"
+          data-mobile-nav-open
+          aria-expanded="false"
+          aria-controls="SiteHeaderMobileNav"
+          aria-label="Öppna meny"
+        >
+          <span class="site-header__menu-icon" aria-hidden="true"></span>
+        </button>
       {% endif %}
     </div>
   </div>
+
+  {% if section.settings.menu != blank %}
+    <div class="site-header__mobile-overlay" data-mobile-nav hidden>
+      <div class="site-header__mobile-backdrop" data-mobile-nav-close tabindex="-1"></div>
+      <nav
+        id="SiteHeaderMobileNav"
+        class="site-header__mobile-panel"
+        aria-label="Mobilmeny"
+        data-mobile-nav-panel
+      >
+        <div class="site-header__mobile-head">
+          <span class="site-header__mobile-title">Meny</span>
+          <button type="button" class="site-header__mobile-close" data-mobile-nav-close aria-label="Stäng meny">
+            {% render 'icon', name: 'x', size: 20 %}
+          </button>
+        </div>
+        <ul class="site-header__mobile-links" role="list">
+          {% for link in section.settings.menu.links %}
+            <li>
+              <a
+                class="site-header__mobile-link"
+                href="{{ link.url }}"
+                {% if link.current %}
+                  aria-current="page"
+                {% endif %}
+              >
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+        {% if section.settings.show_cta and section.settings.cta_label != blank %}
+          <a class="site-header__mobile-cta pp-btn-primary pp-btn--full" href="{{ section.settings.cta_link | default: '#product-showcase' }}">
+            {{ section.settings.cta_label }}
+          </a>
+        {% endif %}
+        {% if section.settings.show_localization %}
+          <div class="site-header__mobile-localization">
+            {% render 'localization-form',
+              class_prefix: 'site-header__mobile-loc',
+              form_id: 'MobileLocalizationForm',
+              compact: true,
+              show_label: false
+            %}
+          </div>
+        {% endif %}
+      </nav>
+    </div>
+  {% endif %}
 </header>
 
 {% stylesheet %}
@@ -324,23 +346,18 @@
     display: none;
   }
 
-  .site-header__drawer {
-    position: relative;
-  }
-
   .site-header__menu-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 40px;
     height: 40px;
-    border-radius: 10px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
     cursor: pointer;
-    list-style: none;
-  }
-
-  .site-header__menu-toggle::-webkit-details-marker {
-    display: none;
+    color: var(--hdr-text, #f6f7f2);
+    background: color-mix(in srgb, var(--hdr-text, #f6f7f2) 6%, transparent);
   }
 
   .site-header__menu-icon,
@@ -367,71 +384,151 @@
 
   .site-header__menu-icon::after {
     top: 6px;
+    transition: transform 0.2s ease, top 0.2s ease;
   }
 
-  .site-header__drawer-nav {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    min-width: 240px;
-    padding: 16px;
-    border-radius: 14px;
-    background-color: var(--hdr-bg, #071014);
-    border: 1px solid var(--hdr-border, rgba(255, 255, 255, 0.08));
-    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.6);
+  .site-header__menu-icon::before {
+    transition: transform 0.2s ease, top 0.2s ease;
   }
 
-  .site-header__drawer:not([open]) .site-header__drawer-nav {
+  .site-header__menu-toggle[aria-expanded='true'] .site-header__menu-icon {
+    background-color: transparent;
+  }
+
+  .site-header__menu-toggle[aria-expanded='true'] .site-header__menu-icon::before {
+    top: 0;
+    transform: rotate(45deg);
+  }
+
+  .site-header__menu-toggle[aria-expanded='true'] .site-header__menu-icon::after {
+    top: 0;
+    transform: rotate(-45deg);
+  }
+
+  .site-header__mobile-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 220;
+  }
+
+  .site-header__mobile-overlay[hidden] {
     display: none;
   }
 
-  .site-header__drawer-nav ul {
+  body.mobile-nav-open {
+    overflow: hidden;
+  }
+
+  .site-header__mobile-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgb(7 16 20 / 72%);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .site-header__mobile-overlay.is-open .site-header__mobile-backdrop {
+    opacity: 1;
+  }
+
+  .site-header__mobile-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: min(100%, 320px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 20px;
+    background: linear-gradient(180deg, var(--hdr-bg, #071014) 0%, color-mix(in srgb, var(--hdr-bg, #071014) 92%, #000) 100%);
+    border-left: 1px solid var(--hdr-border, rgba(255, 255, 255, 0.08));
+    box-shadow: -24px 0 60px rgb(0 0 0 / 45%);
+    transform: translateX(100%);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .site-header__mobile-overlay.is-open .site-header__mobile-panel {
+    transform: translateX(0);
+  }
+
+  .site-header__mobile-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid color-mix(in srgb, var(--hdr-text, #f6f7f2) 10%, transparent);
+  }
+
+  .site-header__mobile-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--hdr-muted, #9aa8a2);
+  }
+
+  .site-header__mobile-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--hdr-muted, #9aa8a2);
+    background: color-mix(in srgb, var(--hdr-text, #f6f7f2) 6%, transparent);
+  }
+
+  .site-header__mobile-links {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
+    flex: 1;
+    overflow-y: auto;
   }
 
-  .site-header__drawer-link {
+  .site-header__mobile-link {
     display: block;
-    padding: 12px 14px;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    text-decoration: none;
-    color: var(--hdr-text, #f6f7f2);
-  }
-
-  .site-header__drawer-link:hover {
-    background-color: color-mix(in srgb, var(--hdr-text, #f6f7f2) 6%, transparent);
-  }
-
-  .site-header__drawer-cta {
-    display: block;
-    margin-top: 12px;
-    padding: 14px;
-    border-radius: 999px;
-    text-align: center;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 1rem;
     font-weight: 600;
     text-decoration: none;
-    color: var(--hdr-bg, #071014);
-    background-color: var(--hdr-accent, #2dd4bf);
+    color: var(--hdr-text, #f6f7f2);
+    transition: background 0.18s ease, color 0.18s ease;
   }
 
-  .site-header__drawer-localization {
+  .site-header__mobile-link:hover,
+  .site-header__mobile-link[aria-current='page'] {
+    background: color-mix(in srgb, var(--hdr-accent, #2dd4bf) 12%, transparent);
+    color: var(--hdr-accent, #2dd4bf);
+  }
+
+  .site-header__mobile-cta {
+    margin-top: 20px;
+    --pp-accent: var(--hdr-accent, #2dd4bf);
+    --pp-accent-ink: var(--hdr-bg, #071014);
+  }
+
+  .site-header__mobile-localization {
     margin-top: 16px;
     padding-top: 16px;
     border-top: 1px solid var(--hdr-border, rgba(255, 255, 255, 0.08));
   }
 
-  .site-header__drawer-loc__fields--compact {
+  .site-header__mobile-loc__fields--compact {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .site-header__drawer-loc__fields--compact select {
+  .site-header__mobile-loc__fields--compact select {
     max-width: none;
     width: 100%;
   }
@@ -449,8 +546,12 @@
       display: inline-flex;
     }
 
-    .site-header__drawer {
+    .site-header__menu-toggle {
       display: none;
+    }
+
+    .site-header__mobile-overlay {
+      display: none !important;
     }
 
     .site-header__logo {
@@ -475,6 +576,65 @@
 
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
+
+    const mobileNav = header.querySelector('[data-mobile-nav]');
+    const mobileOpen = header.querySelector('[data-mobile-nav-open]');
+    const mobilePanel = header.querySelector('[data-mobile-nav-panel]');
+    let mobileLastFocus = null;
+
+    function openMobileNav() {
+      if (!mobileNav || !mobileOpen) return;
+      mobileLastFocus = document.activeElement;
+      mobileNav.hidden = false;
+      mobileNav.classList.add('is-open');
+      mobileOpen.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('mobile-nav-open');
+      window.requestAnimationFrame(function () {
+        const firstLink = mobilePanel && mobilePanel.querySelector('a, button');
+        if (firstLink) firstLink.focus();
+      });
+    }
+
+    function closeMobileNav() {
+      if (!mobileNav || !mobileOpen) return;
+      mobileNav.classList.remove('is-open');
+      mobileOpen.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('mobile-nav-open');
+      window.setTimeout(function () {
+        if (!mobileNav.classList.contains('is-open')) {
+          mobileNav.hidden = true;
+        }
+      }, 280);
+      if (mobileLastFocus && typeof mobileLastFocus.focus === 'function') {
+        mobileLastFocus.focus();
+      }
+    }
+
+    if (mobileOpen) {
+      mobileOpen.addEventListener('click', function () {
+        if (mobileNav.classList.contains('is-open')) {
+          closeMobileNav();
+        } else {
+          openMobileNav();
+        }
+      });
+    }
+
+    header.querySelectorAll('[data-mobile-nav-close]').forEach(function (el) {
+      el.addEventListener('click', closeMobileNav);
+    });
+
+    if (mobilePanel) {
+      mobilePanel.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', closeMobileNav);
+      });
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && mobileNav && mobileNav.classList.contains('is-open')) {
+        closeMobileNav();
+      }
+    });
   })();
 {% endjavascript %}
 
@@ -518,7 +678,7 @@
       "type": "text",
       "id": "cta_label",
       "label": "CTA label",
-      "default": "Köp nu"
+      "default": "Lägg i varukorg"
     },
     {
       "type": "url",

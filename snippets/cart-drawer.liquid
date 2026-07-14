@@ -46,7 +46,15 @@
                 {% unless item.variant.title == 'Default Title' %}
                   <p class="cart-drawer__variant">{{ item.variant.title }}</p>
                 {% endunless %}
-                <p class="cart-drawer__price">{{ item.final_line_price | money }}</p>
+                {% liquid
+                  assign unit_price = item.final_price
+                  if item.quantity > 1
+                    assign price_label = unit_price | money | append: ' × ' | append: item.quantity
+                  else
+                    assign price_label = item.final_line_price | money
+                  endif
+                %}
+                <p class="cart-drawer__price">{{ price_label }}</p>
                 <div class="cart-drawer__qty">
                   <label class="visually-hidden" for="CartDrawerQty-{{ forloop.index }}">Antal</label>
                   <button type="button" class="cart-drawer__qty-btn" data-cart-qty-change data-line="{{ item.key }}" data-quantity="{{ item.quantity | minus: 1 }}" aria-label="Minska antal">−</button>
@@ -107,7 +115,7 @@
           <span>Delsumma</span>
           <strong data-cart-drawer-subtotal>{{ cart.total_price | money }}</strong>
         </p>
-        <a class="cart-drawer__checkout" href="/checkout" data-cart-checkout>
+        <a class="cart-drawer__checkout pp-btn-primary pp-btn--full" href="{{ routes.root_url }}checkout" data-cart-checkout>
           Gå till kassan
         </a>
       </div>
@@ -128,8 +136,15 @@
     </footer>
 
     <p class="cart-drawer__status visually-hidden" data-cart-live-region aria-live="polite" aria-atomic="true"></p>
+    <div class="cart-drawer__spinner" data-cart-spinner aria-hidden="true">
+      <span class="pp-spinner"></span>
+    </div>
   </aside>
 </div>
+
+<template id="CartDrawerEmptyIcon">
+  {% render 'icon', name: 'droplets', size: 32 %}
+</template>
 
 {% stylesheet %}
   .cart-drawer {
@@ -606,9 +621,58 @@
     color: var(--pp-accent, #2dd4bf);
   }
 
-  .cart-drawer.is-busy .cart-drawer__panel {
-    opacity: 0.92;
+  .cart-drawer.is-busy .cart-drawer__spinner {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .cart-drawer__spinner {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--pp-bg-deep, #071014) 35%, transparent);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
     pointer-events: none;
+    z-index: 2;
+  }
+
+  .cart-drawer.is-busy .cart-drawer__panel {
+    pointer-events: none;
+  }
+
+  .cart-drawer__checkout {
+    margin-top: 4px;
+  }
+
+  .cart-drawer__checkout:not(.pp-btn-primary) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    border-radius: var(--pp-radius-pill, 999px);
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--pp-accent-ink, #071014);
+    background: linear-gradient(135deg, var(--pp-accent, #2dd4bf) 0%, color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 22%, var(--pp-accent, #2dd4bf)) 100%);
+    box-shadow: var(--pp-shadow-glow);
+  }
+
+  .cart-drawer.is-busy .cart-drawer__panel {
+    opacity: 1;
+  }
+
+  .cart-drawer__item.is-updating {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cart-drawer__panel {
+      transition: none;
+    }
   }
 
   .cart-drawer .visually-hidden {
@@ -621,12 +685,6 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .cart-drawer__panel {
-      transition: none;
-    }
   }
 {% endstylesheet %}
 

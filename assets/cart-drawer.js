@@ -16,6 +16,38 @@
 
   let isOpen = false;
   let isBusy = false;
+  let lastFocus = null;
+
+  function getEmptyIconHtml() {
+    const tpl = document.getElementById('CartDrawerEmptyIcon');
+    return tpl ? tpl.innerHTML : '';
+  }
+
+  function getFocusableElements(container) {
+    if (!container) return [];
+    return Array.from(
+      container.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter(function (el) {
+      return el.offsetParent !== null || el === container;
+    });
+  }
+
+  function trapFocus(event) {
+    if (!isOpen || event.key !== 'Tab') return;
+    const focusables = getFocusableElements(panel);
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
 
   function shopifyRoot() {
     if (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) {
@@ -226,7 +258,9 @@
 
       body.innerHTML =
         '<div class="cart-drawer__empty" data-cart-drawer-empty>' +
-        '<span class="cart-drawer__empty-icon" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span>' +
+        '<span class="cart-drawer__empty-icon" aria-hidden="true">' +
+        getEmptyIconHtml() +
+        '</span>' +
         '<p class="cart-drawer__empty-title">' +
         escapeHtml(config.strings.empty) +
         '</p>' +
@@ -253,6 +287,11 @@
             ? '<p class="cart-drawer__variant">' + escapeHtml(item.variant_title) + '</p>'
             : '';
 
+        const priceLabel =
+          item.quantity > 1
+            ? formatMoney(item.final_price) + ' × ' + item.quantity
+            : formatMoney(item.final_line_price);
+
         return (
           '<li class="cart-drawer__item" data-cart-line="' +
           escapeHtml(item.key) +
@@ -270,7 +309,7 @@
           '</a>' +
           variant +
           '<p class="cart-drawer__price">' +
-          escapeHtml(formatMoney(item.final_line_price)) +
+          escapeHtml(priceLabel) +
           '</p>' +
           '<div class="cart-drawer__qty">' +
           '<label class="visually-hidden" for="CartDrawerQtyJs-' +
@@ -333,6 +372,8 @@
     if (isBusy) return Promise.resolve();
     isBusy = true;
     root.classList.add('is-busy');
+    const lineEl = root.querySelector('[data-cart-line="' + line + '"]');
+    if (lineEl) lineEl.classList.add('is-updating');
 
     return fetch(shopifyRoot() + 'cart/change.js', {
       method: 'POST',
@@ -357,6 +398,8 @@
       .finally(function () {
         isBusy = false;
         root.classList.remove('is-busy');
+        if (lineEl) lineEl.classList.remove('is-updating');
+        document.dispatchEvent(new CustomEvent('pump:cart-settled'));
       });
   }
 
@@ -400,6 +443,7 @@
       .finally(function () {
         isBusy = false;
         root.classList.remove('is-busy');
+        document.dispatchEvent(new CustomEvent('pump:cart-settled'));
       });
   }
 
@@ -411,15 +455,22 @@
     return [{ id: Number(id), quantity: quantity > 0 ? quantity : 1 }];
   }
 
-  function openDrawer() {
+  function openDrawer(trigger) {
     if (isOpen) return;
+    lastFocus = trigger && typeof trigger.focus === 'function' ? trigger : document.activeElement;
     isOpen = true;
     root.hidden = false;
     root.setAttribute('aria-hidden', 'false');
     root.classList.add('is-open');
     document.body.classList.add('cart-drawer-open');
+    document.addEventListener('keydown', trapFocus);
     window.requestAnimationFrame(function () {
-      if (panel) panel.focus();
+      const focusables = getFocusableElements(panel);
+      if (focusables.length) {
+        focusables[0].focus();
+      } else if (panel) {
+        panel.focus();
+      }
     });
   }
 
@@ -429,9 +480,13 @@
     root.classList.remove('is-open');
     root.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('cart-drawer-open');
+    document.removeEventListener('keydown', trapFocus);
     window.setTimeout(function () {
       if (!isOpen) root.hidden = true;
     }, 250);
+    if (lastFocus && typeof lastFocus.focus === 'function') {
+      lastFocus.focus();
+    }
   }
 
   function shouldUseAjaxForForm(form, submitter) {
@@ -445,7 +500,9 @@
     const openTrigger = event.target.closest('[data-cart-open]');
     if (openTrigger) {
       event.preventDefault();
-      refreshCart().then(openDrawer);
+      refreshCart().then(function () {
+        openDrawer(openTrigger);
+      });
       return;
     }
 
@@ -509,6 +566,7 @@
         submitBtn.classList.remove('is-loading');
         submitBtn.textContent = submitBtn.dataset.defaultLabel || 'Lägg i varukorg';
       }
+      document.dispatchEvent(new CustomEvent('pump:cart-settled'));
     });
   });
 

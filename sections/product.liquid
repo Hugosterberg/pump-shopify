@@ -143,23 +143,25 @@
 
       <h1 class="main-product__title">{{ product.title }}</h1>
 
-      <div class="main-product__meta">
-        {% if current_variant.available %}
-          <span class="main-product__badge main-product__badge--stock">
-            {% render 'icon', name: 'check', size: 12 %}
-            I lager
-          </span>
-        {% endif %}
+      <div class="main-product__meta" data-main-product-meta>
+        <span class="main-product__badge main-product__badge--stock" data-stock-badge{% unless current_variant.available %} hidden{% endunless %}>
+          {% render 'icon', name: 'check', size: 12 %}
+          I lager
+        </span>
         <span class="main-product__badge main-product__badge--delivery">
           {% render 'icon', name: 'truck', size: 12 %}
           2–5 dagar
         </span>
-        {% if current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= 8 %}
-          <span class="main-product__badge main-product__badge--urgency">
-            {% render 'icon', name: 'bolt', size: 12 %}
-            {{ current_variant.inventory_quantity }} kvar
-          </span>
-        {% endif %}
+        <span
+          class="main-product__badge main-product__badge--urgency"
+          data-urgency-badge
+          {% unless current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= 8 %}
+            hidden
+          {% endunless %}
+        >
+          {% render 'icon', name: 'bolt', size: 12 %}
+          <span data-urgency-count>{{ current_variant.inventory_quantity }}</span> kvar
+        </span>
       </div>
 
       <div class="main-product__offer">
@@ -186,27 +188,12 @@
         {% capture product_form_id %}MainProductForm-{{ section.id }}{% endcapture %}
         {% form 'product', product, id: product_form_id, class: 'main-product__form ajax-cart-form' %}
           {% if product.variants.size > 1 %}
-            <label class="main-product__label" for="MainProduct-Variant-{{ section.id }}">Variant</label>
-            <select
-              id="MainProduct-Variant-{{ section.id }}"
-              class="main-product__select"
-              name="id"
-              data-variant-select
-            >
-              {% for variant in product.variants %}
-                <option
-                  value="{{ variant.id }}"
-                  {% if variant == current_variant %}
-                    selected="selected"
-                  {% endif %}
-                  {% unless variant.available %}
-                    disabled
-                  {% endunless %}
-                >
-                  {{ variant.title }}{% unless variant.available %} — slutsåld{% endunless %}
-                </option>
-              {% endfor %}
-            </select>
+            {% render 'pp-variant-picker',
+              product: product,
+              current_variant: current_variant,
+              section_id: section.id,
+              select_class: 'main-product__select'
+            %}
           {% else %}
             <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
           {% endif %}
@@ -322,7 +309,9 @@
         "available": {{ variant.available | json }},
         "price": {{ variant.price | json }},
         "compare_at_price": {{ variant.compare_at_price | default: 0 | json }},
-        "featured_media_id": {% if variant.featured_media %}{{ variant.featured_media.id | json }}{% else %}null{% endif %}
+        "featured_media_id": {% if variant.featured_media %}{{ variant.featured_media.id | json }}{% else %}null{% endif %},
+        "inventory_quantity": {{ variant.inventory_quantity | json }},
+        "inventory_management": {{ variant.inventory_management | json }}
       }{%- unless forloop.last -%},{%- endunless -%}
     {%- endfor -%}
   ]
@@ -1104,6 +1093,9 @@
     const priceCompare = root.querySelector('[data-price-compare]');
     const saveBadge = root.querySelector('[data-save-badge]');
     const submitBtn = root.querySelector('[data-main-product-submit]');
+    const stockBadge = root.querySelector('[data-stock-badge]');
+    const urgencyBadge = root.querySelector('[data-urgency-badge]');
+    const urgencyCount = root.querySelector('[data-urgency-count]');
     const thumbButtons = root.querySelectorAll('[data-media-index]');
     const mediaPrevBtn = root.querySelector('[data-media-prev]');
     const mediaNextBtn = root.querySelector('[data-media-next]');
@@ -1236,10 +1228,30 @@
             variantId: variant.id,
             available: variant.available,
             price: variant.price,
+            compareAtPrice: variant.compare_at_price || 0,
             formattedPrice: formatMoney(variant.price),
+            formattedComparePrice:
+              variant.compare_at_price > variant.price ? formatMoney(variant.compare_at_price) : '',
           },
         })
       );
+    }
+
+    function updateMetaBadges(variant) {
+      if (stockBadge) {
+        stockBadge.hidden = !variant.available;
+      }
+
+      if (urgencyBadge && urgencyCount) {
+        const showUrgency =
+          variant.inventory_management === 'shopify' &&
+          variant.inventory_quantity > 0 &&
+          variant.inventory_quantity <= 8;
+        urgencyBadge.hidden = !showUrgency;
+        if (showUrgency) {
+          urgencyCount.textContent = String(variant.inventory_quantity);
+        }
+      }
     }
 
     function updateVariant(id) {
@@ -1272,6 +1284,7 @@
         showMedia(findMediaIndex(variant.featured_media_id));
       }
 
+      updateMetaBadges(variant);
       dispatchVariantChange(variant);
     }
 

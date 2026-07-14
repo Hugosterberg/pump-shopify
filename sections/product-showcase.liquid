@@ -55,7 +55,11 @@
               {% render 'icon', name: 'truck', size: 12 %}
               2–5 dagar
             </span>
-            <span class="product-showcase__badge product-showcase__badge--muted">
+            <span
+              class="product-showcase__badge product-showcase__badge--muted"
+              data-showcase-stock-badge
+              {% unless current_variant.available %}hidden{% endunless %}
+            >
               {% render 'icon', name: 'check', size: 12 %}
               I lager
             </span>
@@ -94,29 +98,12 @@
               {% assign current_variant = showcase_product.selected_or_first_available_variant %}
 
               {% if showcase_product.variants.size > 1 %}
-                <label class="product-showcase__label" for="ProductShowcase-Variant-{{ section.id }}">
-                  Variant
-                </label>
-                <select
-                  id="ProductShowcase-Variant-{{ section.id }}"
-                  class="product-showcase__select"
-                  name="id"
-                  data-variant-select
-                >
-                  {% for variant in showcase_product.variants %}
-                    <option
-                      value="{{ variant.id }}"
-                      {% if variant == current_variant %}
-                        selected="selected"
-                      {% endif %}
-                      {% unless variant.available %}
-                        disabled
-                      {% endunless %}
-                    >
-                      {{ variant.title }}, {{ variant.price | money }}
-                    </option>
-                  {% endfor %}
-                </select>
+                {% render 'pp-variant-picker',
+                  product: showcase_product,
+                  current_variant: current_variant,
+                  section_id: section.id,
+                  select_class: 'product-showcase__select'
+                %}
               {% else %}
                 <input type="hidden" name="id" value="{{ current_variant.id }}">
               {% endif %}
@@ -210,6 +197,7 @@
     var priceCompare = root.querySelector('[data-price-compare]');
     var saveBadge = root.querySelector('[data-save-badge]');
     var submitBtn = root.querySelector('[data-product-showcase-submit]');
+    var stockBadge = root.querySelector('[data-showcase-stock-badge]');
     var moneyFormat = (window.PumpTheme && window.PumpTheme.moneyFormat) || '';
 
     function formatMoney(cents) {
@@ -217,6 +205,22 @@
         return Shopify.formatMoney(cents, moneyFormat);
       }
       return (cents / 100).toFixed(0) + ' kr';
+    }
+
+    function dispatchVariantChange(variant) {
+      document.dispatchEvent(
+        new CustomEvent('pump:variant-change', {
+          detail: {
+            variantId: variant.id,
+            available: variant.available,
+            price: variant.price,
+            compareAtPrice: variant.compare_at_price || 0,
+            formattedPrice: formatMoney(variant.price),
+            formattedComparePrice:
+              variant.compare_at_price > variant.price ? formatMoney(variant.compare_at_price) : '',
+          },
+        })
+      );
     }
 
     function updateVariant(id) {
@@ -246,12 +250,19 @@
           ? {{ section.settings.button_label | default: 'Lägg i varukorg' | json }}
           : 'Slutsåld';
       }
+
+      if (stockBadge) {
+        stockBadge.hidden = !variant.available;
+      }
+
+      dispatchVariantChange(variant);
     }
 
     if (select) {
       select.addEventListener('change', function () {
         updateVariant(select.value);
       });
+      updateVariant(select.value);
     }
   })();
 </script>

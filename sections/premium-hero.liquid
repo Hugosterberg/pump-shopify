@@ -8,6 +8,17 @@
   if secondary_url == blank
     assign secondary_url = '#how-it-works'
   endif
+
+  assign hero_badge = section.settings.badge_text
+  assign hero_product = section.settings.featured_product
+  if section.settings.use_live_price_badge and hero_product != blank
+    assign hero_variant = hero_product.selected_or_first_available_variant
+    if hero_product.compare_at_price > hero_product.price
+      assign hero_badge = 'Just nu ' | append: hero_variant.price | money
+    else
+      assign hero_badge = 'Från ' | append: hero_variant.price | money
+    endif
+  endif
 %}
 
 <div
@@ -58,12 +69,12 @@
       {% if section.settings.primary_button_label != blank or section.settings.secondary_button_label != blank %}
         <div class="premium-hero__actions">
           {% if section.settings.primary_button_label != blank %}
-            <a class="premium-hero__btn premium-hero__btn--primary" href="{{ primary_url }}">
+            <a class="premium-hero__btn premium-hero__btn--primary pp-btn-primary pp-btn-lg" href="{{ primary_url }}">
               {{ section.settings.primary_button_label }}
             </a>
           {% endif %}
           {% if section.settings.secondary_button_label != blank %}
-            <a class="premium-hero__btn premium-hero__btn--secondary" href="{{ secondary_url }}">
+            <a class="premium-hero__btn premium-hero__btn--secondary pp-btn-secondary" href="{{ secondary_url }}">
               {{ section.settings.secondary_button_label }}
             </a>
           {% endif %}
@@ -111,8 +122,8 @@
           </div>
         {% endif %}
 
-        {% if section.settings.badge_text != blank %}
-          <span class="premium-hero__offer">{{ section.settings.badge_text }}</span>
+        {% if hero_badge != blank %}
+          <span class="premium-hero__offer">{{ hero_badge }}</span>
         {% endif %}
       </div>
     </div>
@@ -660,8 +671,20 @@
       "type": "text",
       "id": "badge_text",
       "label": "Image badge",
-      "info": "Optional offer label shown on the image, e.g. a campaign price.",
+      "info": "Optional offer label shown on the image. Ignored when live price badge is enabled.",
       "default": "Just nu 899 kr"
+    },
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Featured product",
+      "info": "Used for live price badge on the hero image."
+    },
+    {
+      "type": "checkbox",
+      "id": "use_live_price_badge",
+      "label": "Use live price from featured product",
+      "default": true
     },
     {
       "type": "header",
