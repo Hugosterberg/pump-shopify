@@ -306,23 +306,39 @@
 
   .product-showcase__media {
     position: relative;
-    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: min(100%, 560px);
+    min-height: clamp(280px, 72vw, 420px);
+    margin-inline: auto;
+    padding: clamp(18px, 4vw, 32px);
     border-radius: 20px;
     overflow: hidden;
-    background-color: var(--pshow-surface, #14212a);
+    background:
+      radial-gradient(70% 70% at 50% 42%, color-mix(in srgb, var(--pshow-accent, #2dd4bf) 12%, transparent), transparent 72%),
+      var(--pshow-surface, #14212a);
     border: 1px solid color-mix(in srgb, var(--pshow-text, #f6f7f2) 8%, transparent);
-    aspect-ratio: 1;
+    box-shadow: var(--pp-shadow-soft);
+    aspect-ratio: auto;
   }
 
   .product-showcase__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: min(62vw, 360px);
+    margin-inline: auto;
+    object-fit: contain;
+    object-position: center center;
   }
 
   .product-showcase__placeholder {
-    width: 100%;
-    height: 100%;
+    width: min(100%, 320px);
+    height: min(100%, 320px);
+    margin-inline: auto;
     display: grid;
     place-items: center;
     color: color-mix(in srgb, var(--pshow-text, #f6f7f2) 20%, transparent);
@@ -803,13 +819,35 @@
     }
 
     .product-showcase__grid {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: 28px;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: clamp(24px, 3vw, 36px);
       align-items: center;
+    }
+
+    .product-showcase__media {
+      max-width: none;
+      min-height: clamp(420px, 42vw, 560px);
+      padding: clamp(24px, 3vw, 40px);
+    }
+
+    .product-showcase__image {
+      max-height: min(100%, 500px);
+      width: min(100%, 460px);
     }
 
     .product-showcase__price-current {
       font-size: clamp(2.25rem, 3.5vw, 3rem);
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .product-showcase__media {
+      min-height: 520px;
+    }
+
+    .product-showcase__image {
+      max-height: 520px;
+      width: min(100%, 500px);
     }
   }
 
