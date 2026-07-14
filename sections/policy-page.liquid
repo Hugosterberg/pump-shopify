@@ -1,8 +1,9 @@
 {% comment %}
-  Content page template section.
+  Shopify policy pages (privacy, terms, refund, shipping).
+  Uses the global policy object from /policies/* routes.
 {% endcomment %}
 
-<article
+<div
   class="legal-page full-width pp-accent-line"
   style="
     --legal-bg: {{ section.settings.background_color }};
@@ -17,26 +18,46 @@
       {% if section.settings.eyebrow != blank %}
         <p class="legal-page__eyebrow">{{ section.settings.eyebrow }}</p>
       {% endif %}
-      <h1 class="legal-page__title">{{ page.title }}</h1>
+      <h1 class="legal-page__title">{{ policy.title }}</h1>
+      {% if section.settings.intro != blank %}
+        <div class="legal-page__intro pp-legal-prose rte">{{ section.settings.intro }}</div>
+      {% endif %}
     </header>
 
     <div class="legal-page__panel">
       <div class="legal-page__content pp-legal-prose rte">
-        {{ page.content }}
+        {{ policy.body }}
       </div>
     </div>
+
+    {% if section.settings.contact_note != blank %}
+      <div class="legal-page__contact pp-legal-prose rte">{{ section.settings.contact_note }}</div>
+    {% endif %}
   </div>
-</article>
+</div>
 
 {% schema %}
 {
-  "name": "t:general.page",
+  "name": "Policy page",
+  "tag": "section",
   "settings": [
     {
       "type": "text",
       "id": "eyebrow",
       "label": "Eyebrow",
-      "default": "Information"
+      "default": "Juridisk information"
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "Intro (optional)",
+      "info": "Shown under the policy title before the main policy text."
+    },
+    {
+      "type": "richtext",
+      "id": "contact_note",
+      "label": "Contact note",
+      "default": "<p>Har du frågor? Mejla oss på <a href=\"mailto:info@pumpportable.com\">info@pumpportable.com</a> så hjälper vi dig.</p>"
     },
     {
       "type": "header",

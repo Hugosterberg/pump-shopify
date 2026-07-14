@@ -5,8 +5,13 @@
 {% endcomment %}
 
 <div
-  class="policy full-width"
+  class="legal-page policy full-width pp-accent-line"
   style="
+    --legal-bg: {{ section.settings.background_color }};
+    --legal-surface: {{ section.settings.surface_color }};
+    --legal-text: {{ section.settings.text_color }};
+    --legal-muted: {{ section.settings.muted_text_color }};
+    --legal-accent: {{ section.settings.accent_color }};
     --pol-bg: {{ section.settings.background_color }};
     --pol-surface: {{ section.settings.surface_color }};
     --pol-text: {{ section.settings.text_color }};
@@ -14,16 +19,16 @@
     --pol-accent: {{ section.settings.accent_color }};
   "
 >
-  <div class="policy__inner">
-    <header class="policy__header">
+  <div class="legal-page__inner policy__inner">
+    <header class="legal-page__header policy__header">
       {% if section.settings.eyebrow != blank %}
-        <p class="policy__eyebrow">{{ section.settings.eyebrow }}</p>
+        <p class="legal-page__eyebrow policy__eyebrow">{{ section.settings.eyebrow }}</p>
       {% endif %}
       {% if section.settings.heading != blank %}
-        <h1 class="policy__heading">{{ section.settings.heading }}</h1>
+        <h1 class="legal-page__title policy__heading">{{ section.settings.heading }}</h1>
       {% endif %}
       {% if section.settings.intro != blank %}
-        <div class="policy__intro rte">{{ section.settings.intro }}</div>
+        <div class="legal-page__intro policy__intro pp-legal-prose rte">{{ section.settings.intro }}</div>
       {% endif %}
     </header>
 
@@ -38,7 +43,7 @@
               </h2>
             {% endif %}
             {% if block.settings.body != blank %}
-              <div class="policy__block-body rte">{{ block.settings.body }}</div>
+              <div class="policy__block-body pp-legal-prose rte">{{ block.settings.body }}</div>
             {% endif %}
           </section>
         {% endfor %}
@@ -46,127 +51,51 @@
     {% endif %}
 
     {% if section.settings.contact_note != blank %}
-      <div class="policy__contact rte">{{ section.settings.contact_note }}</div>
+      <div class="legal-page__contact policy__contact pp-legal-prose rte">{{ section.settings.contact_note }}</div>
     {% endif %}
   </div>
 </div>
 
 {% stylesheet %}
-  .policy {
-    padding-block: 56px 80px;
-    padding-inline: var(--page-margin, 20px);
-    background-color: var(--pol-bg, #071014);
-    color: var(--pol-text, #f6f7f2);
-  }
-
-  .policy__inner {
-    max-width: 760px;
-    margin-inline: auto;
-  }
-
-  .policy__header {
-    margin-bottom: 28px;
-  }
-
-  .policy__eyebrow {
-    margin: 0 0 10px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--pol-accent, #2dd4bf);
-  }
-
-  .policy__heading {
-    margin: 0;
-    font-size: clamp(1.9rem, 4.5vw, 2.75rem);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-  }
-
-  .policy__intro {
-    margin-top: 18px;
-    font-size: 1.05rem;
-    line-height: 1.7;
-    color: var(--pol-muted, #9aa8a2);
-  }
-
   .policy__blocks {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: clamp(20px, 3vw, 28px);
   }
 
   .policy__block {
-    padding: 24px;
-    border-radius: 16px;
-    background-color: var(--pol-surface, #111c24);
-    border: 1px solid color-mix(in srgb, var(--pol-text, #f6f7f2) 8%, transparent);
+    padding: clamp(24px, 4vw, 32px);
+    border-radius: 20px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pol-text, #f6f7f2) 4%, var(--pol-surface, #14212a)),
+      var(--pol-surface, #14212a)
+    );
+    border: 1px solid color-mix(in srgb, var(--pol-text, #f6f7f2) 9%, transparent);
+    box-shadow: var(--pp-shadow-soft);
   }
 
   .policy__block-title {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin: 0 0 12px;
-    font-size: 1.15rem;
+    margin: 0 0 18px;
+    font-size: clamp(1.12rem, 2.4vw, 1.28rem);
     font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--pol-text, #f6f7f2);
   }
 
   .policy__block-bar {
+    flex-shrink: 0;
     width: 4px;
-    height: 1.1em;
+    height: 1.15em;
     border-radius: 2px;
     background-color: var(--pol-accent, #2dd4bf);
   }
 
   .policy__block-body {
-    font-size: 0.98rem;
-    line-height: 1.7;
     color: var(--pol-muted, #9aa8a2);
-  }
-
-  .policy__block-body > :first-child {
-    margin-top: 0;
-  }
-
-  .policy__block-body > :last-child {
-    margin-bottom: 0;
-  }
-
-  .policy__block-body ul,
-  .policy__block-body ol {
-    margin: 0;
-    padding-left: 1.25em;
-  }
-
-  .policy__block-body a {
-    color: var(--pol-accent, #2dd4bf);
-  }
-
-  .policy__contact {
-    margin-top: 32px;
-    padding: 20px 22px;
-    border-radius: 14px;
-    background-color: color-mix(in srgb, var(--pol-accent, #2dd4bf) 12%, transparent);
-    border: 1px solid color-mix(in srgb, var(--pol-accent, #2dd4bf) 28%, transparent);
-    font-size: 0.98rem;
-    line-height: 1.6;
-  }
-
-  .policy__contact a {
-    color: var(--pol-accent, #2dd4bf);
-    font-weight: 600;
-  }
-
-  @media screen and (min-width: 750px) {
-    .policy {
-      padding-block: 80px 110px;
-    }
-
-    .policy__block {
-      padding: 28px 30px;
-    }
   }
 {% endstylesheet %}
 
