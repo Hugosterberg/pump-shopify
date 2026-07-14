@@ -1,0 +1,34 @@
+{% comment %}
+  Unified product price display.
+
+  @param {product} product - Shopify product
+  @param {variant} [variant] - Optional variant (defaults to selected/first)
+  @param {string} [size] - default | lg
+  @param {string} [class] - Extra CSS classes
+{% endcomment %}
+
+{% liquid
+  assign price_variant = variant | default: product.selected_or_first_available_variant
+  assign compare_price = product.compare_at_price
+  if price_variant.compare_at_price > price_variant.price
+    assign compare_price = price_variant.compare_at_price
+  endif
+
+  assign on_sale = false
+  if compare_price > price_variant.price
+    assign on_sale = true
+    assign saving = compare_price | minus: price_variant.price | times: 100.0 | divided_by: compare_price | round
+  endif
+
+  assign size_class = size | default: 'default'
+%}
+
+<div class="pp-price pp-price--{{ size_class }}{% if class != blank %} {{ class }}{% endif %}">
+  {% if on_sale %}
+    <span class="pp-price__meta">
+      <s class="pp-price__compare">{{ compare_price | money }}</s>
+      <span class="pp-price__save">Spara {{ saving }}%</span>
+    </span>
+  {% endif %}
+  <span class="pp-price__current">{{ price_variant.price | money }}</span>
+</div>

@@ -137,7 +137,7 @@
 
               <div class="product-showcase__checkout-actions">
                 <button
-                  class="product-showcase__submit"
+                  class="product-showcase__submit pp-btn-primary pp-btn-lg pp-btn--full"
                   type="submit"
                   data-product-showcase-submit
                   {% unless current_variant.available %}
@@ -788,32 +788,7 @@
   }
 
   .product-showcase__submit {
-    width: 100%;
-    min-height: 56px;
-    border: none;
-    border-radius: var(--pp-radius-pill, 999px);
-    font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 0.01em;
-    cursor: pointer;
-    color: var(--pshow-accent-ink, #071014);
-    background: linear-gradient(135deg, var(--pshow-accent, #2dd4bf) 0%, color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 22%, var(--pshow-accent, #2dd4bf)) 100%);
-    box-shadow:
-      var(--pp-shadow-glow),
-      inset 0 1px 0 color-mix(in srgb, #fff 25%, transparent);
-    transition:
-      transform var(--pp-transition, 0.2s ease),
-      box-shadow var(--pp-transition, 0.2s ease),
-      opacity var(--pp-transition, 0.2s ease);
-  }
-
-  .product-showcase__submit:hover:not(:disabled) {
-    transform: translateY(-1px);
-  }
-
-  .product-showcase__submit:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    margin-top: 0;
   }
 
   @media screen and (min-width: 750px) {
@@ -841,12 +816,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .product-showcase__submit {
-      transition: none;
-    }
-
-    .product-showcase__submit:hover:not(:disabled) {
-      transform: none;
+    .product-showcase__grid {
+      gap: 20px;
     }
   }
 {% endstylesheet %}

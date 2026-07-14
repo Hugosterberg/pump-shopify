@@ -53,8 +53,8 @@
       </div>
       {% form 'product', upsell_product, class: 'product-upsell__form ajax-cart-form' %}
         <input type="hidden" name="id" value="{{ upsell_variant.id }}">
-        <button type="submit" class="product-upsell__add" {% unless upsell_variant.available %}disabled{% endunless %}>
-          {% if upsell_variant.available %}Lägg till{% else %}Slutsåld{% endif %}
+        <button type="submit" class="product-upsell__add pp-btn-primary pp-btn-sm" {% unless upsell_variant.available %}disabled{% endunless %}>
+          {% if upsell_variant.available %}{{ buy_label | default: 'Lägg i varukorg' }}{% else %}Slutsåld{% endif %}
         </button>
       {% endform %}
     </div>
@@ -150,21 +150,7 @@
   }
 
   .product-upsell__add {
-    min-height: 40px;
-    padding-inline: 14px;
-    border: none;
-    border-radius: var(--pp-radius-pill, 999px);
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    color: var(--pp-accent-ink, #071014);
-    background: var(--pp-accent, #2dd4bf);
     white-space: nowrap;
-  }
-
-  .product-upsell__add:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
   }
 
   @media screen and (max-width: 480px) {

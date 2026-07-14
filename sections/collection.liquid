@@ -17,42 +17,45 @@
       {% if collection.products.size > 0 %}
         <ul class="main-collection__grid" role="list">
           {% for product in collection.products %}
-            <li class="main-collection__card">
-              <a class="main-collection__link" href="{{ product.url }}">
-                <div class="main-collection__media">
-                  {% if product.compare_at_price > product.price %}
-                    {% assign saving = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round %}
-                    <span class="main-collection__badge">SPARA {{ saving }}%</span>
-                  {% endif %}
-                  {% unless product.available %}
-                    <span class="main-collection__badge main-collection__badge--soldout">Slutsåld</span>
-                  {% endunless %}
-                  {% if product.featured_image != blank %}
-                    {{
-                      product.featured_image
-                      | image_url: width: 800
-                      | image_tag:
-                        loading: 'lazy',
-                        sizes: '(min-width: 750px) 33vw, 50vw',
-                        widths: '300, 500, 800',
-                        alt: product.featured_image.alt | default: product.title
-                    }}
-                  {% else %}
-                    <div class="main-collection__placeholder">
-                      {{ 'product-1' | placeholder_svg_tag }}
-                    </div>
-                  {% endif %}
-                </div>
-                <div class="main-collection__info">
-                  <h2 class="main-collection__name">{{ product.title }}</h2>
-                  <p class="main-collection__price">
-                    {% if product.compare_at_price > product.price %}
-                      <s class="main-collection__compare">{{ product.compare_at_price | money }}</s>
-                    {% endif %}
-                    <span>{{ product.price | money }}</span>
-                  </p>
-                </div>
+            <li class="main-collection__card pp-product-card">
+              <a class="pp-product-card__media main-collection__media" href="{{ product.url }}" aria-label="{{ product.title }}">
+                {% if product.compare_at_price > product.price %}
+                  {% assign saving = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round %}
+                  <span class="pp-product-card__badge">Spara {{ saving }}%</span>
+                {% endif %}
+                {% unless product.available %}
+                  <span class="pp-product-card__badge pp-product-card__badge--soldout">Slutsåld</span>
+                {% endunless %}
+                {% if product.featured_image != blank %}
+                  {{
+                    product.featured_image
+                    | image_url: width: 800
+                    | image_tag:
+                      loading: 'lazy',
+                      sizes: '(min-width: 750px) 33vw, 50vw',
+                      widths: '300, 500, 800',
+                      alt: product.featured_image.alt | default: product.title
+                  }}
+                {% else %}
+                  <div class="main-collection__placeholder">
+                    {{ 'product-1' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
               </a>
+
+              <div class="pp-product-card__body main-collection__body">
+                <h2 class="pp-product-card__title main-collection__name">
+                  <a href="{{ product.url }}">{{ product.title }}</a>
+                </h2>
+
+                {% render 'pp-product-price', product: product %}
+
+                {% render 'pp-product-actions',
+                  product: product,
+                  buy_label: section.settings.buy_label,
+                  form_class: 'main-collection__form'
+                %}
+              </div>
             </li>
           {% endfor %}
         </ul>
@@ -132,65 +135,6 @@
     gap: 16px;
   }
 
-  .main-collection__link {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    text-decoration: none;
-    color: inherit;
-    border-radius: 16px;
-    overflow: hidden;
-    background-color: var(--pp-surface, #14212a);
-    border: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
-    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-  }
-
-  .main-collection__link:hover {
-    transform: translateY(-4px);
-    border-color: color-mix(in srgb, var(--pp-accent, #2dd4bf) 45%, transparent);
-    box-shadow: 0 18px 40px -24px color-mix(in srgb, var(--pp-accent, #2dd4bf) 70%, #000);
-  }
-
-  .main-collection__media {
-    position: relative;
-    aspect-ratio: 1;
-    overflow: hidden;
-    background-color: color-mix(in srgb, var(--pp-text, #f6f7f2) 4%, transparent);
-  }
-
-  .main-collection__media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-  }
-
-  .main-collection__link:hover .main-collection__media img {
-    transform: scale(1.05);
-  }
-
-  .main-collection__badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    z-index: 1;
-    padding: 5px 11px;
-    border-radius: 999px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: #06231f;
-    background-color: var(--pp-accent, #2dd4bf);
-  }
-
-  .main-collection__badge--soldout {
-    top: auto;
-    bottom: 12px;
-    color: var(--pp-text, #f6f7f2);
-    background-color: color-mix(in srgb, #000 55%, transparent);
-  }
-
   .main-collection__placeholder {
     width: 100%;
     height: 100%;
@@ -199,31 +143,8 @@
     color: color-mix(in srgb, var(--pp-text, #f6f7f2) 20%, transparent);
   }
 
-  .main-collection__info {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
   .main-collection__name {
-    margin: 0;
-    font-size: 0.95rem;
-    font-weight: 600;
-    line-height: 1.3;
-  }
-
-  .main-collection__price {
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--pp-accent, #2dd4bf);
-    font-weight: 600;
-  }
-
-  .main-collection__compare {
-    margin-right: 8px;
-    color: var(--pp-muted, #9aa8a2);
-    font-weight: 400;
+    font-size: 0.98rem;
   }
 
   .main-collection__empty {
@@ -256,20 +177,6 @@
       font-size: 1.05rem;
     }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .main-collection__link {
-      transition: none;
-    }
-
-    .main-collection__link:hover {
-      transform: none;
-    }
-
-    .main-collection__link:hover .main-collection__media img {
-      transform: none;
-    }
-  }
 {% endstylesheet %}
 
 {% schema %}
@@ -284,6 +191,12 @@
       "max": 24,
       "step": 4,
       "default": 12
+    },
+    {
+      "type": "text",
+      "id": "buy_label",
+      "label": "Buy button label",
+      "default": "Lägg i varukorg"
     }
   ]
 }

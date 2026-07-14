@@ -34,29 +34,52 @@
   >
     <div class="related-products__inner">
       {% if section.settings.heading != blank %}
-        <h2 class="related-products__heading">{{ section.settings.heading }}</h2>
+        <header class="related-products__header">
+          <h2 class="related-products__heading">{{ section.settings.heading }}</h2>
+        </header>
       {% endif %}
 
       <ul class="related-products__grid" role="list">
         {% for related in related_collection.products %}
           {% if related.id != source_product.id and related_count < section.settings.max_products %}
             {% assign related_count = related_count | plus: 1 %}
-            <li class="related-products__card">
-              <a class="related-products__link" href="{{ related.url }}">
-                <div class="related-products__media">
-                  {% if related.featured_image != blank %}
-                    {{
-                      related.featured_image
-                      | image_url: width: 600
-                      | image_tag: loading: 'lazy', widths: '300, 600', sizes: '(min-width: 750px) 25vw, 50vw', alt: related.title
-                    }}
-                  {% endif %}
-                </div>
-                <div class="related-products__info">
-                  <h3 class="related-products__name">{{ related.title }}</h3>
-                  <p class="related-products__price">{{ related.price | money }}</p>
-                </div>
+            <li class="related-products__card pp-product-card">
+              <a class="pp-product-card__media related-products__media" href="{{ related.url }}" aria-label="{{ related.title }}">
+                {% if related.compare_at_price > related.price %}
+                  {% assign saving = related.compare_at_price | minus: related.price | times: 100.0 | divided_by: related.compare_at_price | round %}
+                  <span class="pp-product-card__badge">Spara {{ saving }}%</span>
+                {% endif %}
+                {% unless related.available %}
+                  <span class="pp-product-card__badge pp-product-card__badge--soldout">Slutsåld</span>
+                {% endunless %}
+                {% if related.featured_image != blank %}
+                  {{
+                    related.featured_image
+                    | image_url: width: 800
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '300, 600, 800',
+                      sizes: '(min-width: 750px) 25vw, 50vw',
+                      alt: related.featured_image.alt | default: related.title
+                  }}
+                {% else %}
+                  <div class="related-products__placeholder">{{ 'product-1' | placeholder_svg_tag }}</div>
+                {% endif %}
               </a>
+
+              <div class="pp-product-card__body related-products__body">
+                <h3 class="pp-product-card__title">
+                  <a href="{{ related.url }}">{{ related.title }}</a>
+                </h3>
+
+                {% render 'pp-product-price', product: related %}
+
+                {% render 'pp-product-actions',
+                  product: related,
+                  buy_label: section.settings.buy_label,
+                  form_class: 'related-products__form'
+                %}
+              </div>
             </li>
           {% endif %}
         {% endfor %}
@@ -67,7 +90,7 @@
 
 {% stylesheet %}
   .related-products {
-    padding-block: 72px;
+    padding-block: 56px;
     padding-inline: var(--page-margin, 20px);
     background-color: var(--rp-bg, #101820);
     color: var(--rp-text, #f6f7f2);
@@ -78,9 +101,13 @@
     margin-inline: auto;
   }
 
-  .related-products__heading {
-    margin: 0 0 32px;
+  .related-products__header {
     text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .related-products__heading {
+    margin: 0;
     font-size: clamp(1.5rem, 3.5vw, 2rem);
     letter-spacing: -0.02em;
   }
@@ -94,70 +121,29 @@
     gap: 16px;
   }
 
-  .related-products__link {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    text-decoration: none;
-    color: inherit;
-    border-radius: 16px;
-    overflow: hidden;
-    background-color: var(--rp-surface, #14212a);
-    border: 1px solid color-mix(in srgb, var(--rp-text, #f6f7f2) 8%, transparent);
-    transition: transform 0.15s ease;
+  .related-products__card {
+    --pp-text: var(--rp-text, #f6f7f2);
+    --pp-muted: var(--rp-muted, #9aa8a2);
+    --pp-accent: var(--rp-accent, #2dd4bf);
+    background: var(--rp-surface, #14212a);
   }
 
-  .related-products__link:hover {
-    transform: translateY(-3px);
-  }
-
-  .related-products__media {
-    aspect-ratio: 1;
-    overflow: hidden;
-  }
-
-  .related-products__media img {
+  .related-products__placeholder {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-  }
-
-  .related-products__info {
-    padding: 14px;
-  }
-
-  .related-products__name {
-    margin: 0 0 4px;
-    font-size: 0.92rem;
-    font-weight: 600;
-    line-height: 1.3;
-  }
-
-  .related-products__price {
-    margin: 0;
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--rp-accent, #2dd4bf);
+    display: grid;
+    place-items: center;
+    color: color-mix(in srgb, var(--rp-text, #f6f7f2) 18%, transparent);
   }
 
   @media screen and (min-width: 750px) {
     .related-products {
-      padding-block: 96px;
+      padding-block: 72px;
     }
 
     .related-products__grid {
       grid-template-columns: repeat(4, 1fr);
       gap: 20px;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .related-products__link {
-      transition: none;
-    }
-
-    .related-products__link:hover {
-      transform: none;
     }
   }
 {% endstylesheet %}
@@ -184,6 +170,12 @@
       "id": "heading",
       "label": "Heading",
       "default": "Du kanske också gillar"
+    },
+    {
+      "type": "text",
+      "id": "buy_label",
+      "label": "Buy button label",
+      "default": "Lägg i varukorg"
     },
     {
       "type": "range",

@@ -4,6 +4,7 @@
   data-max="{{ section.settings.max_products }}"
   data-heading="{{ section.settings.heading | escape }}"
   data-empty-text="{{ section.settings.empty_text | escape }}"
+  data-buy-label="{{ section.settings.buy_label | default: 'Lägg i varukorg' | escape }}"
   style="
     --rv-bg: {{ section.settings.background_color }};
     --rv-surface: {{ section.settings.surface_color }};
@@ -49,53 +50,18 @@
   }
 
   .recently-viewed__card {
-    border-radius: 16px;
-    overflow: hidden;
+    --pp-text: var(--rv-text, #f6f7f2);
+    --pp-muted: var(--rv-muted, #9aa8a2);
+    --pp-accent: var(--rv-accent, #2dd4bf);
     background: var(--rv-surface, #14212a);
-    border: 1px solid color-mix(in srgb, var(--rv-text, #f6f7f2) 8%, transparent);
   }
 
-  .recently-viewed__link {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    text-decoration: none;
-    color: inherit;
-    transition: transform 0.15s ease;
-  }
-
-  .recently-viewed__link:hover {
-    transform: translateY(-2px);
-  }
-
-  .recently-viewed__media {
-    aspect-ratio: 1;
-    overflow: hidden;
-    background: color-mix(in srgb, var(--rv-text, #f6f7f2) 4%, transparent);
-  }
-
-  .recently-viewed__media img {
+  .recently-viewed__placeholder {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-  }
-
-  .recently-viewed__info {
-    padding: 14px;
-  }
-
-  .recently-viewed__name {
-    margin: 0 0 4px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    line-height: 1.3;
-  }
-
-  .recently-viewed__price {
-    margin: 0;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--rv-accent, #2dd4bf);
+    display: grid;
+    place-items: center;
+    color: color-mix(in srgb, var(--rv-text, #f6f7f2) 18%, transparent);
   }
 
   .recently-viewed__empty {
@@ -149,6 +115,57 @@
 
     const toFetch = handles.slice(0, max);
 
+    const buyLabel = section.dataset.buyLabel || 'Lägg i varukorg';
+
+    function formatMoney(cents) {
+      if (window.PumpTheme && window.PumpTheme.moneyFormat && typeof Shopify !== 'undefined' && typeof Shopify.formatMoney === 'function') {
+        return Shopify.formatMoney(cents, window.PumpTheme.moneyFormat);
+      }
+      return (cents / 100).toLocaleString('sv-SE') + ' kr';
+    }
+
+    function renderPrice(product) {
+      const current = formatMoney(product.price);
+      if (product.compare_at_price && product.compare_at_price > product.price) {
+        const saving = Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100);
+        return (
+          '<div class="pp-price">' +
+          '<span class="pp-price__meta">' +
+          '<s class="pp-price__compare">' + formatMoney(product.compare_at_price) + '</s>' +
+          '<span class="pp-price__save">Spara ' + saving + '%</span>' +
+          '</span>' +
+          '<span class="pp-price__current">' + current + '</span>' +
+          '</div>'
+        );
+      }
+      return '<div class="pp-price"><span class="pp-price__current">' + current + '</span></div>';
+    }
+
+    function renderActions(product) {
+      const variants = product.variants || [];
+      if (!product.available) {
+        return '<div class="pp-product-actions"><span class="pp-btn-primary pp-btn--full" aria-disabled="true">Slutsåld</span></div>';
+      }
+      if (variants.length > 1) {
+        return (
+          '<div class="pp-product-actions">' +
+          '<a class="pp-btn-primary pp-btn--full" href="' + product.url + '">Välj variant</a>' +
+          '<a class="pp-btn-secondary pp-btn--full" href="' + product.url + '">Läs mer</a>' +
+          '</div>'
+        );
+      }
+      const variant = variants[0];
+      return (
+        '<div class="pp-product-actions">' +
+        '<form action="/cart/add" method="post" class="ajax-cart-form pp-product-actions__form recently-viewed__form">' +
+        '<input type="hidden" name="id" value="' + variant.id + '">' +
+        '<button type="submit" name="add" class="pp-btn-primary pp-btn--full">' + buyLabel + '</button>' +
+        '</form>' +
+        '<a class="pp-btn-secondary pp-btn--full" href="' + product.url + '">Läs mer</a>' +
+        '</div>'
+      );
+    }
+
     Promise.all(
       toFetch.map(function (handle) {
         return fetch('/products/' + encodeURIComponent(handle) + '.js')
@@ -168,18 +185,17 @@
           const img = product.featured_image || product.images[0];
           const imgHtml = img
             ? '<img src="' + img + '" alt="' + (product.title || '').replace(/"/g, '&quot;') + '" loading="lazy" width="400" height="400">'
-            : '';
-          const price = window.PumpTheme && window.PumpTheme.moneyFormat && typeof Shopify !== 'undefined' && typeof Shopify.formatMoney === 'function'
-            ? Shopify.formatMoney(product.price, window.PumpTheme.moneyFormat)
-            : (product.price / 100).toLocaleString('sv-SE') + ' kr';
+            : '<div class="recently-viewed__placeholder">' + (product.title || '') + '</div>';
           return (
-            '<li class="recently-viewed__card">' +
-            '<a class="recently-viewed__link" href="' + product.url + '">' +
-            '<div class="recently-viewed__media">' + imgHtml + '</div>' +
-            '<div class="recently-viewed__info">' +
-            '<h3 class="recently-viewed__name">' + product.title + '</h3>' +
-            '<p class="recently-viewed__price">' + price + '</p>' +
-            '</div></a></li>'
+            '<li class="recently-viewed__card pp-product-card">' +
+            '<a class="pp-product-card__media recently-viewed__media" href="' + product.url + '" aria-label="' + (product.title || '').replace(/"/g, '&quot;') + '">' +
+            imgHtml +
+            '</a>' +
+            '<div class="pp-product-card__body recently-viewed__body">' +
+            '<h3 class="pp-product-card__title"><a href="' + product.url + '">' + product.title + '</a></h3>' +
+            renderPrice(product) +
+            renderActions(product) +
+            '</div></li>'
           );
         })
         .join('');
@@ -203,6 +219,12 @@
       "id": "empty_text",
       "label": "Empty state",
       "default": "Du har inte tittat på några produkter än."
+    },
+    {
+      "type": "text",
+      "id": "buy_label",
+      "label": "Buy button label",
+      "default": "Lägg i varukorg"
     },
     {
       "type": "range",

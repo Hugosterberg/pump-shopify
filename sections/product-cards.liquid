@@ -42,7 +42,6 @@
           %}
           <li class="product-cards__card{% if is_featured %} product-cards__card--featured{% endif %}" {{ block.shopify_attributes }}>
             {% if product != blank %}
-              {% assign variant = product.selected_or_first_available_variant %}
               <a class="product-cards__media" href="{{ product.url }}" aria-label="{{ product.title }}">
                 {% if block.settings.badge != blank %}
                   <span class="product-cards__badge">{{ block.settings.badge }}</span>
@@ -71,45 +70,18 @@
                 </h3>
 
                 <div class="product-cards__price">
-                  {% if product.compare_at_price > product.price %}
-                    <span class="product-cards__price-sale">{{ product.price | money }}</span>
-                    <s class="product-cards__price-was">{{ product.compare_at_price | money }}</s>
-                  {% else %}
-                    <span class="product-cards__price-sale">{{ product.price | money }}</span>
-                  {% endif %}
+                  {% render 'pp-product-price', product: product %}
                 </div>
 
                 {% if block.settings.description != blank %}
                   <p class="product-cards__desc">{{ block.settings.description }}</p>
                 {% endif %}
 
-                <div class="product-cards__actions">
-                  {% if variant != blank and product.available %}
-                    {% if product.variants.size > 1 %}
-                      <a class="product-cards__btn product-cards__btn--primary" href="{{ product.url }}">
-                        Välj variant
-                      </a>
-                    {% else %}
-                      {% form 'product', product, class: 'product-cards__form ajax-cart-form' %}
-                        <input type="hidden" name="id" value="{{ variant.id }}">
-                        <button
-                          type="submit"
-                          name="add"
-                          class="product-cards__btn product-cards__btn--primary"
-                        >
-                          {{ section.settings.buy_label | default: 'Köp nu' }}
-                        </button>
-                      {% endform %}
-                    {% endif %}
-                  {% else %}
-                    <span class="product-cards__btn product-cards__btn--soldout" aria-disabled="true">
-                      Slutsåld
-                    </span>
-                  {% endif %}
-                  <a class="product-cards__btn product-cards__btn--ghost" href="{{ product.url }}">
-                    Läs mer
-                  </a>
-                </div>
+                {% render 'pp-product-actions',
+                  product: product,
+                  buy_label: section.settings.buy_label,
+                  form_class: 'product-cards__form'
+                %}
               </div>
             {% else %}
               <div class="product-cards__body product-cards__body--empty">
@@ -152,6 +124,9 @@
     background-color: var(--pc-bg, #0b1117);
     color: var(--pc-text, #f6f7f2);
     overflow: hidden;
+    --pp-accent: var(--pc-accent, #2dd4bf);
+    --pp-text: var(--pc-text, #f6f7f2);
+    --pp-muted: var(--pc-muted, #9aa8a2);
   }
 
   .product-cards::before {
@@ -346,20 +321,7 @@
   }
 
   .product-cards__price {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-  }
-
-  .product-cards__price-sale {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--pc-text, #f6f7f2);
-  }
-
-  .product-cards__price-was {
-    font-size: 0.95rem;
-    color: var(--pc-muted, #9aa8a2);
+    margin: 0;
   }
 
   .product-cards__desc {
@@ -369,75 +331,6 @@
     color: var(--pc-muted, #9aa8a2);
     flex: 1;
     text-wrap: pretty;
-  }
-
-  .product-cards__actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 4px;
-  }
-
-  .product-cards__form {
-    margin: 0;
-  }
-
-  .product-cards__btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 48px;
-    padding-inline: 22px;
-    border-radius: 999px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    border: 1px solid transparent;
-  }
-
-  .product-cards__btn--primary {
-    position: relative;
-    overflow: hidden;
-    color: var(--pp-accent-ink, #06231f);
-    background: linear-gradient(135deg, var(--pc-accent, #2dd4bf), color-mix(in srgb, var(--pp-accent-blue, #4cc9f0) 28%, var(--pc-accent, #2dd4bf)));
-    box-shadow: var(--pp-shadow-glow);
-    transition: transform var(--pp-transition, 0.2s ease), filter var(--pp-transition, 0.2s ease);
-  }
-
-  .product-cards__btn--primary::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -70%;
-    width: 45%;
-    height: 100%;
-    background: linear-gradient(100deg, transparent, color-mix(in srgb, #ffffff 55%, transparent), transparent);
-    transform: skewX(-20deg);
-    pointer-events: none;
-    transition: left 0.6s ease;
-  }
-
-  .product-cards__card:hover .product-cards__btn--primary::after {
-    left: 130%;
-  }
-
-  .product-cards__btn--primary:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.03);
-  }
-
-  .product-cards__btn--ghost {
-    color: var(--pc-text, #f6f7f2);
-    border-color: color-mix(in srgb, var(--pc-text, #f6f7f2) 28%, transparent);
-    background-color: transparent;
-  }
-
-  .product-cards__btn--soldout {
-    color: var(--pc-muted, #9aa8a2);
-    background-color: color-mix(in srgb, var(--pc-text, #f6f7f2) 8%, transparent);
-    cursor: not-allowed;
   }
 
   @media screen and (min-width: 750px) {
@@ -546,8 +439,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .product-cards__card,
-    .product-cards__media img,
-    .product-cards__btn--primary::after {
+    .product-cards__media img {
       transition: none;
     }
 
@@ -631,7 +523,7 @@
       "type": "text",
       "id": "buy_label",
       "label": "Buy button label",
-      "default": "Köp nu"
+      "default": "Lägg i varukorg"
     },
     {
       "type": "checkbox",

@@ -1,0 +1,51 @@
+{% comment %}
+  Unified product card buy actions.
+
+  @param {product} product - Shopify product
+  @param {string} [buy_label] - Primary button label
+  @param {string} [secondary_label] - Secondary link label
+  @param {boolean} [show_secondary] - Show "Läs mer" link
+  @param {string} [form_class] - Extra classes on the product form
+{% endcomment %}
+
+{% liquid
+  assign card_variant = product.selected_or_first_available_variant
+  assign primary_label = buy_label | default: 'Lägg i varukorg'
+  assign secondary_text = secondary_label | default: 'Läs mer'
+  assign show_more = show_secondary
+  if show_more == nil
+    assign show_more = true
+  endif
+
+  assign form_classes = 'ajax-cart-form pp-product-actions__form'
+  if form_class != blank
+    assign form_classes = form_class | append: ' ' | append: form_classes
+  endif
+%}
+
+<div class="pp-product-actions">
+  {% if product.available %}
+    {% if product.variants.size > 1 %}
+      <a class="pp-btn-primary pp-btn--full" href="{{ product.url }}">
+        Välj variant
+      </a>
+    {% else %}
+      {% form 'product', product, class: form_classes %}
+        <input type="hidden" name="id" value="{{ card_variant.id }}">
+        <button type="submit" name="add" class="pp-btn-primary pp-btn--full">
+          {{ primary_label }}
+        </button>
+      {% endform %}
+    {% endif %}
+  {% else %}
+    <span class="pp-btn-primary pp-btn--full" aria-disabled="true">
+      Slutsåld
+    </span>
+  {% endif %}
+
+  {% if show_more %}
+    <a class="pp-btn-secondary pp-btn--full" href="{{ product.url }}">
+      {{ secondary_text }}
+    </a>
+  {% endif %}
+</div>
