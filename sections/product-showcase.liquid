@@ -108,19 +108,13 @@
                 <input type="hidden" name="id" value="{{ current_variant.id }}">
               {% endif %}
 
-              <div class="product-showcase__qty-row">
-                <label class="product-showcase__label" for="ProductShowcase-Qty-{{ section.id }}">
-                  Antal
-                </label>
-                <input
-                  id="ProductShowcase-Qty-{{ section.id }}"
-                  class="product-showcase__qty"
-                  type="number"
-                  name="quantity"
-                  min="1"
-                  value="1"
-                >
-              </div>
+              {% capture showcase_qty_id %}ProductShowcase-Qty-{{ section.id }}{% endcapture %}
+              {% render 'pp-quantity-input',
+                id: showcase_qty_id,
+                wrapper_class: 'product-showcase__qty-row',
+                label: 'Antal',
+                label_class: 'product-showcase__label'
+              %}
 
               <div class="product-showcase__checkout-actions">
                 <button
@@ -785,8 +779,7 @@
     color: var(--pshow-muted, #9aa8a2);
   }
 
-  .product-showcase__select,
-  .product-showcase__qty {
+  .product-showcase__select {
     width: 100%;
     min-height: 48px;
     padding: 0 14px;
@@ -797,14 +790,7 @@
   }
 
   .product-showcase__qty-row {
-    max-width: 132px;
-  }
-
-  .product-showcase__qty {
-    text-align: center;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.02em;
+    max-width: 148px;
   }
 
   .product-showcase__submit {

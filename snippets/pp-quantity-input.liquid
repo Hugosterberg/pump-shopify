@@ -1,0 +1,59 @@
+{% comment %}
+  Premium quantity stepper for product buy boxes.
+
+  @param {string} id - Input id (required)
+  @param {string} [name] - Input name, default quantity
+  @param {number} [value] - Default value, default 1
+  @param {number} [min] - Minimum value, default 1
+  @param {string} [label] - Visible label text
+  @param {string} [label_class] - Label CSS class
+  @param {string} [wrapper_class] - Wrapper CSS class
+{% endcomment %}
+
+{% liquid
+  assign qty_name = name | default: 'quantity'
+  assign qty_value = value | default: 1
+  assign qty_min = min | default: 1
+  assign qty_label = label | default: 'Antal'
+%}
+
+<div class="pp-qty-wrap{% if wrapper_class != blank %} {{ wrapper_class }}{% endif %}">
+  {% if qty_label != blank %}
+    <label
+      class="pp-qty-wrap__label{% if label_class != blank %} {{ label_class }}{% endif %}"
+      for="{{ id }}"
+    >
+      {{ qty_label }}
+    </label>
+  {% endif %}
+
+  <div class="pp-qty" data-pp-qty>
+    <button
+      type="button"
+      class="pp-qty__btn pp-qty__btn--minus"
+      data-pp-qty-minus
+      aria-label="Minska antal"
+    >
+      <span aria-hidden="true">−</span>
+    </button>
+    <input
+      id="{{ id }}"
+      class="pp-qty__input"
+      type="number"
+      name="{{ qty_name }}"
+      min="{{ qty_min }}"
+      value="{{ qty_value }}"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      aria-label="{{ qty_label }}"
+    >
+    <button
+      type="button"
+      class="pp-qty__btn pp-qty__btn--plus"
+      data-pp-qty-plus
+      aria-label="Öka antal"
+    >
+      <span aria-hidden="true">+</span>
+    </button>
+  </div>
+</div>

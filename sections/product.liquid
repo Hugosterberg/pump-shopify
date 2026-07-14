@@ -198,17 +198,13 @@
             <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
           {% endif %}
 
-          <div class="main-product__qty-row">
-            <label class="main-product__label" for="MainProduct-Qty-{{ section.id }}">Antal</label>
-            <input
-              id="MainProduct-Qty-{{ section.id }}"
-              class="main-product__qty"
-              type="number"
-              name="quantity"
-              min="1"
-              value="1"
-            >
-          </div>
+          {% capture main_qty_id %}MainProduct-Qty-{{ section.id }}{% endcapture %}
+          {% render 'pp-quantity-input',
+            id: main_qty_id,
+            wrapper_class: 'main-product__qty-row',
+            label: 'Antal',
+            label_class: 'main-product__label'
+          %}
 
           <div class="main-product__checkout-actions">
             <button
@@ -918,8 +914,7 @@
     color: var(--mp-muted, #9aa8a2);
   }
 
-  .main-product__select,
-  .main-product__qty {
+  .main-product__select {
     width: 100%;
     min-height: 48px;
     padding: 0 14px;
@@ -930,13 +925,7 @@
   }
 
   .main-product__qty-row {
-    max-width: 140px;
-  }
-
-  .main-product__qty {
-    text-align: center;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
+    max-width: 148px;
   }
 
   .main-product__submit {
