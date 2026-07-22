@@ -1,14 +1,13 @@
 {% comment %}
   Country and language selector (Shopify Markets / localization).
+  Custom dark dropdown so option text stays readable (native OS
+  selects often render white text on white backgrounds).
 
   Params:
   - class_prefix (optional)
   - form_id (optional, default: LocalizationForm)
-  - compact (optional, boolean — inline selects without submit button label)
+  - compact (optional, boolean)
   - show_label (optional, default: true)
-
-  Usage:
-    {% render 'localization-form', class_prefix: 'site-header__localization', compact: true, form_id: 'HeaderLocalizationForm' %}
 {% endcomment %}
 
 {%- liquid
@@ -32,45 +31,146 @@
     {%- if show_label and compact == false -%}
       <p class="{{ class_prefix }}__label">Region &amp; språk</p>
     {%- endif -%}
-    <div class="{{ class_prefix }}__fields{% if compact %} {{ class_prefix }}__fields--compact{% endif %}">
+
+    <div
+      class="pp-loc {{ class_prefix }}__fields{% if compact %} {{ class_prefix }}__fields--compact pp-loc--compact{% endif %}"
+      data-pp-loc
+    >
       {%- if show_countries -%}
-        <label class="visually-hidden" for="{{ form_id }}-CountrySelect">Land/region</label>
-        <select id="{{ form_id }}-CountrySelect" name="country_code" class="{{ class_prefix }}__select" aria-label="Land och valuta">
-          {%- for country in localization.available_countries -%}
-            <option
-              value="{{ country.iso_code }}"
-              {%- if country.iso_code == localization.country.iso_code %}
-                selected
-              {% endif %}
-            >
-              {%- if compact -%}
+        <div class="pp-loc__group" data-pp-loc-group>
+          <label class="visually-hidden" for="{{ form_id }}-CountrySelect">Land/region</label>
+          <select
+            id="{{ form_id }}-CountrySelect"
+            name="country_code"
+            class="pp-loc__native {{ class_prefix }}__select"
+            aria-hidden="true"
+            tabindex="-1"
+            data-pp-loc-select
+          >
+            {%- for country in localization.available_countries -%}
+              <option
+                value="{{ country.iso_code }}"
+                {%- if country.iso_code == localization.country.iso_code %}
+                  selected
+                {% endif %}
+              >
                 {{ country.name }} | {{ country.currency.iso_code }} {{ country.currency.symbol }}
-              {%- else -%}
-                {{ country.name }} ({{ country.currency.iso_code }})
-              {%- endif -%}
-            </option>
-          {%- endfor -%}
-        </select>
+              </option>
+            {%- endfor -%}
+          </select>
+
+          <button
+            type="button"
+            class="pp-loc__trigger"
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-controls="{{ form_id }}-CountryList"
+            data-pp-loc-trigger
+          >
+            <span class="pp-loc__trigger-text" data-pp-loc-label>
+              {{ localization.country.name }} | {{ localization.country.currency.iso_code }} {{ localization.country.currency.symbol }}
+            </span>
+            <span class="pp-loc__chevron" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </button>
+
+          <ul
+            id="{{ form_id }}-CountryList"
+            class="pp-loc__menu"
+            role="listbox"
+            hidden
+            data-pp-loc-menu
+          >
+            {%- for country in localization.available_countries -%}
+              <li role="presentation">
+                <button
+                  type="button"
+                  class="pp-loc__option{% if country.iso_code == localization.country.iso_code %} is-active{% endif %}"
+                  role="option"
+                  aria-selected="{% if country.iso_code == localization.country.iso_code %}true{% else %}false{% endif %}"
+                  data-pp-loc-option
+                  data-value="{{ country.iso_code }}"
+                >
+                  <span class="pp-loc__option-name">{{ country.name }}</span>
+                  <span class="pp-loc__option-currency">{{ country.currency.iso_code }} {{ country.currency.symbol }}</span>
+                </button>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
       {%- endif -%}
 
       {%- if show_languages -%}
-        <label class="visually-hidden" for="{{ form_id }}-LanguageSelect">Språk</label>
-        <select id="{{ form_id }}-LanguageSelect" name="locale_code" class="{{ class_prefix }}__select" aria-label="Språk">
-          {%- for language in localization.available_languages -%}
-            <option
-              value="{{ language.iso_code }}"
-              {%- if language.iso_code == localization.language.iso_code %}
-                selected
-              {% endif %}
-            >
-              {{ language.endonym_name | capitalize }}
-            </option>
-          {%- endfor -%}
-        </select>
+        <div class="pp-loc__group" data-pp-loc-group>
+          <label class="visually-hidden" for="{{ form_id }}-LanguageSelect">Språk</label>
+          <select
+            id="{{ form_id }}-LanguageSelect"
+            name="locale_code"
+            class="pp-loc__native {{ class_prefix }}__select"
+            aria-hidden="true"
+            tabindex="-1"
+            data-pp-loc-select
+          >
+            {%- for language in localization.available_languages -%}
+              <option
+                value="{{ language.iso_code }}"
+                {%- if language.iso_code == localization.language.iso_code %}
+                  selected
+                {% endif %}
+              >
+                {{ language.endonym_name | capitalize }}
+              </option>
+            {%- endfor -%}
+          </select>
+
+          <button
+            type="button"
+            class="pp-loc__trigger"
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-controls="{{ form_id }}-LanguageList"
+            data-pp-loc-trigger
+          >
+            <span class="pp-loc__trigger-text" data-pp-loc-label>
+              {{ localization.language.endonym_name | capitalize }}
+            </span>
+            <span class="pp-loc__chevron" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </button>
+
+          <ul
+            id="{{ form_id }}-LanguageList"
+            class="pp-loc__menu"
+            role="listbox"
+            hidden
+            data-pp-loc-menu
+          >
+            {%- for language in localization.available_languages -%}
+              <li role="presentation">
+                <button
+                  type="button"
+                  class="pp-loc__option{% if language.iso_code == localization.language.iso_code %} is-active{% endif %}"
+                  role="option"
+                  aria-selected="{% if language.iso_code == localization.language.iso_code %}true{% else %}false{% endif %}"
+                  data-pp-loc-option
+                  data-value="{{ language.iso_code }}"
+                >
+                  <span class="pp-loc__option-name">{{ language.endonym_name | capitalize }}</span>
+                </button>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
       {%- endif -%}
 
       <button type="submit" class="{{ class_prefix }}__submit{% if compact %} visually-hidden{% endif %}">
-        {%- if compact -%}Uppdatera{%- else -%}Uppdatera{%- endif -%}
+        Uppdatera
       </button>
     </div>
   {% endform %}
@@ -81,24 +181,153 @@
 {%- endif -%}
 
 {% stylesheet %}
-  .localization-form__fields--compact,
-  [class*='__localization__fields--compact'] {
+  .pp-loc {
     display: flex;
-    align-items: center;
-    gap: 8px;
     flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
   }
 
-  .localization-form__fields--compact select,
-  [class*='__localization__fields--compact'] select {
-    min-height: 34px;
-    padding: 6px 10px;
-    border-radius: 8px;
-    border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 12%, transparent);
-    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 4%, transparent);
+  .pp-loc__group {
+    position: relative;
+    min-width: 0;
+  }
+
+  .pp-loc__native {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .pp-loc__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    max-width: 100%;
+    padding: 8px 12px 8px 14px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--pp-accent, #2dd4bf) 55%, transparent);
+    background: color-mix(in srgb, var(--pp-bg-deep, #071014) 88%, transparent);
     color: var(--pp-text, #f6f7f2);
+    font-size: 0.84rem;
+    font-weight: 500;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .pp-loc--compact .pp-loc__trigger {
+    min-height: 36px;
+    padding: 6px 10px 6px 12px;
     font-size: 0.78rem;
-    max-width: 160px;
+    border-radius: 10px;
+  }
+
+  .pp-loc__trigger:hover,
+  .pp-loc__trigger[aria-expanded='true'] {
+    border-color: var(--pp-accent, #2dd4bf);
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 10%, var(--pp-bg-deep, #071014));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pp-accent, #2dd4bf) 14%, transparent);
+  }
+
+  .pp-loc__trigger-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 220px;
+  }
+
+  .pp-loc__chevron {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: var(--pp-accent, #2dd4bf);
+    transition: transform 0.18s ease;
+  }
+
+  .pp-loc__trigger[aria-expanded='true'] .pp-loc__chevron {
+    transform: rotate(180deg);
+  }
+
+  .pp-loc__menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 400;
+    min-width: max(100%, 260px);
+    max-width: min(92vw, 320px);
+    max-height: min(60vh, 360px);
+    margin: 0;
+    padding: 8px;
+    list-style: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 14px;
+    border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 12%, transparent);
+    background: #0f1a22;
+    color: #f6f7f2;
+    box-shadow:
+      0 18px 48px -18px rgb(0 0 0 / 70%),
+      0 0 0 1px color-mix(in srgb, var(--pp-accent, #2dd4bf) 12%, transparent);
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--pp-accent, #2dd4bf) 40%, transparent) transparent;
+  }
+
+  .pp-loc__menu[hidden] {
+    display: none;
+  }
+
+  .pp-loc__option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #e8eee9;
+    text-align: left;
+    font: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+  }
+
+  .pp-loc__option:hover,
+  .pp-loc__option:focus-visible {
+    outline: none;
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 16%, transparent);
+    color: #fff;
+  }
+
+  .pp-loc__option.is-active {
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 22%, transparent);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .pp-loc__option-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pp-loc__option-currency {
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--pp-accent, #2dd4bf);
   }
 
   .site-header__localization {
@@ -111,6 +340,18 @@
     white-space: nowrap;
   }
 
+  .site-footer__localization__submit {
+    min-height: 40px;
+    padding-inline: 16px;
+    border: none;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--ftr-bg, #071014);
+    background: var(--ftr-accent, #2dd4bf);
+  }
+
   @media screen and (min-width: 990px) {
     .site-header__localization {
       display: block;
@@ -120,11 +361,75 @@
 
 {% javascript %}
   (function () {
-    document.querySelectorAll('.localization-form__fields--compact select, [class*="__localization__fields--compact"] select').forEach(function (select) {
-      select.addEventListener('change', function () {
-        const form = select.closest('form');
-        if (form) form.requestSubmit();
+    function closeGroup(group) {
+      if (!group) return;
+      var trigger = group.querySelector('[data-pp-loc-trigger]');
+      var menu = group.querySelector('[data-pp-loc-menu]');
+      if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      if (menu) menu.hidden = true;
+    }
+
+    function closeAll(except) {
+      document.querySelectorAll('[data-pp-loc-group]').forEach(function (group) {
+        if (group !== except) closeGroup(group);
       });
+    }
+
+    document.addEventListener('click', function (event) {
+      var trigger = event.target.closest('[data-pp-loc-trigger]');
+      if (trigger) {
+        var group = trigger.closest('[data-pp-loc-group]');
+        var menu = group && group.querySelector('[data-pp-loc-menu]');
+        if (!group || !menu) return;
+
+        var willOpen = trigger.getAttribute('aria-expanded') !== 'true';
+        closeAll(willOpen ? group : null);
+        trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        menu.hidden = !willOpen;
+        return;
+      }
+
+      var option = event.target.closest('[data-pp-loc-option]');
+      if (option) {
+        var group = option.closest('[data-pp-loc-group]');
+        var select = group && group.querySelector('[data-pp-loc-select]');
+        var label = group && group.querySelector('[data-pp-loc-label]');
+        var form = option.closest('form');
+        if (!select || !form) return;
+
+        var value = option.getAttribute('data-value');
+        select.value = value;
+
+        group.querySelectorAll('[data-pp-loc-option]').forEach(function (btn) {
+          var active = btn === option;
+          btn.classList.toggle('is-active', active);
+          btn.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+
+        if (label) {
+          var name = option.querySelector('.pp-loc__option-name');
+          var currency = option.querySelector('.pp-loc__option-currency');
+          label.textContent = currency
+            ? name.textContent + ' | ' + currency.textContent
+            : name.textContent;
+        }
+
+        closeGroup(group);
+        if (typeof form.requestSubmit === 'function') {
+          form.requestSubmit();
+        } else {
+          form.submit();
+        }
+        return;
+      }
+
+      if (!event.target.closest('[data-pp-loc-group]')) {
+        closeAll(null);
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeAll(null);
     });
   })();
 {% endjavascript %}
