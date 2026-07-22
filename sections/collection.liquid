@@ -1,14 +1,27 @@
-{% comment %}
-  Collection page — lists products with pagination. No hardcoded product data.
-{% endcomment %}
+{%- liquid
+  assign collection_heading = collection.title
+  assign collection_eyebrow = 'Kollektion'
+  if collection.handle == 'all'
+    assign collection_heading = 'Produkter'
+    assign collection_eyebrow = 'Sortiment'
+  endif
+-%}
 
 <div class="main-collection full-width">
   <div class="main-collection__inner">
     {% render 'breadcrumbs' %}
 
     <header class="main-collection__header">
-      <h1 class="main-collection__title">{{ collection.title }}</h1>
-      {% if collection.description != blank %}
+      <p class="main-collection__eyebrow">{{ collection_eyebrow }}</p>
+      <h1 class="main-collection__title">{{ collection_heading }}</h1>
+      {% if collection.handle == 'all' %}
+        <p class="main-collection__description">
+          Alla våra produkter på ett ställe — dusch, hink och perfekta combon.
+        </p>
+        {% if collection.products_count > 0 %}
+          <p class="main-collection__count">{{ collection.products_count }} produkter</p>
+        {% endif %}
+      {% elsif collection.description != blank %}
         <div class="main-collection__description">{{ collection.description }}</div>
       {% endif %}
     </header>
@@ -111,7 +124,17 @@
   .main-collection__header {
     text-align: center;
     margin-inline: auto;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
+    max-width: 42rem;
+  }
+
+  .main-collection__eyebrow {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pp-accent, #2dd4bf);
   }
 
   .main-collection__title {
@@ -121,9 +144,18 @@
   }
 
   .main-collection__description {
-    font-size: 0.95rem;
-    line-height: 1.6;
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
     color: var(--pp-muted, #9aa8a2);
+  }
+
+  .main-collection__count {
+    margin: 14px 0 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--pp-accent, #2dd4bf);
   }
 
   .main-collection__grid {

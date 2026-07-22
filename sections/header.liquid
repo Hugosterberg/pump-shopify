@@ -51,9 +51,39 @@
       {% endif %}
     </div>
 
-    {% if section.settings.menu != blank %}
-      <nav class="site-header__nav" aria-label="Huvudmeny">
-        <ul class="site-header__menu" role="list">
+    {%- liquid
+      assign products_nav_url = routes.all_products_collection_url
+      assign products_nav_label = 'Produkter'
+      assign has_products_nav = false
+      assign has_menu_links = false
+
+      if section.settings.menu != blank and section.settings.menu.links.size > 0
+        assign has_menu_links = true
+        for link in section.settings.menu.links
+          assign link_title_down = link.title | downcase | strip
+          if link.url == products_nav_url or link_title_down == 'produkter' or link_title_down == 'products'
+            assign has_products_nav = true
+          endif
+        endfor
+      endif
+    -%}
+
+    <nav class="site-header__nav" aria-label="Huvudmeny">
+      <ul class="site-header__menu" role="list">
+        {% unless has_products_nav %}
+          <li>
+            <a
+              class="site-header__link{% if request.page_type == 'collection' and collection.handle == 'all' %} site-header__link--active{% endif %}"
+              href="{{ products_nav_url }}"
+              {% if request.page_type == 'collection' and collection.handle == 'all' %}
+                aria-current="page"
+              {% endif %}
+            >
+              {{ products_nav_label }}
+            </a>
+          </li>
+        {% endunless %}
+        {% if has_menu_links %}
           {% for link in section.settings.menu.links %}
             <li>
               <a
@@ -67,9 +97,9 @@
               </a>
             </li>
           {% endfor %}
-        </ul>
-      </nav>
-    {% endif %}
+        {% endif %}
+      </ul>
+    </nav>
 
     <div class="site-header__actions">
       {% if section.settings.show_localization %}
@@ -109,37 +139,48 @@
         <span class="site-header__cart-count" data-cart-count aria-hidden="true"{% if cart.item_count == 0 %} hidden{% endif %}>{{ cart.item_count }}</span>
       </button>
 
-      {% if section.settings.menu != blank %}
-        <button
-          type="button"
-          class="site-header__menu-toggle"
-          data-mobile-nav-open
-          aria-expanded="false"
-          aria-controls="SiteHeaderMobileNav"
-          aria-label="Öppna meny"
-        >
-          <span class="site-header__menu-icon" aria-hidden="true"></span>
-        </button>
-      {% endif %}
+      <button
+        type="button"
+        class="site-header__menu-toggle"
+        data-mobile-nav-open
+        aria-expanded="false"
+        aria-controls="SiteHeaderMobileNav"
+        aria-label="Öppna meny"
+      >
+        <span class="site-header__menu-icon" aria-hidden="true"></span>
+      </button>
     </div>
   </div>
 
-  {% if section.settings.menu != blank %}
-    <div class="site-header__mobile-overlay" data-mobile-nav hidden>
-      <div class="site-header__mobile-backdrop" data-mobile-nav-close tabindex="-1"></div>
-      <nav
-        id="SiteHeaderMobileNav"
-        class="site-header__mobile-panel"
-        aria-label="Mobilmeny"
-        data-mobile-nav-panel
-      >
-        <div class="site-header__mobile-head">
-          <span class="site-header__mobile-title">Meny</span>
-          <button type="button" class="site-header__mobile-close" data-mobile-nav-close aria-label="Stäng meny">
-            {% render 'icon', name: 'x', size: 20 %}
-          </button>
-        </div>
-        <ul class="site-header__mobile-links" role="list">
+  <div class="site-header__mobile-overlay" data-mobile-nav hidden>
+    <div class="site-header__mobile-backdrop" data-mobile-nav-close tabindex="-1"></div>
+    <nav
+      id="SiteHeaderMobileNav"
+      class="site-header__mobile-panel"
+      aria-label="Mobilmeny"
+      data-mobile-nav-panel
+    >
+      <div class="site-header__mobile-head">
+        <span class="site-header__mobile-title">Meny</span>
+        <button type="button" class="site-header__mobile-close" data-mobile-nav-close aria-label="Stäng meny">
+          {% render 'icon', name: 'x', size: 20 %}
+        </button>
+      </div>
+      <ul class="site-header__mobile-links" role="list">
+        {% unless has_products_nav %}
+          <li>
+            <a
+              class="site-header__mobile-link"
+              href="{{ products_nav_url }}"
+              {% if request.page_type == 'collection' and collection.handle == 'all' %}
+                aria-current="page"
+              {% endif %}
+            >
+              {{ products_nav_label }}
+            </a>
+          </li>
+        {% endunless %}
+        {% if has_menu_links %}
           {% for link in section.settings.menu.links %}
             <li>
               <a
@@ -153,25 +194,25 @@
               </a>
             </li>
           {% endfor %}
-        </ul>
-        {% if section.settings.show_cta and section.settings.cta_label != blank %}
-          <a class="site-header__mobile-cta pp-btn-primary pp-btn--full" href="{{ section.settings.cta_link | default: '#product-showcase' }}">
-            {{ section.settings.cta_label }}
-          </a>
         {% endif %}
-        {% if section.settings.show_localization %}
-          <div class="site-header__mobile-localization">
-            {% render 'localization-form',
-              class_prefix: 'site-header__mobile-loc',
-              form_id: 'MobileLocalizationForm',
-              compact: true,
-              show_label: false
-            %}
-          </div>
-        {% endif %}
-      </nav>
-    </div>
-  {% endif %}
+      </ul>
+      {% if section.settings.show_cta and section.settings.cta_label != blank %}
+        <a class="site-header__mobile-cta pp-btn-primary pp-btn--full" href="{{ section.settings.cta_link | default: '#product-showcase' }}">
+          {{ section.settings.cta_label }}
+        </a>
+      {% endif %}
+      {% if section.settings.show_localization %}
+        <div class="site-header__mobile-localization">
+          {% render 'localization-form',
+            class_prefix: 'site-header__mobile-loc',
+            form_id: 'MobileLocalizationForm',
+            compact: true,
+            show_label: false
+          %}
+        </div>
+      {% endif %}
+    </nav>
+  </div>
 </header>
 
 {% stylesheet %}
