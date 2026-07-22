@@ -213,14 +213,13 @@
     text-wrap: pretty;
   }
 
-  /* Mobile 2-col: if the last card is alone on its row, let it span the
-     full width and center its content so the grid stays even. */
+  /* Mobile: center every card like the solo last-row style */
   @media screen and (max-width: 749px) {
     .use-case-grid__card:last-child:nth-child(odd) {
       grid-column: 1 / -1;
     }
 
-    .use-case-grid__card:last-child:nth-child(odd) .use-case-grid__body {
+    .use-case-grid__body {
       align-items: center;
       text-align: center;
     }

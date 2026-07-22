@@ -1,0 +1,1374 @@
+{%- liquid
+  assign review_scope = section.settings.review_scope | default: 'all_shop'
+  assign review_product = section.settings.product
+  if review_product == blank and section.settings.product_handle != blank
+    assign review_product = all_products[section.settings.product_handle]
+  endif
+
+  assign shop_rating = shop.metafields.judgeme.all_reviews_rating
+  assign shop_count = shop.metafields.judgeme.all_reviews_count
+  assign featured_carousel = shop.metafields.judgeme.featured_carousel
+
+  assign rating_value = blank
+  assign rating_count = blank
+  assign rating_scale = 5
+  assign summary_label = blank
+
+  if review_scope == 'all_shop'
+    if shop_rating != blank
+      assign rating_value = shop_rating.value | default: shop_rating
+    endif
+    if shop_count != blank
+      assign rating_count = shop_count.value | default: shop_count
+    endif
+    assign summary_label = section.settings.all_products_label | default: 'från alla våra produkter'
+  elsif review_product != blank
+    if review_product.metafields.reviews.rating.value != blank
+      assign rating_value = review_product.metafields.reviews.rating.value.rating
+      assign rating_scale = review_product.metafields.reviews.rating.value.scale_max | default: 5
+    endif
+    if review_product.metafields.reviews.rating_count != blank
+      assign rating_count = review_product.metafields.reviews.rating_count.value | default: review_product.metafields.reviews.rating_count
+    endif
+    assign summary_label = review_product.title
+  endif
+
+  if rating_value != blank
+    assign rating_display = rating_value | times: 1.0 | round: 1
+    assign rating_rounded = rating_value | round
+  else
+    assign rating_display = blank
+    assign rating_rounded = 5
+  endif
+
+  assign product_ids_csv = ''
+  assign source_products = ''
+  if review_scope == 'all_shop'
+    if section.settings.products != blank and section.settings.products.size > 0
+      assign source_products = section.settings.products
+    endif
+  elsif review_product != blank
+    assign product_ids_csv = review_product.id | append: ''
+  endif
+-%}
+
+<div
+  id="pp-reviews-{{ section.id }}"
+  class="pp-jdgm-carousel full-width"
+  data-pp-jdgm-carousel
+  data-review-scope="{{ review_scope }}"
+  style="
+    --jc-bg: {{ section.settings.background_color }};
+    --jc-surface: {{ section.settings.surface_color }};
+    --jc-text: {{ section.settings.text_color }};
+    --jc-muted: {{ section.settings.muted_text_color }};
+    --jc-accent: {{ section.settings.accent_color }};
+  "
+>
+  <div class="pp-jdgm-carousel__inner">
+    {% if section.settings.heading != blank or section.settings.eyebrow != blank %}
+      <header class="pp-jdgm-carousel__header">
+        {% if section.settings.eyebrow != blank %}
+          <p class="pp-jdgm-carousel__eyebrow">{{ section.settings.eyebrow }}</p>
+        {% endif %}
+        {% if section.settings.heading != blank %}
+          <h2 class="pp-jdgm-carousel__heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.subheading != blank %}
+          <p class="pp-jdgm-carousel__subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {% if rating_display != blank or rating_count != blank %}
+      <div class="pp-jdgm-carousel__summary" aria-label="Sammanfattning av omdömen">
+        {% if rating_display != blank %}
+          <div class="pp-jdgm-carousel__score">
+            <span class="pp-jdgm-carousel__score-number">{{ rating_display }}</span>
+            <div class="pp-jdgm-carousel__stars" role="img" aria-label="{{ rating_display }} av {{ rating_scale }} stjärnor">
+              {% for i in (1..5) %}
+                <span class="pp-jdgm-carousel__star{% if i > rating_rounded %} pp-jdgm-carousel__star--empty{% endif %}" aria-hidden="true">★</span>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        {% if rating_count != blank %}
+          <p class="pp-jdgm-carousel__count">
+            Baserat på <strong>{{ rating_count }}</strong>
+            {% if rating_count == 1 %}omdöme{% else %}omdömen{% endif %}
+            {% if summary_label != blank %}
+              {{ summary_label }}
+            {% endif %}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="pp-jdgm-carousel__stage">
+      <button
+        type="button"
+        class="pp-jdgm-carousel__nav pp-jdgm-carousel__nav--prev"
+        data-pp-jdgm-prev
+        aria-label="Föregående omdömen"
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div class="pp-jdgm-carousel__viewport" data-pp-jdgm-viewport>
+        {%- comment -%}
+          Always seed with real product review widgets (DOM). Featured carousel alone
+          often won't hydrate cards here, and Judge.me's public API now requires auth.
+        {%- endcomment -%}
+        <div
+          class="pp-jdgm-carousel__sources"
+          data-pp-jdgm-sources
+          aria-hidden="true"
+        >
+          {% if review_scope == 'all_shop' %}
+            {% if review_product != blank and review_product.metafields.judgeme.widget != blank %}
+              <div
+                class="jdgm-widget jdgm-review-widget"
+                id="judgeme_product_reviews_{{ section.id }}_{{ review_product.id }}"
+                data-id="{{ review_product.id }}"
+                data-product-title="{{ review_product.title | escape }}"
+              >
+                {{ review_product.metafields.judgeme.widget }}
+              </div>
+            {% endif %}
+
+            {% if source_products != blank %}
+              {% for p in source_products %}
+                {% if review_product != blank and p.id == review_product.id %}{% continue %}{% endif %}
+                {% if p.metafields.judgeme.widget != blank %}
+                  <div
+                    class="jdgm-widget jdgm-review-widget"
+                    id="judgeme_product_reviews_{{ section.id }}_{{ p.id }}"
+                    data-id="{{ p.id }}"
+                    data-product-title="{{ p.title | escape }}"
+                  >
+                    {{ p.metafields.judgeme.widget }}
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              {% for p in collections.all.products limit: 24 %}
+                {% if review_product != blank and p.id == review_product.id %}{% continue %}{% endif %}
+                {% if p.metafields.judgeme.widget != blank %}
+                  <div
+                    class="jdgm-widget jdgm-review-widget"
+                    id="judgeme_product_reviews_{{ section.id }}_{{ p.id }}"
+                    data-id="{{ p.id }}"
+                    data-product-title="{{ p.title | escape }}"
+                  >
+                    {{ p.metafields.judgeme.widget }}
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          {% elsif review_product != blank and review_product.metafields.judgeme.widget != blank %}
+            <div
+              class="jdgm-widget jdgm-review-widget"
+              id="judgeme_product_reviews_{{ section.id }}"
+              data-id="{{ review_product.id }}"
+              data-product-title="{{ review_product.title | escape }}"
+            >
+              {{ review_product.metafields.judgeme.widget }}
+            </div>
+          {% endif %}
+
+          {% if featured_carousel != blank %}
+            <div class="jdgm-widget pp-jdgm-featured-source" data-pp-jdgm-featured>
+              {{ featured_carousel }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div
+          class="pp-jdgm-carousel__track"
+          data-pp-jdgm-track
+          data-id="{{ review_product.id | default: '' }}"
+        ></div>
+
+        {% if request.design_mode %}
+          <p class="pp-jdgm-carousel__empty" data-pp-jdgm-empty hidden>
+            Inga omdömen hittades ännu. Kontrollera att Judge.me Core är aktiverat och att produkterna har omdömen.
+          </p>
+        {% endif %}
+      </div>
+
+      <button
+        type="button"
+        class="pp-jdgm-carousel__nav pp-jdgm-carousel__nav--next"
+        data-pp-jdgm-next
+        aria-label="Nästa omdömen"
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .pp-jdgm-carousel {
+    --jc-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    isolation: isolate;
+    padding-block: clamp(36px, 5vw, 52px);
+    padding-inline: var(--page-margin, 20px);
+    background:
+      radial-gradient(58% 48% at 50% -8%, color-mix(in srgb, var(--jc-accent, #2dd4bf) 22%, transparent), transparent 68%),
+      radial-gradient(42% 36% at 92% 88%, color-mix(in srgb, #38bdf8 12%, transparent), transparent 72%),
+      radial-gradient(36% 30% at 8% 70%, color-mix(in srgb, var(--jc-accent, #2dd4bf) 8%, transparent), transparent 70%),
+      linear-gradient(180deg, #05090c 0%, var(--jc-bg, #071014) 42%, #060b10 100%);
+    color: var(--jc-text, #f6f7f2);
+    overflow: hidden;
+  }
+
+  .pp-jdgm-carousel::before {
+    content: '';
+    position: absolute;
+    inset: -20% -10%;
+    background:
+      conic-gradient(from 210deg at 50% 40%, transparent 0deg, color-mix(in srgb, var(--jc-accent, #2dd4bf) 7%, transparent) 55deg, transparent 110deg, color-mix(in srgb, #38bdf8 6%, transparent) 180deg, transparent 250deg);
+    animation: pp-jdgm-aurora 18s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.7;
+  }
+
+  .pp-jdgm-carousel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.035) 1px, transparent 0);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, #000 10%, transparent 78%);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  @keyframes pp-jdgm-aurora {
+    to { transform: rotate(360deg); }
+  }
+
+  .pp-jdgm-carousel__inner {
+    position: relative;
+    z-index: 1;
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+  }
+
+  .pp-jdgm-carousel__header {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .pp-jdgm-carousel__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 8px;
+    font-size: 0.76rem;
+    font-weight: 650;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--jc-accent, #2dd4bf);
+    text-shadow: 0 0 24px color-mix(in srgb, var(--jc-accent, #2dd4bf) 35%, transparent);
+  }
+
+  .pp-jdgm-carousel__eyebrow::before,
+  .pp-jdgm-carousel__eyebrow::after {
+    content: '';
+    width: 36px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--jc-accent, #2dd4bf) 80%, #fff));
+  }
+
+  .pp-jdgm-carousel__eyebrow::after {
+    background: linear-gradient(90deg, color-mix(in srgb, var(--jc-accent, #2dd4bf) 80%, #fff), transparent);
+  }
+
+  .pp-jdgm-carousel__heading {
+    margin: 0 0 6px;
+    font-size: clamp(1.45rem, 3.2vw, 2rem);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    font-weight: 750;
+    background: linear-gradient(180deg, #ffffff 20%, color-mix(in srgb, var(--jc-text, #f6f7f2) 78%, var(--jc-accent, #2dd4bf)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .pp-jdgm-carousel__subheading {
+    margin: 0 auto;
+    max-width: 38rem;
+    color: var(--jc-muted, #9aa8a2);
+    line-height: 1.5;
+    font-size: 0.92rem;
+  }
+
+  .pp-jdgm-carousel__summary {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin: 0 auto 16px;
+    padding: 12px 20px 11px;
+    max-width: 26rem;
+    border-radius: 18px;
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.07), transparent 42%),
+      linear-gradient(165deg, color-mix(in srgb, var(--jc-accent, #2dd4bf) 18%, #121c24), #0c141a 70%);
+    border: 1px solid color-mix(in srgb, var(--jc-accent, #2dd4bf) 34%, transparent);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.1) inset,
+      0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+      0 24px 60px -28px color-mix(in srgb, var(--jc-accent, #2dd4bf) 55%, #000),
+      0 0 80px -40px color-mix(in srgb, var(--jc-accent, #2dd4bf) 50%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
+  }
+
+  .pp-jdgm-carousel__summary::before {
+    content: '';
+    position: absolute;
+    inset: -40% auto auto 50%;
+    width: 160px;
+    height: 160px;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, color-mix(in srgb, var(--jc-accent, #2dd4bf) 35%, transparent), transparent 68%);
+    pointer-events: none;
+  }
+
+  .pp-jdgm-carousel__score {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pp-jdgm-carousel__score-number {
+    font-size: clamp(1.65rem, 3.5vw, 2rem);
+    font-weight: 820;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    background: linear-gradient(180deg, #fff, color-mix(in srgb, #fff 70%, var(--jc-accent, #2dd4bf)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .pp-jdgm-carousel__stars {
+    display: flex;
+    gap: 2px;
+    font-size: 1rem;
+    color: var(--jc-accent, #2dd4bf);
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--jc-accent, #2dd4bf) 45%, transparent));
+  }
+
+  .pp-jdgm-carousel__star {
+    display: inline-block;
+    animation: pp-jdgm-star-pop 0.55s var(--jc-ease) both;
+  }
+
+  .pp-jdgm-carousel__star:nth-child(2) { animation-delay: 0.05s; }
+  .pp-jdgm-carousel__star:nth-child(3) { animation-delay: 0.1s; }
+  .pp-jdgm-carousel__star:nth-child(4) { animation-delay: 0.15s; }
+  .pp-jdgm-carousel__star:nth-child(5) { animation-delay: 0.2s; }
+
+  @keyframes pp-jdgm-star-pop {
+    from { opacity: 0; transform: scale(0.6) translateY(4px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .pp-jdgm-carousel__star--empty {
+    color: color-mix(in srgb, var(--jc-text, #f6f7f2) 22%, transparent);
+    filter: none;
+  }
+
+  .pp-jdgm-carousel__count {
+    position: relative;
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--jc-muted, #9aa8a2);
+    text-align: center;
+  }
+
+  .pp-jdgm-carousel__count strong {
+    color: var(--jc-text, #f6f7f2);
+    font-weight: 700;
+  }
+
+  .pp-jdgm-carousel__stage {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pp-jdgm-carousel__nav {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--jc-accent, #2dd4bf) 45%, transparent);
+    background:
+      linear-gradient(160deg, rgba(255,255,255,0.08), transparent 45%),
+      linear-gradient(165deg, color-mix(in srgb, var(--jc-accent, #2dd4bf) 18%, #121a22), #0a1015);
+    color: var(--jc-text, #f6f7f2);
+    cursor: pointer;
+    box-shadow: 0 10px 28px -16px rgba(0,0,0,0.85);
+    transition: transform 0.25s var(--jc-ease), border-color 0.2s ease, box-shadow 0.25s ease, color 0.2s ease;
+  }
+
+  .pp-jdgm-carousel__nav svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .pp-jdgm-carousel__nav:hover {
+    transform: translateY(-3px) scale(1.04);
+    color: #fff;
+    border-color: var(--jc-accent, #2dd4bf);
+    box-shadow:
+      0 14px 32px -14px color-mix(in srgb, var(--jc-accent, #2dd4bf) 70%, #000),
+      0 0 0 4px color-mix(in srgb, var(--jc-accent, #2dd4bf) 12%, transparent);
+  }
+
+  .pp-jdgm-carousel__nav:active {
+    transform: translateY(-1px) scale(0.98);
+  }
+
+  .pp-jdgm-carousel__viewport {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    min-height: 0;
+    padding-block: 6px 10px;
+    mask-image: linear-gradient(90deg, transparent, #000 2.5%, #000 97.5%, transparent);
+  }
+
+  /* Keep sources off-screen but renderable so Judge.me can hydrate widgets */
+  .pp-jdgm-carousel__sources {
+    position: absolute;
+    left: -10000px;
+    top: 0;
+    width: 720px;
+    height: 600px;
+    overflow: auto;
+    opacity: 0.01;
+    pointer-events: none;
+  }
+
+  .pp-jdgm-carousel.is-ready .pp-jdgm-carousel__sources {
+    display: none !important;
+  }
+
+  .pp-jdgm-carousel__track {
+    position: relative;
+    min-height: 1px;
+  }
+
+  .pp-jdgm-carousel__rail {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 14px;
+    margin: 0;
+    padding: 4px 4px 18px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .pp-jdgm-carousel__rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev-widg__header,
+  .pp-jdgm-carousel .jdgm-row-stars,
+  .pp-jdgm-carousel .jdgm-histogram,
+  .pp-jdgm-carousel .jdgm-write-rev-link,
+  .pp-jdgm-carousel .jdgm-rev-widg__summary,
+  .pp-jdgm-carousel .jdgm-sort-dropdown-wrapper,
+  .pp-jdgm-carousel .jdgm-rev-widg__sort-wrapper,
+  .pp-jdgm-carousel .jdgm-form,
+  .pp-jdgm-carousel .jdgm-rev-widg__title,
+  .pp-jdgm-carousel .jdgm-carousel__header,
+  .pp-jdgm-carousel .jdgm-carousel__title,
+  .pp-jdgm-carousel .jdgm-all-reviews-rating,
+  .pp-jdgm-carousel .jdgm-carousel-title,
+  .pp-jdgm-carousel .jdgm-gallery,
+  .pp-jdgm-carousel .jdgm-link--all-reviews {
+    display: none !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-paginate {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    pointer-events: auto !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev-widg__body,
+  .pp-jdgm-carousel .jdgm-rev-widg__reviews,
+  .pp-jdgm-carousel .jdgm-carousel__item-wrapper,
+  .pp-jdgm-carousel .jdgm-carousel__items {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 20px !important;
+    margin: 0 !important;
+    padding: 4px 2px 18px !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev,
+  .pp-jdgm-carousel__rail .jdgm-rev,
+  .pp-jdgm-carousel .jdgm-carousel__item,
+  .pp-jdgm-carousel__rail .jdgm-carousel__item {
+    --bubble-ink: #0d1f1a;
+    --bubble-muted: #61756e;
+    flex: 0 0 min(100%, 300px) !important;
+    width: min(100%, 300px) !important;
+    max-width: min(100%, 300px) !important;
+    min-height: 178px;
+    height: 178px;
+    scroll-snap-align: start;
+    position: relative;
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 0 8px !important;
+    padding: 14px 14px 18px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    border: 1px solid rgba(255, 255, 255, 0.72) !important;
+    border-radius: 30px 30px 30px 20px !important;
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.72) 28%, transparent 55%),
+      radial-gradient(120% 90% at 100% 0%, rgba(45, 212, 191, 0.16), transparent 44%),
+      linear-gradient(168deg, #ffffff 0%, #f5faf8 48%, #e7f3ef 100%) !important;
+    color: var(--bubble-ink) !important;
+    box-shadow:
+      0 1.5px 0 rgba(255, 255, 255, 0.95) inset,
+      0 0 0 1px rgba(13, 148, 136, 0.06) inset,
+      0 28px 56px -30px rgba(0, 0, 0, 0.82),
+      0 12px 28px -18px rgba(45, 212, 191, 0.4);
+    transition:
+      transform 0.35s var(--jc-ease),
+      box-shadow 0.35s ease;
+    animation: pp-jdgm-bubble-in-a 0.65s var(--jc-ease) both;
+    will-change: transform;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev:nth-child(even),
+  .pp-jdgm-carousel__rail .jdgm-rev:nth-child(even),
+  .pp-jdgm-carousel .jdgm-carousel__item:nth-child(even),
+  .pp-jdgm-carousel__rail .jdgm-carousel__item:nth-child(even) {
+    animation-name: pp-jdgm-bubble-in-b;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev:nth-child(2),
+  .pp-jdgm-carousel__rail .jdgm-rev:nth-child(2) { animation-delay: 0.07s; }
+  .pp-jdgm-carousel .jdgm-rev:nth-child(3),
+  .pp-jdgm-carousel__rail .jdgm-rev:nth-child(3) { animation-delay: 0.14s; }
+  .pp-jdgm-carousel .jdgm-rev:nth-child(4),
+  .pp-jdgm-carousel__rail .jdgm-rev:nth-child(4) { animation-delay: 0.21s; }
+  .pp-jdgm-carousel .jdgm-rev:nth-child(5),
+  .pp-jdgm-carousel__rail .jdgm-rev:nth-child(5) { animation-delay: 0.28s; }
+
+  @keyframes pp-jdgm-bubble-in-a {
+    from { opacity: 0; transform: translateY(18px) rotate(-1.2deg) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) rotate(-0.4deg) scale(1); }
+  }
+
+  @keyframes pp-jdgm-bubble-in-b {
+    from { opacity: 0; transform: translateY(18px) rotate(1.2deg) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) rotate(0.45deg) scale(1); }
+  }
+
+  .pp-jdgm-carousel .jdgm-rev:nth-child(odd),
+  .pp-jdgm-carousel__rail .jdgm-rev:nth-child(odd) {
+    transform: rotate(-0.4deg);
+  }
+
+  .pp-jdgm-carousel .jdgm-rev:nth-child(even),
+  .pp-jdgm-carousel__rail .jdgm-rev:nth-child(even) {
+    transform: rotate(0.45deg);
+  }
+
+  .pp-jdgm-carousel .jdgm-rev:hover,
+  .pp-jdgm-carousel__rail .jdgm-rev:hover,
+  .pp-jdgm-carousel .jdgm-carousel__item:hover,
+  .pp-jdgm-carousel__rail .jdgm-carousel__item:hover {
+    transform: translateY(-8px) rotate(0deg) scale(1.015);
+    box-shadow:
+      0 1.5px 0 rgba(255, 255, 255, 0.95) inset,
+      0 34px 64px -24px rgba(0, 0, 0, 0.85),
+      0 16px 36px -14px rgba(45, 212, 191, 0.5),
+      0 0 0 1px color-mix(in srgb, var(--jc-accent, #2dd4bf) 22%, transparent);
+  }
+
+  .pp-jdgm-carousel .jdgm-rev::before,
+  .pp-jdgm-carousel__rail .jdgm-rev::before,
+  .pp-jdgm-carousel .jdgm-carousel__item::before,
+  .pp-jdgm-carousel__rail .jdgm-carousel__item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 14px;
+    bottom: 22px;
+    width: 3px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5eead4, var(--jc-accent, #2dd4bf) 40%, #38bdf8 75%, transparent);
+    box-shadow: 0 0 16px color-mix(in srgb, var(--jc-accent, #2dd4bf) 55%, transparent);
+  }
+
+  .pp-jdgm-carousel .jdgm-rev::after,
+  .pp-jdgm-carousel__rail .jdgm-rev::after,
+  .pp-jdgm-carousel .jdgm-carousel__item::after,
+  .pp-jdgm-carousel__rail .jdgm-carousel__item::after {
+    content: '';
+    position: absolute;
+    left: 30px;
+    bottom: -10px;
+    width: 22px;
+    height: 22px;
+    background: linear-gradient(135deg, #e7f3ef 8%, #dcece8 100%);
+    border-radius: 0 0 6px 0;
+    transform: rotate(45deg);
+    box-shadow: 5px 5px 14px -7px rgba(0, 0, 0, 0.4);
+    z-index: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.45);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .pp-jdgm-carousel .jdgm-rev .pp-jdgm-quote,
+  .pp-jdgm-carousel__rail .jdgm-rev .pp-jdgm-quote {
+    position: absolute;
+    top: 4px;
+    right: 12px;
+    font-size: 2.6rem;
+    line-height: 1;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--jc-accent, #2dd4bf) 42%, transparent), transparent 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev .pp-jdgm-sheen,
+  .pp-jdgm-carousel__rail .jdgm-rev .pp-jdgm-sheen {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.35) 48%, transparent 62%);
+    transform: translateX(-120%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev:hover .pp-jdgm-sheen,
+  .pp-jdgm-carousel__rail .jdgm-rev:hover .pp-jdgm-sheen {
+    animation: pp-jdgm-sheen 0.85s var(--jc-ease);
+  }
+
+  @keyframes pp-jdgm-sheen {
+    to { transform: translateX(120%); }
+  }
+
+  .pp-jdgm-carousel .jdgm-rev > *:not(.pp-jdgm-sheen):not(.pp-jdgm-quote),
+  .pp-jdgm-carousel__rail .jdgm-rev > *:not(.pp-jdgm-sheen):not(.pp-jdgm-quote),
+  .pp-jdgm-carousel .jdgm-carousel__item > *,
+  .pp-jdgm-carousel__rail .jdgm-carousel__item > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__author,
+  .pp-jdgm-carousel__rail .jdgm-rev__author,
+  .pp-jdgm-carousel .jdgm-carousel__author,
+  .pp-jdgm-carousel__rail .jdgm-carousel__author {
+    color: #0f766e !important;
+    font-weight: 750 !important;
+    font-size: 1rem !important;
+    letter-spacing: -0.015em !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__body,
+  .pp-jdgm-carousel .jdgm-rev__content p,
+  .pp-jdgm-carousel .jdgm-rev__title,
+  .pp-jdgm-carousel__rail .jdgm-rev__body,
+  .pp-jdgm-carousel__rail .jdgm-rev__content p,
+  .pp-jdgm-carousel__rail .jdgm-rev__title,
+  .pp-jdgm-carousel .jdgm-carousel__content,
+  .pp-jdgm-carousel__rail .jdgm-carousel__content {
+    color: #1a3029 !important;
+    line-height: 1.45 !important;
+    font-size: 0.88rem !important;
+    text-wrap: pretty;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__timestamp,
+  .pp-jdgm-carousel__rail .jdgm-rev__timestamp {
+    color: var(--bubble-muted) !important;
+    font-size: 0.76rem !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-star,
+  .pp-jdgm-carousel__rail .jdgm-star {
+    color: #0d9488 !important;
+    filter: drop-shadow(0 0 7px rgba(45, 212, 191, 0.4));
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__buyer-badge,
+  .pp-jdgm-carousel__rail .jdgm-rev__buyer-badge {
+    background: linear-gradient(135deg, rgba(45,212,191,0.18), rgba(56,189,248,0.1)) !important;
+    color: #0f766e !important;
+    border: 1px solid color-mix(in srgb, var(--jc-accent, #2dd4bf) 42%, transparent) !important;
+    border-radius: 999px !important;
+    font-size: 0.66rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__prod-title,
+  .pp-jdgm-carousel__rail .jdgm-rev__prod-title,
+  .pp-jdgm-carousel .pp-jdgm-product-tag {
+    display: inline-flex !important;
+    align-items: center;
+    margin-top: 12px !important;
+    padding: 5px 11px !important;
+    border-radius: 999px !important;
+    background: rgba(15, 118, 110, 0.09) !important;
+    color: #0f766e !important;
+    font-size: 0.68rem !important;
+    font-weight: 650 !important;
+    letter-spacing: 0.02em;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__icon,
+  .pp-jdgm-carousel__rail .jdgm-rev__icon {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    border: 2px solid #fff !important;
+    box-shadow:
+      0 0 0 1px rgba(15, 118, 110, 0.14),
+      0 8px 18px -8px rgba(15, 118, 110, 0.55);
+    background: linear-gradient(145deg, #e4fbf5, #6fcbb9) !important;
+    background-size: cover !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__icon--blank,
+  .pp-jdgm-carousel__rail .jdgm-rev__icon--blank {
+    background-image: linear-gradient(145deg, #e4fbf5, #6fcbb9) !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev:nth-child(3n + 2) .jdgm-rev__icon--blank,
+  .pp-jdgm-carousel__rail .jdgm-rev:nth-child(3n + 2) .jdgm-rev__icon--blank {
+    background-image: linear-gradient(145deg, #eaf1ff, #8aa4d4) !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev:nth-child(3n) .jdgm-rev__icon--blank,
+  .pp-jdgm-carousel__rail .jdgm-rev:nth-child(3n) .jdgm-rev__icon--blank {
+    background-image: linear-gradient(145deg, #fff3e8, #d0a882) !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__icon--blank *,
+  .pp-jdgm-carousel__rail .jdgm-rev__icon--blank * {
+    display: none !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__body,
+  .pp-jdgm-carousel .jdgm-rev__content p,
+  .pp-jdgm-carousel .jdgm-rev__title,
+  .pp-jdgm-carousel__rail .jdgm-rev__body,
+  .pp-jdgm-carousel__rail .jdgm-rev__content p,
+  .pp-jdgm-carousel__rail .jdgm-rev__title,
+  .pp-jdgm-carousel .jdgm-carousel__content,
+  .pp-jdgm-carousel__rail .jdgm-carousel__content {
+    color: #1a3029 !important;
+    line-height: 1.45 !important;
+    font-size: 0.88rem !important;
+    text-wrap: pretty;
+  }
+
+  /* Keep body height consistent — with or without photos */
+  .pp-jdgm-carousel .jdgm-rev__body,
+  .pp-jdgm-carousel .jdgm-rev__content,
+  .pp-jdgm-carousel__rail .jdgm-rev__body,
+  .pp-jdgm-carousel__rail .jdgm-rev__content,
+  .pp-jdgm-carousel .jdgm-carousel__content,
+  .pp-jdgm-carousel__rail .jdgm-carousel__content {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 3 !important;
+    overflow: hidden !important;
+    max-height: 4.4em !important;
+    margin: 6px 0 0 !important;
+    flex: 1 1 auto;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__title,
+  .pp-jdgm-carousel__rail .jdgm-rev__title {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 1 !important;
+    overflow: hidden !important;
+    margin: 4px 0 0 !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+  }
+
+  /* Compact photo strip — same footprint whether 0, 1 or more images */
+  .pp-jdgm-carousel .jdgm-rev__pics,
+  .pp-jdgm-carousel__rail .jdgm-rev__pics,
+  .pp-jdgm-carousel .jdgm-rev__media,
+  .pp-jdgm-carousel__rail .jdgm-rev__media,
+  .pp-jdgm-carousel .pp-jdgm-thumbs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin: auto 0 0 !important;
+    padding: 8px 0 0 !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    overflow: hidden !important;
+    flex: 0 0 auto !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__pics a,
+  .pp-jdgm-carousel__rail .jdgm-rev__pics a,
+  .pp-jdgm-carousel .jdgm-rev__pics .jdgm-rev__pic,
+  .pp-jdgm-carousel__rail .jdgm-rev__pics .jdgm-rev__pic,
+  .pp-jdgm-carousel .pp-jdgm-thumbs a,
+  .pp-jdgm-carousel .pp-jdgm-thumbs .pp-jdgm-thumb {
+    flex: 0 0 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    display: block !important;
+    border: 1px solid rgba(15, 118, 110, 0.14) !important;
+    box-shadow: 0 4px 12px -8px rgba(0, 0, 0, 0.35);
+    background: #e8f2ef !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__pics img,
+  .pp-jdgm-carousel__rail .jdgm-rev__pics img,
+  .pp-jdgm-carousel .pp-jdgm-thumbs img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    object-fit: cover !important;
+    border-radius: 0 !important;
+    display: block !important;
+    box-shadow: none !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__pics a:nth-child(n + 3),
+  .pp-jdgm-carousel__rail .jdgm-rev__pics a:nth-child(n + 3),
+  .pp-jdgm-carousel .jdgm-rev__pics .jdgm-rev__pic:nth-child(n + 3),
+  .pp-jdgm-carousel__rail .jdgm-rev__pics .jdgm-rev__pic:nth-child(n + 3),
+  .pp-jdgm-carousel .pp-jdgm-thumbs > :nth-child(n + 3) {
+    display: none !important;
+  }
+
+  .pp-jdgm-carousel .pp-jdgm-thumb-more {
+    flex: 0 0 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px !important;
+    background: rgba(15, 118, 110, 0.1) !important;
+    color: #0f766e !important;
+    font-size: 0.72rem !important;
+    font-weight: 750 !important;
+    letter-spacing: 0.01em;
+  }
+
+  .pp-jdgm-carousel__empty {
+    margin: 0;
+    padding: 28px;
+    text-align: center;
+    color: var(--jc-muted, #9aa8a2);
+    border: 1px dashed color-mix(in srgb, var(--jc-text, #f6f7f2) 16%, transparent);
+    border-radius: 16px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .pp-jdgm-carousel__stage { gap: 12px; }
+
+    .pp-jdgm-carousel .jdgm-rev,
+    .pp-jdgm-carousel__rail .jdgm-rev,
+    .pp-jdgm-carousel .jdgm-carousel__item,
+    .pp-jdgm-carousel__rail .jdgm-carousel__item {
+      flex-basis: min(100%, 320px) !important;
+      width: min(100%, 320px) !important;
+      max-width: min(100%, 320px) !important;
+    }
+  }
+
+  @media screen and (max-width: 549px) {
+    .pp-jdgm-carousel__nav { width: 36px; height: 36px; }
+
+    .pp-jdgm-carousel .jdgm-rev,
+    .pp-jdgm-carousel__rail .jdgm-rev,
+    .pp-jdgm-carousel .jdgm-carousel__item,
+    .pp-jdgm-carousel__rail .jdgm-carousel__item {
+      flex-basis: min(100%, 260px) !important;
+      width: min(100%, 260px) !important;
+      max-width: min(100%, 260px) !important;
+      min-height: 178px;
+    height: 178px;
+      padding: 14px 14px 18px !important;
+    }
+
+    .pp-jdgm-carousel .jdgm-rev:nth-child(odd),
+    .pp-jdgm-carousel .jdgm-rev:nth-child(even),
+    .pp-jdgm-carousel__rail .jdgm-rev:nth-child(odd),
+    .pp-jdgm-carousel__rail .jdgm-rev:nth-child(even) {
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pp-jdgm-carousel::before,
+    .pp-jdgm-carousel__star,
+    .pp-jdgm-carousel .jdgm-rev,
+    .pp-jdgm-carousel .jdgm-carousel__item,
+    .pp-jdgm-carousel .pp-jdgm-sheen {
+      animation: none !important;
+    }
+
+    .pp-jdgm-carousel__rail,
+    .pp-jdgm-carousel .jdgm-rev-widg__reviews,
+    .pp-jdgm-carousel .jdgm-rev-widg__body {
+      scroll-behavior: auto;
+    }
+
+    .pp-jdgm-carousel__nav,
+    .pp-jdgm-carousel .jdgm-rev,
+    .pp-jdgm-carousel .jdgm-carousel__item {
+      transition: none;
+    }
+
+    .pp-jdgm-carousel .jdgm-rev:hover,
+    .pp-jdgm-carousel .jdgm-carousel__item:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    var root = document.getElementById('pp-reviews-{{ section.id }}');
+    if (!root) return;
+
+    var viewport = root.querySelector('[data-pp-jdgm-viewport]');
+    var sources = root.querySelector('[data-pp-jdgm-sources]');
+    var prevBtn = root.querySelector('[data-pp-jdgm-prev]');
+    var nextBtn = root.querySelector('[data-pp-jdgm-next]');
+    var track = root.querySelector('[data-pp-jdgm-track]');
+    var emptyEl = root.querySelector('[data-pp-jdgm-empty]');
+    if (!viewport || !prevBtn || !nextBtn || !track) return;
+
+    var rail = null;
+    var loading = false;
+    var built = false;
+    var REVIEW_SEL = [
+      '.jdgm-rev',
+      '.jdgm-carousel__item',
+      '.jdgm-revs-carousel__item',
+      '.jdgm-rev-card',
+      '[data-review-id]',
+      '.jdgm-all-reviews__review'
+    ].join(',');
+
+    function sleep(ms) {
+      return new Promise(function (resolve) { setTimeout(resolve, ms); });
+    }
+
+    function reviewKey(el) {
+      return (
+        el.getAttribute('data-review-id') ||
+        el.getAttribute('data-review-uuid') ||
+        el.id ||
+        (
+          ((el.querySelector('.jdgm-rev__author, .jdgm-carousel__author, .jdgm-rev__author-wrapper') || {}).textContent || '') +
+          '|' +
+          ((el.querySelector('.jdgm-rev__timestamp') || {}).textContent || '') +
+          '|' +
+          ((el.querySelector('.jdgm-rev__body, .jdgm-carousel__content, .jdgm-rev__content, .jdgm-rev__title') || {}).textContent || '').slice(0, 90)
+        )
+      ).trim();
+    }
+
+    function polishIcon(icon) {
+      if (!icon || icon.dataset.ppPolished === '1') return;
+      var bg = (icon.getAttribute('style') || '') + ' ' + (window.getComputedStyle(icon).backgroundImage || '');
+      var img = icon.querySelector('img');
+      var src = img ? img.currentSrc || img.src || '' : '';
+      var real = /gravatar|googleusercontent|fbcdn|cdn\.shopify|cloudinary|judge\.me\/(?:.*\/)?(?:uploads|media|profiles)/i.test(
+        bg + ' ' + src
+      );
+      if (!real) {
+        icon.classList.add('jdgm-rev__icon--blank');
+        icon.style.setProperty('background-image', 'none', 'important');
+        icon.querySelectorAll('svg, i, img').forEach(function (n) { n.remove(); });
+      }
+      icon.dataset.ppPolished = '1';
+    }
+
+    function decorateCard(rev) {
+      if (!rev || rev.dataset.ppDecorated === '1') return;
+      rev.classList.add('jdgm-rev');
+      rev.style.setProperty('opacity', '1', 'important');
+      rev.style.setProperty('visibility', 'visible', 'important');
+      rev.style.removeProperty('display');
+      if (!rev.querySelector('.pp-jdgm-quote')) {
+        var q = document.createElement('span');
+        q.className = 'pp-jdgm-quote';
+        q.setAttribute('aria-hidden', 'true');
+        q.textContent = '“';
+        rev.appendChild(q);
+      }
+      if (!rev.querySelector('.pp-jdgm-sheen')) {
+        var sheen = document.createElement('span');
+        sheen.className = 'pp-jdgm-sheen';
+        sheen.setAttribute('aria-hidden', 'true');
+        rev.appendChild(sheen);
+      }
+      polishIcon(rev.querySelector('.jdgm-rev__icon'));
+      compactPhotos(rev);
+      rev.dataset.ppDecorated = '1';
+    }
+
+    function compactPhotos(rev) {
+      var pics =
+        rev.querySelector('.jdgm-rev__pics') ||
+        rev.querySelector('.jdgm-rev__media') ||
+        rev.querySelector('.jdgm-rev__pictures');
+      if (!pics || pics.dataset.ppThumbs === '1') return;
+
+      var images = Array.prototype.slice.call(pics.querySelectorAll('img'));
+      if (!images.length) {
+        pics.remove();
+        return;
+      }
+
+      var strip = document.createElement('div');
+      strip.className = 'pp-jdgm-thumbs';
+      var maxShow = 2;
+      images.forEach(function (img, index) {
+        if (index >= maxShow) return;
+        var wrap = document.createElement('a');
+        wrap.className = 'pp-jdgm-thumb';
+        wrap.href = img.currentSrc || img.src || '#';
+        wrap.target = '_blank';
+        wrap.rel = 'noopener noreferrer';
+        var clone = img.cloneNode(true);
+        clone.removeAttribute('width');
+        clone.removeAttribute('height');
+        clone.removeAttribute('style');
+        wrap.appendChild(clone);
+        strip.appendChild(wrap);
+      });
+
+      if (images.length > maxShow) {
+        var more = document.createElement('span');
+        more.className = 'pp-jdgm-thumb-more';
+        more.textContent = '+' + (images.length - maxShow);
+        strip.appendChild(more);
+      }
+
+      pics.replaceWith(strip);
+      strip.dataset.ppThumbs = '1';
+    }
+
+    function getScroller() {
+      return rail || viewport;
+    }
+
+    function cardStep(scroller) {
+      var card = scroller.querySelector('.jdgm-rev');
+      if (!card) return Math.min(scroller.clientWidth * 0.9, 360);
+      var style = window.getComputedStyle(scroller);
+      var gap = parseFloat(style.columnGap || style.gap || '18') || 18;
+      return card.getBoundingClientRect().width + gap;
+    }
+
+    function scrollByDir(dir) {
+      var scroller = getScroller();
+      if (!scroller) return;
+      var step = cardStep(scroller);
+      var max = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+      if (max < 8) return;
+      if (dir > 0 && scroller.scrollLeft >= max - 6) {
+        scroller.scrollTo({ left: 0, behavior: 'smooth' });
+        return;
+      }
+      if (dir < 0 && scroller.scrollLeft <= 6) {
+        scroller.scrollTo({ left: max, behavior: 'smooth' });
+        return;
+      }
+      scroller.scrollBy({ left: dir * step, behavior: 'smooth' });
+    }
+
+    prevBtn.addEventListener('click', function () { scrollByDir(-1); });
+    nextBtn.addEventListener('click', function () { scrollByDir(1); });
+
+    function collectFromScope(scope, map) {
+      if (!scope) return;
+      scope.querySelectorAll(REVIEW_SEL).forEach(function (rev) {
+        if (rev.closest('.pp-jdgm-carousel__rail')) return;
+        // Skip nested wrappers that aren't actual review cards
+        if (rev.querySelector(REVIEW_SEL) && !rev.classList.contains('jdgm-rev') && !rev.hasAttribute('data-review-id')) {
+          return;
+        }
+        var key = reviewKey(rev);
+        if (!key || key === '|' || key === '||' || map.has(key)) return;
+        var text = (rev.textContent || '').replace(/\s+/g, ' ').trim();
+        if (text.length < 8) return;
+        map.set(key, rev.cloneNode(true));
+      });
+    }
+
+    function buildRail(map) {
+      if (!map.size) return false;
+      if (rail) rail.remove();
+      rail = document.createElement('div');
+      rail.className = 'pp-jdgm-carousel__rail';
+      rail.setAttribute('data-pp-jdgm-rail', '');
+      map.forEach(function (node) {
+        decorateCard(node);
+        rail.appendChild(node);
+      });
+      track.appendChild(rail);
+      root.classList.add('is-ready');
+      built = true;
+      if (emptyEl) emptyEl.hidden = true;
+      return true;
+    }
+
+    function findNextPageButton(scope) {
+      var area = scope || sources || root;
+      var current = area.querySelector('.jdgm-paginate__page.jdgm-curt, .jdgm-paginate__page.is-active, .jdgm-paginate__page[aria-current="page"]');
+      if (current && current.nextElementSibling && current.nextElementSibling.classList.contains('jdgm-paginate__page')) {
+        return current.nextElementSibling;
+      }
+      return (
+        area.querySelector('.jdgm-paginate__next-page:not(.jdgm-disabled):not([disabled])') ||
+        area.querySelector('a.jdgm-paginate__load-more, button.jdgm-paginate__load-more, .jdgm-link--load-more')
+      );
+    }
+
+    async function waitForFirstReviews() {
+      for (var i = 0; i < 50; i++) {
+        var host = sources || root;
+        if (host.querySelector(REVIEW_SEL)) return true;
+        await sleep(160);
+      }
+      return false;
+    }
+
+    async function paginateSources(map) {
+      if (!sources) return;
+      var widgets = sources.querySelectorAll('.jdgm-widget, .jdgm-review-widget, .jdgm-rev-widg');
+      var list = widgets.length ? Array.prototype.slice.call(widgets) : [sources];
+
+      for (var w = 0; w < list.length; w++) {
+        var widget = list[w];
+        for (var i = 0; i < 12; i++) {
+          var before = map.size;
+          collectFromScope(widget, map);
+          var next = findNextPageButton(widget);
+          if (!next) break;
+          try { next.click(); } catch (e) {}
+          await sleep(380);
+          for (var t = 0; t < 10; t++) {
+            collectFromScope(widget, map);
+            if (map.size > before) break;
+            await sleep(100);
+          }
+          if (map.size === before) break;
+        }
+      }
+    }
+
+    async function loadAllPages() {
+      if (loading || built) return;
+      loading = true;
+      var map = new Map();
+
+      var ready = await waitForFirstReviews();
+      if (ready) {
+        collectFromScope(sources || root, map);
+        await paginateSources(map);
+        collectFromScope(sources || root, map);
+      }
+
+      if (map.size > 0) {
+        buildRail(map);
+      } else if (emptyEl) {
+        emptyEl.hidden = false;
+      }
+
+      loading = false;
+    }
+
+    // Judge.me often hydrates after its own script boots
+    loadAllPages();
+    window.setTimeout(function () { if (!built) loadAllPages(); }, 1200);
+    window.setTimeout(function () { if (!built) loadAllPages(); }, 3000);
+    window.addEventListener('load', function () {
+      if (!built) loadAllPages();
+    });
+
+    if (sources) {
+      var observer = new MutationObserver(function () {
+        if (built) return;
+        if (loading) return;
+        requestAnimationFrame(function () {
+          if (!built && !loading) loadAllPages();
+        });
+      });
+      observer.observe(sources, { childList: true, subtree: true });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Judge.me carousel",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Omdömen"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Det här säger våra kunder"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Verifierade omdömen från Judge.me"
+    },
+    {
+      "type": "select",
+      "id": "review_scope",
+      "label": "Review source",
+      "options": [
+        { "value": "all_shop", "label": "All products (store-wide)" },
+        { "value": "single_product", "label": "Single product" }
+      ],
+      "default": "all_shop",
+      "info": "All products uses Judge.me shop rating + featured carousel, then merges reviews from your catalog via Judge.me’s public widget API."
+    },
+    {
+      "type": "text",
+      "id": "all_products_label",
+      "label": "Store-wide summary label",
+      "default": "från alla våra produkter"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Products to pull reviews from",
+      "limit": 20,
+      "info": "Optional. Leave empty to use up to 40 products from the All collection."
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Single product (when scope = Single)",
+      "info": "Only used when Review source is Single product."
+    },
+    {
+      "type": "text",
+      "id": "product_handle",
+      "label": "Fallback product handle",
+      "default": "portabel-dusch"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#071014"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "Surface",
+      "default": "#14212A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F6F7F2"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#9AA8A2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2DD4BF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Judge.me carousel"
+    }
+  ]
+}
+{% endschema %}

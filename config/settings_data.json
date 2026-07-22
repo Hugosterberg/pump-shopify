@@ -13,6 +13,20 @@
     "announcement_shipping_threshold": 999,
     "enable_cookie_banner": true,
     "cookie_banner_text": "Vi använder cookies för att ge dig bästa möjliga upplevelse på vår webbplats.",
-    "cookie_banner_button": "Acceptera cookies"
+    "cookie_banner_button": "Acceptera cookies",
+    "blocks": {
+      "judgeme_core": {
+        "type": "shopify://apps/judge-me-reviews/blocks/judgeme_core/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+        "disabled": false,
+        "settings": {}
+      },
+      "trustview_embed": {
+        "type": "shopify://apps/trustview/blocks/app_embed_script/bda8b0f7-273b-4b6e-ab43-02c3fec9d11a",
+        "disabled": false,
+        "settings": {
+          "widget_language": "sv-SE"
+        }
+      }
+    }
   }
 }

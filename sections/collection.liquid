@@ -1,28 +1,24 @@
 {%- liquid
   assign collection_heading = collection.title
   assign collection_eyebrow = 'Kollektion'
+  assign collection_intro = collection.description
   if collection.handle == 'all'
     assign collection_heading = 'Produkter'
     assign collection_eyebrow = 'Sortiment'
+    assign collection_intro = 'Alla våra produkter på ett ställe — portabel dusch, vikbar hink och The Perfect Combo.'
   endif
 -%}
 
 <div class="main-collection full-width">
   <div class="main-collection__inner">
-    {% render 'breadcrumbs' %}
-
     <header class="main-collection__header">
       <p class="main-collection__eyebrow">{{ collection_eyebrow }}</p>
       <h1 class="main-collection__title">{{ collection_heading }}</h1>
-      {% if collection.handle == 'all' %}
-        <p class="main-collection__description">
-          Alla våra produkter på ett ställe — dusch, hink och perfekta combon.
-        </p>
-        {% if collection.products_count > 0 %}
-          <p class="main-collection__count">{{ collection.products_count }} produkter</p>
-        {% endif %}
-      {% elsif collection.description != blank %}
-        <div class="main-collection__description">{{ collection.description }}</div>
+      {% if collection_intro != blank %}
+        <div class="main-collection__description">{{ collection_intro }}</div>
+      {% endif %}
+      {% if collection.products_count > 0 %}
+        <p class="main-collection__count">{{ collection.products_count }} produkter</p>
       {% endif %}
     </header>
 
@@ -30,9 +26,27 @@
       {% if collection.products.size > 0 %}
         <ul class="main-collection__grid" role="list">
           {% for product in collection.products %}
-            <li class="main-collection__card pp-product-card">
+            {%- liquid
+              assign is_featured = false
+              assign card_order = forloop.index | plus: 20
+
+              if product.handle contains 'perfect-combo' or product.handle contains 'combo'
+                assign is_featured = true
+                assign card_order = 1
+              elsif product.handle == 'portabel-dusch' or product.handle contains 'portable-shower' or product.handle contains 'portabel-dusch'
+                assign card_order = 2
+              elsif product.handle == 'portabel-hink' or product.handle contains 'bucket' or product.handle contains 'hink'
+                assign card_order = 3
+              endif
+            -%}
+            <li
+              class="main-collection__card pp-product-card{% if is_featured %} main-collection__card--featured{% endif %}"
+              style="order: {{ card_order }};"
+            >
               <a class="pp-product-card__media main-collection__media" href="{{ product.url }}" aria-label="{{ product.title }}">
-                {% if product.compare_at_price > product.price %}
+                {% if is_featured %}
+                  <span class="pp-product-card__badge">Bästsäljare</span>
+                {% elsif product.compare_at_price > product.price %}
                   {% assign saving = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round %}
                   <span class="pp-product-card__badge">Spara {{ saving }}%</span>
                 {% endif %}
@@ -42,12 +56,13 @@
                 {% if product.featured_image != blank %}
                   {{
                     product.featured_image
-                    | image_url: width: 800
+                    | image_url: width: 900
                     | image_tag:
                       loading: 'lazy',
-                      sizes: '(min-width: 750px) 33vw, 50vw',
-                      widths: '300, 500, 800',
-                      alt: product.featured_image.alt | default: product.title
+                      sizes: '(min-width: 990px) 30vw, (min-width: 750px) 45vw, 92vw',
+                      widths: '400, 600, 900',
+                      alt: product.featured_image.alt | default: product.title,
+                      class: 'main-collection__image'
                   }}
                 {% else %}
                   <div class="main-collection__placeholder">
@@ -60,6 +75,14 @@
                 <h2 class="pp-product-card__title main-collection__name">
                   <a href="{{ product.url }}">{{ product.title }}</a>
                 </h2>
+
+                {% if product.description != blank %}
+                  <p class="main-collection__excerpt">
+                    {{ product.description | strip_html | truncate: 90 }}
+                  </p>
+                {% else %}
+                  <p class="main-collection__excerpt" aria-hidden="true">&nbsp;</p>
+                {% endif %}
 
                 {% render 'pp-product-price', product: product %}
 
@@ -90,7 +113,7 @@
     {
       "@context": "https://schema.org",
       "@type": "ItemList",
-      "name": {{ collection.title | json }},
+      "name": {{ collection_heading | json }},
       "url": {{ shop.url | append: collection.url | json }},
       "numberOfItems": {{ collection.products_count | json }},
       "itemListElement": [
@@ -109,9 +132,12 @@
 
 {% stylesheet %}
   .main-collection {
-    padding-block: 48px 72px;
+    position: relative;
+    padding-block: clamp(48px, 8vw, 88px) clamp(72px, 10vw, 110px);
     padding-inline: var(--page-margin, 20px);
-    background-color: var(--pp-bg-deep, #071014);
+    background:
+      radial-gradient(70% 50% at 50% 0%, color-mix(in srgb, var(--pp-accent, #2dd4bf) 10%, transparent), transparent 65%),
+      var(--pp-bg-deep, #071014);
     color: var(--pp-text, #f6f7f2);
     min-height: 50vh;
   }
@@ -124,12 +150,12 @@
   .main-collection__header {
     text-align: center;
     margin-inline: auto;
-    margin-bottom: 32px;
-    max-width: 42rem;
+    margin-bottom: clamp(28px, 5vw, 44px);
+    max-width: 40rem;
   }
 
   .main-collection__eyebrow {
-    margin: 0 0 10px;
+    margin: 0 0 12px;
     font-size: 0.78rem;
     font-weight: 600;
     letter-spacing: 0.14em;
@@ -138,24 +164,32 @@
   }
 
   .main-collection__title {
-    margin: 0 0 12px;
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    letter-spacing: -0.02em;
+    margin: 0 0 14px;
+    font-size: clamp(2rem, 5vw, 3rem);
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    text-wrap: balance;
   }
 
   .main-collection__description {
     margin: 0;
-    font-size: 0.98rem;
+    font-size: clamp(0.95rem, 2.2vw, 1.05rem);
     line-height: 1.65;
     color: var(--pp-muted, #9aa8a2);
+    text-wrap: pretty;
   }
 
   .main-collection__count {
-    margin: 14px 0 0;
-    font-size: 0.82rem;
+    display: inline-flex;
+    margin: 18px 0 0;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
     font-weight: 600;
     letter-spacing: 0.04em;
     color: var(--pp-accent, #2dd4bf);
+    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--pp-accent, #2dd4bf) 28%, transparent);
   }
 
   .main-collection__grid {
@@ -163,20 +197,97 @@
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .main-collection__card {
+    --pp-text: #f6f7f2;
+    --pp-muted: #9aa8a2;
+    --pp-accent: #2dd4bf;
+  }
+
+  .main-collection__card--featured {
+    border-color: color-mix(in srgb, var(--pp-accent, #2dd4bf) 35%, transparent);
+    box-shadow:
+      var(--pp-shadow-soft),
+      0 0 0 1px color-mix(in srgb, var(--pp-accent, #2dd4bf) 18%, transparent);
+  }
+
+  .main-collection__media {
+    aspect-ratio: 1 / 1;
+    display: grid;
+    place-items: center;
+    padding: clamp(18px, 4vw, 28px);
+    background:
+      radial-gradient(65% 65% at 50% 42%, color-mix(in srgb, var(--pp-accent, #2dd4bf) 14%, transparent), transparent 70%),
+      color-mix(in srgb, var(--pp-text, #f6f7f2) 3%, transparent);
+  }
+
+  .main-collection__image {
+    width: auto !important;
+    height: auto !important;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain !important;
+    object-position: center center;
+    filter: drop-shadow(0 18px 28px rgb(0 0 0 / 45%));
+  }
+
+  .main-collection__card:hover .main-collection__image {
+    transform: scale(1.03);
   }
 
   .main-collection__placeholder {
-    width: 100%;
-    height: 100%;
+    width: min(100%, 220px);
+    height: min(100%, 220px);
     display: grid;
     place-items: center;
     color: color-mix(in srgb, var(--pp-text, #f6f7f2) 20%, transparent);
   }
 
+  .main-collection__body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px 20px 22px;
+    flex: 1;
+  }
+
   .main-collection__name {
-    font-size: 0.98rem;
+    margin: 0;
+    min-height: calc(1.3em * 2);
+    font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .main-collection__excerpt {
+    margin: 0;
+    min-height: calc(1.5em * 3);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--pp-muted, #9aa8a2);
+    text-wrap: pretty;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .main-collection__body .pp-price {
+    margin-top: auto;
+  }
+
+  .main-collection__body .pp-product-actions {
+    margin-top: 0;
+  }
+
+  .main-collection__form {
+    margin-top: 0;
   }
 
   .main-collection__empty {
@@ -196,17 +307,22 @@
   }
 
   @media screen and (min-width: 750px) {
-    .main-collection {
-      padding-block: 64px 96px;
+    .main-collection__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
     }
+  }
 
+  @media screen and (min-width: 990px) {
     .main-collection__grid {
       grid-template-columns: repeat(3, 1fr);
       gap: 24px;
     }
+  }
 
-    .main-collection__name {
-      font-size: 1.05rem;
+  @media (prefers-reduced-motion: reduce) {
+    .main-collection__card:hover .main-collection__image {
+      transform: none;
     }
   }
 {% endstylesheet %}

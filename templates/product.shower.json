@@ -2,6 +2,13 @@
   "sections": {
     "main": {
       "type": "product",
+      "blocks": {
+        "judgeme_badge": {
+          "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {}
+        }
+      },
+      "block_order": ["judgeme_badge"],
       "settings": {}
     },
     "trust": {
@@ -92,14 +99,22 @@
     "reviews": {
       "type": "review-cards",
       "blocks": {
-        "r-1": { "type": "review", "settings": { "quote": "Smidig att ta med sig och fungerar perfekt efter en varm sommardag på fjället.", "author": "Anna", "context": "Camping" } },
-        "r-2": { "type": "review", "settings": { "quote": "Toppen att ha i bastun i vår stuga ute i skärgården!", "author": "Erik", "context": "Bastu" } }
+        "judgeme_reviews": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "real_data",
+            "max_width": 1200,
+            "show_shop_reviews": false,
+            "empty_state": "empty_widget"
+          }
+        }
       },
-      "block_order": ["r-1", "r-2"],
+      "block_order": ["judgeme_reviews"],
       "settings": {
         "heading": "Det här säger våra kunder",
-        "subheading": "Installera Judge.me och lägg till appblock här.",
-        "show_placeholder_reviews": true
+        "subheading": "Verifierade omdömen från Judge.me.",
+        "use_judgeme_widget": true,
+        "show_placeholder_reviews": false
       }
     },
     "feature_icons": {

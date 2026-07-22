@@ -133,6 +133,10 @@
     </div>
 
     {% if section.settings.show_trust_highlights %}
+      {%- liquid
+        assign trust_returns_title = section.settings.trust_returns_title | default: '14 dagars ångerrätt'
+        assign trust_returns_text = section.settings.trust_returns_text | default: 'Handla tryggt med 14 dagars ångerrätt enligt distansavtalslagen.'
+      -%}
       <div class="site-footer__trust-highlights">
         {% if section.settings.trust_warranty_title != blank %}
           <div class="site-footer__trust-item">
@@ -143,6 +147,19 @@
               <h3 class="site-footer__trust-title">{{ section.settings.trust_warranty_title }}</h3>
               {% if section.settings.trust_warranty_text != blank %}
                 <p class="site-footer__trust-text">{{ section.settings.trust_warranty_text }}</p>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+        {% if trust_returns_title != blank %}
+          <div class="site-footer__trust-item">
+            <span class="site-footer__trust-icon" aria-hidden="true">
+              {% render 'icon', name: 'check', size: 18 %}
+            </span>
+            <div class="site-footer__trust-body">
+              <h3 class="site-footer__trust-title">{{ trust_returns_title }}</h3>
+              {% if trust_returns_text != blank %}
+                <p class="site-footer__trust-text">{{ trust_returns_text }}</p>
               {% endif %}
             </div>
           </div>
@@ -368,8 +385,8 @@
 
   @media screen and (min-width: 750px) {
     .site-footer__trust-highlights {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 32px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
     }
   }
 
@@ -709,7 +726,7 @@
     {
       "type": "checkbox",
       "id": "show_trust_highlights",
-      "label": "Show warranty & shipping highlights",
+      "label": "Show trust highlights",
       "default": true
     },
     {
@@ -723,6 +740,18 @@
       "id": "trust_warranty_text",
       "label": "Warranty text",
       "default": "Vi strävar efter att erbjuda saker som håller."
+    },
+    {
+      "type": "text",
+      "id": "trust_returns_title",
+      "label": "Returns title",
+      "default": "14 dagars ångerrätt"
+    },
+    {
+      "type": "text",
+      "id": "trust_returns_text",
+      "label": "Returns text",
+      "default": "Handla tryggt med 14 dagars ångerrätt enligt distansavtalslagen."
     },
     {
       "type": "text",

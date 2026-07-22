@@ -296,48 +296,14 @@
       }
     },
     "reviews": {
-      "type": "review-cards",
-      "blocks": {
-        "r-1": {
-          "type": "review",
-          "settings": {
-            "rating": 5,
-            "quote": "Smidig att ta med sig och fungerar perfekt efter en varm sommardag på fjället.",
-            "author": "Anna",
-            "context": "Camping"
-          }
-        },
-        "r-2": {
-          "type": "review",
-          "settings": {
-            "rating": 5,
-            "quote": "Toppen att ha i bastun i vår stuga ute i skärgården!",
-            "author": "Erik",
-            "context": "Bastu"
-          }
-        },
-        "r-3": {
-          "type": "review",
-          "settings": {
-            "rating": 5,
-            "quote": "Perfekt på båten, sköljer av salt och svett direkt på däck.",
-            "author": "Maria",
-            "context": "Båt"
-          }
-        }
-      },
-      "block_order": [
-        "r-1",
-        "r-2",
-        "r-3"
-      ],
+      "type": "pp-judgeme-carousel",
       "settings": {
         "eyebrow": "Omdömen",
         "heading": "Det här säger våra kunder",
-        "subheading": "38 verifierade omdömen — alla 5 stjärnor. Här är några av dem.",
-        "total_review_count": 38,
-        "summary_note": "Alla 5 stjärnor",
-        "show_placeholder_reviews": true,
+        "subheading": "Verifierade omdömen från Judge.me",
+        "review_scope": "all_shop",
+        "all_products_label": "från alla våra produkter",
+        "product_handle": "portabel-dusch",
         "background_color": "#071014",
         "surface_color": "#14212a",
         "text_color": "#f6f7f2",
@@ -733,7 +699,7 @@
         "heading": "En dusch. Oändligt många platser.",
         "seconds_per_scene": 4,
         "overlay_opacity": 45,
-        "min_height": 220,
+        "min_height": 200,
         "text_color": "#f6f7f2",
         "accent_color": "#2dd4bf"
       }
@@ -1000,7 +966,7 @@
           "type": "row",
           "settings": {
             "comparison_set": "competitors",
-            "feature": "Justerbart vattenflöde (kraft på stråle)",
+            "feature": "Justerbart vattenflöde",
             "us_has": true,
             "us_note": "",
             "them_has": false,
@@ -1011,7 +977,7 @@
           "type": "row",
           "settings": {
             "comparison_set": "competitors",
-            "feature": "Slå av/på vattenflödet via duschhandtaget",
+            "feature": "Av/på via duschhandtaget",
             "us_has": true,
             "us_note": "",
             "them_has": false,
@@ -1022,7 +988,7 @@
           "type": "row",
           "settings": {
             "comparison_set": "competitors",
-            "feature": "Kraftfullt läge & energisparläge på pumpen",
+            "feature": "Kraft- & energisparläge",
             "us_has": true,
             "us_note": "",
             "them_has": false,
@@ -1044,7 +1010,7 @@
           "type": "row",
           "settings": {
             "comparison_set": "competitors",
-            "feature": "Sprutpistol-munstycke (2 munstycken totalt)",
+            "feature": "Sprutpistol-munstycke",
             "us_has": true,
             "us_note": "",
             "them_has": false,
@@ -1055,7 +1021,7 @@
           "type": "row",
           "settings": {
             "comparison_set": "competitors",
-            "feature": "Sugproppsfäste + duschhållare med 3-i-1 krok",
+            "feature": "Sugpropp + 3-i-1 krok",
             "us_has": true,
             "us_note": "",
             "them_has": false,
@@ -1472,20 +1438,6 @@
         "cta_button_link": "#product-showcase"
       }
     },
-    "final_cta": {
-      "type": "final-cta",
-      "settings": {
-        "heading": "Redo för friheten?",
-        "subheading": "Ta med duschen dit livet händer: camping, båt, bastu eller strand.",
-        "button_label": "Köp The Perfect Combo",
-        "button_link": "#product-showcase",
-        "background_color": "#14212a",
-        "text_color": "#f6f7f2",
-        "muted_text_color": "#9aa8a2",
-        "accent_color": "#2dd4bf",
-        "accent_text_color": "#071014"
-      }
-    },
     "sticky_atc": {
       "type": "sticky-mobile-atc",
       "settings": {
@@ -1521,7 +1473,6 @@
     "blog_posts",
     "newsletter",
     "faq",
-    "final_cta",
     "sticky_atc"
   ]
 }

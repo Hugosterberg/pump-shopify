@@ -262,6 +262,43 @@
     text-wrap: pretty;
   }
 
+  /* Mobile: center cards like use-case grid + tighter packing */
+  @media screen and (max-width: 749px) {
+    .feature-highlights {
+      padding-block: 36px;
+    }
+
+    .feature-highlights__header {
+      margin-bottom: 18px;
+    }
+
+    .feature-highlights__grid {
+      gap: 12px;
+    }
+
+    .feature-highlights__card-body {
+      align-items: center;
+      text-align: center;
+      padding: 16px 14px;
+      gap: 6px;
+    }
+
+    .feature-highlights__icon-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+    }
+
+    .feature-highlights__card-title {
+      font-size: 0.98rem;
+    }
+
+    .feature-highlights__card-text {
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+  }
+
   @media screen and (min-width: 750px) {
     .feature-highlights {
       padding-block: 68px;

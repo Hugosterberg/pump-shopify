@@ -31,8 +31,6 @@
   "
 >
   <div class="main-product__inner">
-    {% render 'breadcrumbs' %}
-
     <div class="main-product__gallery">
       {% if product.media.size > 0 %}
         <div class="main-product__media-main" id="MainProductMedia-{{ section.id }}" data-main-product-media>
@@ -131,13 +129,32 @@
     </div>
 
     <div class="main-product__info">
-      {% if section.blocks.size > 0 %}
+      {%- liquid
+        assign has_app_review_blocks = false
+        for block in section.blocks
+          if block.type == '@app'
+            assign has_app_review_blocks = true
+            break
+          endif
+        endfor
+        assign judgeme_badge = product.metafields.judgeme.badge
+      -%}
+      {% if has_app_review_blocks or judgeme_badge != blank %}
         <div class="main-product__reviews-slot">
           {% for block in section.blocks %}
             {% if block.type == '@app' %}
               <div {{ block.shopify_attributes }}>{% render block %}</div>
             {% endif %}
           {% endfor %}
+          {% if judgeme_badge != blank and has_app_review_blocks == false %}
+            <div
+              class="jdgm-widget jdgm-preview-badge"
+              data-id="{{ product.id }}"
+              data-auto-install="false"
+            >
+              {{ judgeme_badge }}
+            </div>
+          {% endif %}
         </div>
       {% endif %}
 
@@ -155,7 +172,7 @@
         <span
           class="main-product__badge main-product__badge--urgency"
           data-urgency-badge
-          {% unless current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= 8 %}
+          {% unless current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0 and current_variant.inventory_quantity < 50 %}
             hidden
           {% endunless %}
         >
@@ -181,7 +198,12 @@
       </div>
 
       {% if product.description != blank %}
-        <div class="main-product__description">{{ product.description }}</div>
+        {%- liquid
+          assign product_desc = product.description | replace: '✓', '<br><span class="mp-check">✓</span> ' | replace: '✔', '<br><span class="mp-check">✔</span> '
+          assign product_desc = product_desc | replace: '<br><br><span class="mp-check">', '<br><span class="mp-check">'
+          assign product_desc = product_desc | replace: '><br><span class="mp-check">', '><span class="mp-check">'
+        -%}
+        <div class="main-product__description">{{ product_desc }}</div>
       {% endif %}
 
       <div class="main-product__form-wrap">
@@ -618,6 +640,10 @@
     color: var(--mp-muted, #9aa8a2);
   }
 
+  .main-product__badge[hidden] {
+    display: none !important;
+  }
+
   .main-product__badge--stock {
     color: var(--mp-accent, #2dd4bf);
     border-color: color-mix(in srgb, var(--mp-accent, #2dd4bf) 35%, transparent);
@@ -705,6 +731,43 @@
     font-size: 0.9rem;
     line-height: 1.65;
     color: var(--mp-muted, #9aa8a2);
+  }
+
+  /* Keep each ✓ benefit on its own line (product copy often jams them inline) */
+  .main-product__description > br:first-child,
+  .main-product__description :is(p, li, div) > br:first-child {
+    display: none;
+  }
+
+  .main-product__description .mp-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15em;
+    height: 1.15em;
+    margin-right: 0.35em;
+    border-radius: 999px;
+    font-size: 0.78em;
+    font-weight: 700;
+    line-height: 1;
+    color: #041016;
+    background: linear-gradient(145deg, var(--mp-accent, #2dd4bf), color-mix(in srgb, #4cc9f0 40%, var(--mp-accent, #2dd4bf)));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mp-accent, #2dd4bf) 16%, transparent);
+    vertical-align: -0.05em;
+  }
+
+  .main-product__description ul,
+  .main-product__description ol {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45em;
+    margin: 0.85em 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .main-product__description li {
+    display: block;
   }
 
   .main-product__description > :first-child {
@@ -1053,10 +1116,6 @@
       gap: 56px;
       align-items: start;
     }
-
-    .main-product__inner > .breadcrumbs {
-      grid-column: 1 / -1;
-    }
   }
 {% endstylesheet %}
 
@@ -1232,7 +1291,7 @@
         const showUrgency =
           variant.inventory_management === 'shopify' &&
           variant.inventory_quantity > 0 &&
-          variant.inventory_quantity <= 8;
+          variant.inventory_quantity < 50;
         urgencyBadge.hidden = !showUrgency;
         if (showUrgency) {
           urgencyCount.textContent = String(variant.inventory_quantity);

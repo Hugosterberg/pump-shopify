@@ -24,11 +24,11 @@
 %}
 
 <div class="pp-price pp-price--{{ size_class }}{% if class != blank %} {{ class }}{% endif %}">
-  {% if on_sale %}
-    <span class="pp-price__meta">
+  <span class="pp-price__meta{% unless on_sale %} pp-price__meta--empty{% endunless %}"{% unless on_sale %} aria-hidden="true"{% endunless %}>
+    {% if on_sale %}
       <s class="pp-price__compare">{{ compare_price | money }}</s>
       <span class="pp-price__save">Spara {{ saving }}%</span>
-    </span>
-  {% endif %}
+    {% endif %}
+  </span>
   <span class="pp-price__current">{{ price_variant.price | money }}</span>
 </div>

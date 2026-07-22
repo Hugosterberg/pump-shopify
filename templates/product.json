@@ -11,6 +11,13 @@
   "sections": {
     "main": {
       "type": "product",
+      "blocks": {
+        "judgeme_badge": {
+          "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {}
+        }
+      },
+      "block_order": ["judgeme_badge"],
       "settings": {}
     },
     "trust": {
@@ -116,27 +123,57 @@
         "c-3": { "type": "row", "settings": { "comparison_set": "common", "feature": "~150 min batteritid", "us_has": true, "them_has": false, "them_note": "Kräver eluttag" } },
         "c-4": { "type": "row", "settings": { "comparison_set": "common", "feature": "Ingen installation", "us_has": true, "them_has": false } },
         "c-5": { "type": "row", "settings": { "comparison_set": "common", "feature": "Väger ca 1 kg", "us_has": true, "them_has": false } },
-        "c-6": { "type": "row", "settings": { "comparison_set": "common", "feature": "Duscha var du vill", "us_has": true, "them_has": false } }
+        "c-6": { "type": "row", "settings": { "comparison_set": "common", "feature": "Duscha var du vill", "us_has": true, "them_has": false } },
+        "k-6": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Batterikapacitet", "us_has": true, "us_note": "6000 mAh", "them_has": true, "them_note": "2200 mAh" } },
+        "k-2": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Drifttid", "us_has": true, "us_note": "~150 min", "them_has": true, "them_note": "60 min" } },
+        "k-7": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Flöde / kapacitet", "us_has": true, "us_note": "upp till 8 L/min", "them_has": true, "them_note": "3,5–4,5 L/min" } },
+        "k-10": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Slanglängd", "us_has": true, "us_note": "2 m", "them_has": true, "them_note": "1,8 m" } },
+        "k-4": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "USB-C laddning", "us_has": true, "them_has": false, "them_note": "USB (ej USB-C)" } },
+        "k-1": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Digital temperaturdisplay", "us_has": true, "them_has": false } },
+        "k-1b": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Digital batteridisplay", "us_has": true, "them_has": false } },
+        "k-14": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Justerbart vattenflöde", "us_has": true, "them_has": false } },
+        "k-15": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Av/på via duschhandtaget", "us_has": true, "them_has": false } },
+        "k-16": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Kraft- & energisparläge", "us_has": true, "them_has": false } },
+        "k-3": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Vikbar 20L-hink", "us_has": true, "them_has": false } },
+        "k-9": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Sprutpistol-munstycke", "us_has": true, "them_has": false } },
+        "k-11": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Sugpropp + 3-i-1 krok", "us_has": true, "them_has": false } },
+        "k-12": { "type": "row", "settings": { "comparison_set": "competitors", "feature": "Nätförvaringspåse", "us_has": true, "them_has": false } }
       },
-      "block_order": ["c-1", "c-2", "c-3", "c-4", "c-5", "c-6"],
+      "block_order": [
+        "c-1", "c-2", "c-3", "c-4", "c-5", "c-6",
+        "k-6", "k-2", "k-7", "k-10", "k-4", "k-1", "k-1b", "k-14", "k-15", "k-16", "k-3", "k-9", "k-11", "k-12"
+      ],
       "settings": {
         "eyebrow": "Jämförelse",
-        "heading": "Duschkit från pump vs vanliga lösningar"
+        "heading": "Duschkit från pump vs",
+        "flip_word_competitors": "kända konkurrenter",
+        "flip_word_common": "vanliga lösningar",
+        "show_share_link": true,
+        "show_cta": true,
+        "cta_label": "Köp The Perfect Combo",
+        "cta_link": "#main-product"
       }
     },
     "reviews": {
       "type": "review-cards",
       "blocks": {
-        "r-1": { "type": "review", "settings": { "quote": "Vilken grej! Kommer vara en svalkare i nöden under många soldagar framöver.", "author": "Martin", "context": "The Portable Shower" } },
-        "r-2": { "type": "review", "settings": { "quote": "Mycket nöjd! Smidig att ta med sig och fungerar perfekt efter en varm sommardag på fjället.", "author": "Gunnar", "context": "The Portable Shower" } },
-        "r-3": { "type": "review", "settings": { "quote": "Toppen att ha i bastun i vår stuga ute i skärgården!", "author": "Caroline", "context": "The Perfect Combo" } }
+        "judgeme_reviews": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "real_data",
+            "max_width": 1200,
+            "show_shop_reviews": false,
+            "empty_state": "empty_widget"
+          }
+        }
       },
-      "block_order": ["r-1", "r-2", "r-3"],
+      "block_order": ["judgeme_reviews"],
       "settings": {
         "eyebrow": "Kundrecensioner",
         "heading": "Det här säger våra kunder",
-        "subheading": "Installera Judge.me i temaredigeraren och lägg till appblock här för att ersätta exempelkorten.",
-        "show_placeholder_reviews": true
+        "subheading": "Verifierade omdömen från Judge.me. Lägg till TrustView-appblock eller TrustBox-kod för Trustpilot.",
+        "use_judgeme_widget": true,
+        "show_placeholder_reviews": false
       }
     },
     "feature_icons": {

@@ -11,6 +11,10 @@
   assign total = slot | times: scene_count
   assign visible = 100 | divided_by: scene_count
   assign hold_end = visible | minus: 5
+  assign has_product = false
+  if section.settings.product_image != blank
+    assign has_product = true
+  endif
 -%}
 
 {% if scene_count > 0 %}
@@ -26,7 +30,7 @@
 {% endif %}
 
 <div
-  class="scenes full-width"
+  class="scenes full-width{% unless has_product %} scenes--text-only{% endunless %}"
   style="
     --scn-text: {{ section.settings.text_color }};
     --scn-accent: {{ section.settings.accent_color }};
@@ -186,19 +190,51 @@
     text-wrap: balance;
   }
 
+  /* No product image: hug the copy instead of forcing a tall empty stage */
+  .scenes--text-only .scenes__stage {
+    min-height: 0;
+  }
+
+  .scenes--text-only .scenes__content {
+    position: relative;
+    padding: 28px 24px 24px;
+  }
+
+  .scenes--text-only .scenes__labels {
+    min-height: 1.5em;
+    margin-top: 8px;
+  }
+
   @media screen and (max-width: 749px) {
+    .scenes {
+      padding-block: 8px 12px;
+    }
+
     .scenes__stage {
-      min-height: max(var(--scn-min-height, 260px), 320px);
+      min-height: var(--scn-min-height, 220px);
+      border-radius: 18px;
+    }
+
+    .scenes--text-only .scenes__stage {
+      min-height: 0;
+    }
+
+    .scenes--text-only .scenes__content {
+      padding: 20px 16px 18px;
     }
 
     .scenes__product {
       bottom: auto;
-      top: 32%;
+      top: 28%;
       max-width: min(48%, 180px);
     }
 
     .scenes__content {
-      padding: 18px 18px 20px;
+      padding: 16px 16px 18px;
+    }
+
+    .scenes__heading {
+      font-size: clamp(1.35rem, 6vw, 1.75rem);
     }
 
     .scenes__label {

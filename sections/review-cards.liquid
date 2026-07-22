@@ -21,12 +21,55 @@
       </header>
     {% endif %}
 
-    {% assign review_blocks = section.blocks | where: 'type', 'review' %}
-    {% assign app_blocks = section.blocks | where: 'type', '@app' %}
-    {% assign show_placeholders = section.settings.show_placeholder_reviews %}
+    {%- liquid
+      assign review_blocks = section.blocks | where: 'type', 'review'
+      assign app_blocks = section.blocks | where: 'type', '@app'
+      assign show_placeholders = section.settings.show_placeholder_reviews
+      assign use_judgeme = section.settings.use_judgeme_widget
+      assign trustpilot_html = section.settings.trustpilot_embed_html
+      assign has_live_source = false
+
+      if app_blocks.size > 0
+        assign has_live_source = true
+        assign show_placeholders = false
+      endif
+
+      if use_judgeme and product != blank and product.metafields.judgeme.widget != blank
+        assign has_live_source = true
+        assign show_placeholders = false
+      endif
+
+      if trustpilot_html != blank
+        assign has_live_source = true
+        assign show_placeholders = false
+      endif
+    -%}
 
     {% if app_blocks.size > 0 %}
-      {% assign show_placeholders = false %}
+      <div class="review-cards__apps">
+        {% for block in section.blocks %}
+          {% if block.type == '@app' %}
+            <div class="review-cards__app" {{ block.shopify_attributes }}>
+              {% render block %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% elsif use_judgeme and product != blank %}
+      <div
+        id="judgeme_product_reviews"
+        class="review-cards__judgeme jdgm-widget jdgm-review-widget"
+        data-id="{{ product.id }}"
+        data-product-title="{{ product.title | escape }}"
+      >
+        {{ product.metafields.judgeme.widget }}
+      </div>
+    {% endif %}
+
+    {% if trustpilot_html != blank %}
+      <div class="review-cards__trustpilot">
+        {{ trustpilot_html }}
+      </div>
     {% endif %}
 
     {% if review_blocks.size > 0 and show_placeholders %}
@@ -66,18 +109,7 @@
           {% if section.settings.summary_note != blank %} · {{ section.settings.summary_note }}{% endif %}
         </p>
       </div>
-    {% endif %}
 
-    {% for block in section.blocks %}
-      {% case block.type %}
-        {% when '@app' %}
-          <div class="review-cards__app" {{ block.shopify_attributes }}>
-            {% render block %}
-          </div>
-      {% endcase %}
-    {% endfor %}
-
-    {% if review_blocks.size > 0 and show_placeholders %}
       <ul class="review-cards__list" role="list">
         {% for block in section.blocks %}
           {% if block.type == 'review' %}
@@ -107,6 +139,10 @@
           {% endif %}
         {% endfor %}
       </ul>
+    {% elsif has_live_source == false and review_blocks.size == 0 and request.design_mode %}
+      <p class="review-cards__empty">
+        Lägg till Judge.me- eller TrustView-appblock i den här sektionen, eller klistra in Trustpilot TrustBox-kod under sektionens inställningar.
+      </p>
     {% endif %}
   </div>
 </div>
@@ -150,6 +186,27 @@
     margin: 0;
     color: var(--rc-muted, #9aa8a2);
     line-height: 1.6;
+  }
+
+  .review-cards__apps,
+  .review-cards__judgeme,
+  .review-cards__trustpilot {
+    margin-top: 8px;
+  }
+
+  .review-cards__app + .review-cards__app,
+  .review-cards__judgeme + .review-cards__trustpilot,
+  .review-cards__apps + .review-cards__trustpilot {
+    margin-top: 28px;
+  }
+
+  .review-cards__empty {
+    margin: 0;
+    padding: 28px 20px;
+    text-align: center;
+    color: var(--rc-muted, #9aa8a2);
+    border: 1px dashed color-mix(in srgb, var(--rc-text, #f6f7f2) 16%, transparent);
+    border-radius: 16px;
   }
 
   .review-cards__summary {
@@ -330,6 +387,772 @@
     background: color-mix(in srgb, var(--rc-accent, #2dd4bf) 16%, transparent);
   }
 
+  /* Soften Judge.me / Trustpilot widgets on dark theme */
+  .review-cards__judgeme,
+  .review-cards__app,
+  .review-cards__trustpilot {
+    color: var(--rc-text, #f6f7f2);
+  }
+
+  /* ——— Judge.me: premium speech bubbles + sort ——— */
+  .review-cards .jdgm-rev-widg,
+  .review-cards .jdgm-widget {
+    font-family: inherit;
+  }
+
+  .review-cards .jdgm-rev-widg__header,
+  .review-cards .jdgm-histogram,
+  .review-cards .jdgm-rev-widg__summary {
+    color: var(--rc-text, #f6f7f2);
+  }
+
+  .review-cards .jdgm-write-rev-link,
+  .review-cards a.jdgm-write-rev-link {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 22px !important;
+    border-radius: 999px !important;
+    background: linear-gradient(
+      135deg,
+      var(--rc-accent, #2dd4bf),
+      color-mix(in srgb, #4cc9f0 40%, var(--rc-accent, #2dd4bf))
+    ) !important;
+    color: #071014 !important;
+    font-weight: 750 !important;
+    letter-spacing: 0.01em;
+    border: none !important;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.4) inset,
+      0 16px 34px -14px color-mix(in srgb, var(--rc-accent, #2dd4bf) 80%, #000),
+      0 0 0 0 transparent;
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;
+  }
+
+  .review-cards .jdgm-write-rev-link:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.4) inset,
+      0 18px 38px -12px color-mix(in srgb, var(--rc-accent, #2dd4bf) 85%, #000),
+      0 0 0 4px color-mix(in srgb, var(--rc-accent, #2dd4bf) 14%, transparent);
+  }
+
+  /* Sort control */
+  .review-cards .jdgm-rev-widg__sort-wrapper,
+  .review-cards .jdgm-row-actions {
+    margin: 6px 0 18px !important;
+  }
+
+  .review-cards .jdgm-sort-dropdown-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .review-cards .jdgm-sort-dropdown-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-right: 1.5px solid color-mix(in srgb, var(--rc-accent, #2dd4bf) 80%, #fff);
+    border-bottom: 1.5px solid color-mix(in srgb, var(--rc-accent, #2dd4bf) 80%, #fff);
+    transform: translateY(-60%) rotate(45deg);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .review-cards .jdgm-sort-dropdown,
+  .review-cards .jdgm-sort-dropdown-wrapper select,
+  .review-cards select.jdgm-sort-dropdown,
+  .review-cards .jdgm-sort-dropdown-wrapper .jdgm-sort-dropdown {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    min-height: 42px !important;
+    min-width: 168px;
+    padding: 10px 40px 10px 16px !important;
+    border-radius: 999px !important;
+    border: 1px solid color-mix(in srgb, var(--rc-accent, #2dd4bf) 42%, transparent) !important;
+    background:
+      linear-gradient(
+        165deg,
+        color-mix(in srgb, var(--rc-accent, #2dd4bf) 14%, #101820),
+        color-mix(in srgb, #14212a 88%, #000)
+      ) !important;
+    color: #f6f7f2 !important;
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.01em;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.06) inset,
+      0 10px 28px -18px rgba(0, 0, 0, 0.8);
+    cursor: pointer;
+  }
+
+  .review-cards .jdgm-sort-dropdown:hover,
+  .review-cards .jdgm-sort-dropdown:focus,
+  .review-cards .jdgm-sort-dropdown-wrapper select:hover,
+  .review-cards .jdgm-sort-dropdown-wrapper select:focus {
+    border-color: color-mix(in srgb, var(--rc-accent, #2dd4bf) 70%, transparent) !important;
+    outline: none !important;
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--rc-accent, #2dd4bf) 18%, transparent),
+      0 12px 30px -16px rgba(0, 0, 0, 0.85);
+  }
+
+  .review-cards .jdgm-sort-dropdown option,
+  .review-cards select.jdgm-sort-dropdown option {
+    background: #121a20;
+    color: #f6f7f2;
+  }
+
+  /* Custom Judge.me menu panel (non-native) */
+  .review-cards .jdgm-sort-dropdown-wrapper ul,
+  .review-cards .jdgm-dropdown,
+  .review-cards [class*='sort'] ul {
+    margin-top: 8px !important;
+    padding: 8px !important;
+    border-radius: 18px !important;
+    border: 1px solid color-mix(in srgb, var(--rc-accent, #2dd4bf) 28%, transparent) !important;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, #1a2832 92%, #000),
+        #0e151b
+      ) !important;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.05) inset,
+      0 24px 48px -20px rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    overflow: hidden;
+  }
+
+  .review-cards .jdgm-sort-dropdown-wrapper li,
+  .review-cards .jdgm-dropdown li,
+  .review-cards [class*='sort'] li {
+    margin: 2px 0 !important;
+    padding: 10px 14px !important;
+    border-radius: 12px !important;
+    color: #d7e2dd !important;
+    font-size: 0.86rem !important;
+    font-weight: 500 !important;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .review-cards .jdgm-sort-dropdown-wrapper li:hover,
+  .review-cards .jdgm-dropdown li:hover,
+  .review-cards [class*='sort'] li:hover {
+    background: color-mix(in srgb, var(--rc-accent, #2dd4bf) 14%, transparent) !important;
+    color: #fff !important;
+  }
+
+  .review-cards .jdgm-sort-dropdown-wrapper li.selected,
+  .review-cards .jdgm-sort-dropdown-wrapper li[aria-selected='true'],
+  .review-cards .jdgm-dropdown li.selected,
+  .review-cards [class*='sort'] li.selected {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--rc-accent, #2dd4bf) 88%, #fff),
+      color-mix(in srgb, #4cc9f0 40%, var(--rc-accent, #2dd4bf))
+    ) !important;
+    color: #071014 !important;
+    font-weight: 700 !important;
+  }
+
+  .review-cards .jdgm-rev-widg__reviews,
+  .review-cards .jdgm-rev-widg__body {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding-bottom: 8px;
+  }
+
+  /* Speech bubbles */
+  .review-cards .jdgm-rev {
+    position: relative;
+    margin: 0 0 10px !important;
+    padding: 24px 24px 26px !important;
+    border: 1px solid rgba(255, 255, 255, 0.72) !important;
+    border-radius: 30px 30px 30px 18px !important;
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 30%, transparent 55%),
+      radial-gradient(120% 90% at 100% 0%, rgba(45, 212, 191, 0.14), transparent 44%),
+      linear-gradient(168deg, #ffffff 0%, #f5faf8 48%, #e7f3ef 100%) !important;
+    color: #0d1f1a !important;
+    box-shadow:
+      0 1.5px 0 rgba(255, 255, 255, 0.95) inset,
+      0 0 0 1px rgba(15, 118, 110, 0.05) inset,
+      0 22px 48px -26px rgba(0, 0, 0, 0.72),
+      0 10px 24px -16px rgba(45, 212, 191, 0.32);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+    overflow: visible;
+  }
+
+  .review-cards .jdgm-rev::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 18px;
+    bottom: 28px;
+    width: 3px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5eead4, var(--rc-accent, #2dd4bf) 40%, #38bdf8 75%, transparent);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--rc-accent, #2dd4bf) 50%, transparent);
+    opacity: 1;
+  }
+
+  .review-cards .jdgm-rev::after {
+    content: '';
+    position: absolute;
+    left: 28px;
+    bottom: -10px;
+    width: 22px;
+    height: 22px;
+    background: linear-gradient(135deg, #e7f3ef 8%, #dcece8 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.45);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 0 0 6px 0;
+    transform: rotate(45deg);
+    box-shadow: 5px 5px 14px -7px rgba(0, 0, 0, 0.38);
+    z-index: 0;
+  }
+
+  .review-cards .jdgm-rev:hover {
+    transform: translateY(-5px);
+    box-shadow:
+      0 1.5px 0 rgba(255, 255, 255, 0.95) inset,
+      0 28px 56px -22px rgba(0, 0, 0, 0.78),
+      0 14px 32px -14px rgba(45, 212, 191, 0.42),
+      0 0 0 1px color-mix(in srgb, var(--rc-accent, #2dd4bf) 18%, transparent);
+  }
+
+  .review-cards .jdgm-rev > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .review-cards .jdgm-rev__header,
+  .review-cards .jdgm-rev__author,
+  .review-cards .jdgm-rev__author-wrapper,
+  .review-cards .jdgm-rev__buyer-badge,
+  .review-cards .jdgm-rev__timestamp,
+  .review-cards .jdgm-rev__title,
+  .review-cards .jdgm-rev__body,
+  .review-cards .jdgm-rev__content {
+    color: inherit !important;
+  }
+
+  .review-cards .jdgm-rev__rating {
+    margin-bottom: 4px !important;
+  }
+
+  .review-cards .jdgm-rev__author {
+    color: #0f766e !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+  }
+
+  .review-cards .jdgm-rev__timestamp {
+    color: #7a8c86 !important;
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
+  }
+
+  .review-cards .jdgm-rev__title {
+    color: #0b1613 !important;
+    font-weight: 700 !important;
+    font-size: 1.02rem !important;
+    letter-spacing: -0.01em;
+    margin-top: 6px !important;
+  }
+
+  .review-cards .jdgm-rev__body,
+  .review-cards .jdgm-rev__content p {
+    color: #2a3b36 !important;
+    line-height: 1.62 !important;
+    font-size: 0.95rem !important;
+  }
+
+  .review-cards .jdgm-rev__buyer-badge,
+  .review-cards .jdgm-rev__icon .jdgm-rev__buyer-badge,
+  .review-cards span.jdgm-rev__buyer-badge {
+    background: color-mix(in srgb, var(--rc-accent, #2dd4bf) 16%, #fff) !important;
+    color: #0f766e !important;
+    border: 1px solid color-mix(in srgb, var(--rc-accent, #2dd4bf) 40%, transparent) !important;
+    border-radius: 999px !important;
+    padding: 2px 9px !important;
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .review-cards .jdgm-star,
+  .review-cards .jdgm-rev__rating .jdgm-star {
+    color: #14b8a6 !important;
+    filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.35));
+  }
+
+  /* Avatar: soft circle only — no person silhouette */
+  .review-cards .jdgm-rev__icon {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    border: 2.5px solid #fff !important;
+    box-shadow:
+      0 0 0 1px rgba(15, 118, 110, 0.12),
+      0 6px 14px -8px rgba(15, 118, 110, 0.55);
+    background-color: #cfe8e2 !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+  }
+
+  .review-cards .jdgm-rev:nth-child(3n + 1) .jdgm-rev__icon--blank {
+    background-image: linear-gradient(145deg, #dff7f1, #8fd4c6) !important;
+  }
+
+  .review-cards .jdgm-rev:nth-child(3n + 2) .jdgm-rev__icon--blank {
+    background-image: linear-gradient(145deg, #eaf1ff, #9eb6e0) !important;
+  }
+
+  .review-cards .jdgm-rev:nth-child(3n) .jdgm-rev__icon--blank {
+    background-image: linear-gradient(145deg, #fff4e6, #dfb894) !important;
+  }
+
+  .review-cards .jdgm-rev__icon--blank {
+    background-image: linear-gradient(145deg, #dff7f1, #8fd4c6) !important;
+  }
+
+  .review-cards .jdgm-rev__icon--blank::before,
+  .review-cards .jdgm-rev__icon--blank::after {
+    content: none !important;
+    display: none !important;
+    background: none !important;
+  }
+
+  .review-cards .jdgm-rev__icon--blank *,
+  .review-cards .jdgm-rev__icon--blank svg,
+  .review-cards .jdgm-rev__icon--blank i,
+  .review-cards .jdgm-rev__icon--blank img,
+  .review-cards .jdgm-rev__icon--blank .fa,
+  .review-cards .jdgm-rev__icon--blank [class*='fa-'] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+  .review-cards .jdgm-rev__icon:not(.jdgm-rev__icon--blank) img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+  }
+
+  .review-cards .jdgm-rev__pic-line,
+  .review-cards .jdgm-rev__author-wrapper {
+    align-items: center;
+    gap: 8px;
+  }
+
+  .review-cards .jdgm-paginate {
+    color: var(--rc-muted, #9aa8a2);
+  }
+
+  .review-cards .jdgm-histogram__bar-content {
+    background: color-mix(in srgb, var(--rc-text, #f6f7f2) 12%, transparent) !important;
+    border-radius: 999px !important;
+    overflow: hidden;
+  }
+
+  .review-cards .jdgm-histogram__bar-content--percentage {
+    background: linear-gradient(
+      90deg,
+      var(--rc-accent, #2dd4bf),
+      color-mix(in srgb, #4cc9f0 45%, var(--rc-accent, #2dd4bf))
+    ) !important;
+  }
+
+  .review-cards .jdgm-rev__pics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px !important;
+  }
+
+  .review-cards .jdgm-rev__pics img,
+  .review-cards .jdgm-rev__pic-link img {
+    border-radius: 14px !important;
+    border: 1px solid rgba(15, 118, 110, 0.1) !important;
+    box-shadow: 0 8px 18px -14px rgba(0, 0, 0, 0.45);
+    transition: transform 0.2s ease;
+  }
+
+  .review-cards .jdgm-rev__pics img:hover,
+  .review-cards .jdgm-rev__pic-link img:hover {
+    transform: scale(1.03);
+  }
+
+  /* ——— Judge.me: write-review form ——— */
+  .review-cards .jdgm-form,
+  .review-cards .jdgm-form-wrapper,
+  .review-cards form.jdgm-form {
+    position: relative;
+    max-width: 560px;
+    margin: 8px auto 0 !important;
+    padding: 30px 26px 26px !important;
+    border-radius: 30px !important;
+    border: 1px solid color-mix(in srgb, var(--rc-accent, #2dd4bf) 28%, transparent) !important;
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.06), transparent 40%),
+      radial-gradient(90% 70% at 100% 0%, color-mix(in srgb, var(--rc-accent, #2dd4bf) 16%, transparent), transparent 55%),
+      linear-gradient(165deg, #1a2832 0%, #0e151b 100%) !important;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.08) inset,
+      0 28px 60px -28px rgba(0, 0, 0, 0.9),
+      0 0 60px -36px color-mix(in srgb, var(--rc-accent, #2dd4bf) 45%, transparent) !important;
+    text-align: left !important;
+    overflow: hidden;
+  }
+
+  .review-cards .jdgm-form__title,
+  .review-cards .jdgm-form .jdgm-form__title,
+  .review-cards .jdgm-form h3,
+  .review-cards .jdgm-form h4 {
+    margin: 0 0 22px !important;
+    text-align: center !important;
+    font-size: clamp(1.35rem, 3.5vw, 1.65rem) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em;
+    color: #f6f7f2 !important;
+  }
+
+  .review-cards .jdgm-form label,
+  .review-cards .jdgm-form .jdgm-form__label,
+  .review-cards label.jdgm-form,
+  .review-cards .jdgm-form__fieldset-title,
+  .review-cards .jdgm-form p,
+  .review-cards .jdgm-form .jdgm-form__inline-label {
+    color: color-mix(in srgb, #f6f7f2 88%, transparent) !important;
+    font-size: 0.86rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.01em;
+  }
+
+  .review-cards .jdgm-form__rating,
+  .review-cards .jdgm-form .jdgm-form__rating {
+    display: flex !important;
+    justify-content: center;
+    gap: 6px;
+    margin: 6px 0 22px !important;
+  }
+
+  .review-cards .jdgm-form__rating .jdgm-star,
+  .review-cards .jdgm-form .jdgm-star {
+    font-size: 1.55rem !important;
+    color: var(--rc-accent, #2dd4bf) !important;
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--rc-accent, #2dd4bf) 35%, transparent));
+    transition: transform 0.15s ease, filter 0.15s ease;
+    cursor: pointer;
+  }
+
+  .review-cards .jdgm-form__rating .jdgm-star:hover,
+  .review-cards .jdgm-form__rating .jdgm-star.jdgm--on {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 14px color-mix(in srgb, var(--rc-accent, #2dd4bf) 55%, transparent));
+  }
+
+  .review-cards .jdgm-form input[type='text'],
+  .review-cards .jdgm-form input[type='email'],
+  .review-cards .jdgm-form input[type='url'],
+  .review-cards .jdgm-form textarea,
+  .review-cards .jdgm-form .jdgm-form__input,
+  .review-cards .jdgm-form input.jdgm-input,
+  .review-cards .jdgm-form textarea.jdgm-input {
+    width: 100% !important;
+    margin-top: 8px !important;
+    margin-bottom: 16px !important;
+    padding: 14px 16px !important;
+    border-radius: 16px !important;
+    border: 1px solid color-mix(in srgb, #fff 12%, transparent) !important;
+    background: linear-gradient(180deg, #f8fbfa 0%, #eef4f2 100%) !important;
+    color: #14241f !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    line-height: 1.45 !important;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 10px 24px -18px rgba(0, 0, 0, 0.55) !important;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .review-cards .jdgm-form textarea,
+  .review-cards .jdgm-form textarea.jdgm-input {
+    min-height: 140px !important;
+    resize: vertical;
+  }
+
+  .review-cards .jdgm-form input:focus,
+  .review-cards .jdgm-form textarea:focus,
+  .review-cards .jdgm-form .jdgm-form__input:focus {
+    outline: none !important;
+    border-color: color-mix(in srgb, var(--rc-accent, #2dd4bf) 55%, transparent) !important;
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--rc-accent, #2dd4bf) 22%, transparent),
+      0 12px 28px -16px rgba(0, 0, 0, 0.55) !important;
+  }
+
+  .review-cards .jdgm-form input::placeholder,
+  .review-cards .jdgm-form textarea::placeholder {
+    color: #7a8c86 !important;
+    opacity: 1;
+  }
+
+  /* Media upload dropzone */
+  .review-cards .jdgm-form .jdgm-media-fieldset,
+  .review-cards .jdgm-form .jdgm-picture-fieldset,
+  .review-cards .jdgm-form [class*='media'],
+  .review-cards .jdgm-form [class*='picture'] {
+    margin-bottom: 8px;
+  }
+
+  .review-cards .jdgm-form .jdgm-media-fieldset__input-wrapper,
+  .review-cards .jdgm-form .jdgm-picture-fieldset__input-wrapper,
+  .review-cards .jdgm-form [class*='upload'],
+  .review-cards .jdgm-form label[for*='media'],
+  .review-cards .jdgm-form .jdgm-form__file-upload {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 88px !important;
+    height: 88px !important;
+    margin: 10px auto 18px !important;
+    border-radius: 20px !important;
+    border: 1.5px dashed color-mix(in srgb, var(--rc-accent, #2dd4bf) 55%, transparent) !important;
+    background: color-mix(in srgb, var(--rc-accent, #2dd4bf) 8%, transparent) !important;
+    color: var(--rc-accent, #2dd4bf) !important;
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  }
+
+  .review-cards .jdgm-form .jdgm-media-fieldset__input-wrapper:hover,
+  .review-cards .jdgm-form .jdgm-picture-fieldset__input-wrapper:hover,
+  .review-cards .jdgm-form [class*='upload']:hover {
+    background: color-mix(in srgb, var(--rc-accent, #2dd4bf) 16%, transparent) !important;
+    border-color: var(--rc-accent, #2dd4bf) !important;
+    transform: translateY(-1px);
+  }
+
+  .review-cards .jdgm-form svg,
+  .review-cards .jdgm-form .jdgm-media-fieldset svg {
+    color: var(--rc-accent, #2dd4bf) !important;
+    stroke: var(--rc-accent, #2dd4bf) !important;
+  }
+
+  /* Name format: hide dropdown — typed name is used as-is */
+  .review-cards .jdgm-form select[name*='name_format'],
+  .review-cards .jdgm-form select[name*='reviewer_name_format'],
+  .review-cards .jdgm-form select.jdgm-form__reviewer-name-format,
+  .review-cards .jdgm-form .jdgm-form__reviewer-name-format,
+  .review-cards .jdgm-form [class*='name-format'],
+  .review-cards .jdgm-form [class*='name_format'],
+  .review-cards .jdgm-form .jdgm-form__name-format,
+  .review-cards .jdgm-form .jdgm-dropdown[data-name-format],
+  .review-cards .jdgm-form .pp-jdgm-name-format {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    position: absolute !important;
+    pointer-events: none !important;
+  }
+
+  .review-cards .jdgm-form .pp-jdgm-name-label {
+    display: block !important;
+    margin-bottom: 6px !important;
+    color: color-mix(in srgb, #f6f7f2 88%, transparent) !important;
+    font-size: 0.86rem !important;
+    font-weight: 600 !important;
+  }
+
+  /* Name format pill (legacy — kept for other selects if any) */
+  .review-cards .jdgm-form select:not([name*='name_format']):not([name*='reviewer_name_format']),
+  .review-cards .jdgm-form select.jdgm-sort-dropdown {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    min-height: 38px !important;
+    padding: 8px 34px 8px 14px !important;
+    border-radius: 999px !important;
+    border: 1px solid color-mix(in srgb, var(--rc-accent, #2dd4bf) 40%, transparent) !important;
+    background:
+      linear-gradient(
+        165deg,
+        color-mix(in srgb, var(--rc-accent, #2dd4bf) 18%, #14212a),
+        #101820
+      ) !important;
+    color: #f6f7f2 !important;
+    font-weight: 600 !important;
+    font-size: 0.84rem !important;
+  }
+
+  /* Form links — never style cancel as a text link */
+  .review-cards .jdgm-form a:not(.jdgm-cancel-rev):not(.jdgm-btn),
+  .review-cards .jdgm-form .jdgm-link:not(.jdgm-cancel-rev) {
+    color: var(--rc-accent, #2dd4bf) !important;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .review-cards .jdgm-form .jdgm-form__terms,
+  .review-cards .jdgm-form .jdgm-form__disclaimer,
+  .review-cards .jdgm-form .jdgm-form__agreements {
+    margin: 8px 0 1.25rem !important;
+    text-align: center !important;
+    font-size: 0.78rem !important;
+    line-height: 1.55 !important;
+    color: color-mix(in srgb, #f6f7f2 72%, transparent) !important;
+    font-weight: 400 !important;
+  }
+
+  /* Action row — cancel + submit same height & baseline */
+  .review-cards .jdgm-form .jdgm-form__actions,
+  .review-cards .jdgm-form .jdgm-form__buttons,
+  .review-cards .jdgm-form .jdgm-btn-wrapper,
+  .review-cards .jdgm-form .jdgm-submit-rev-wrapper,
+  .review-cards .jdgm-form .jdgm-row-actions,
+  .review-cards .jdgm-form .jdgm-row-extra,
+  .review-cards .jdgm-form .pp-jdgm-form-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
+    margin-top: 0.5rem !important;
+  }
+
+  .review-cards .jdgm-form .jdgm-btn,
+  .review-cards .jdgm-form button,
+  .review-cards .jdgm-form input[type='submit'],
+  .review-cards .jdgm-form .jdgm-submit-rev,
+  .review-cards .jdgm-form a.jdgm-cancel-rev,
+  .review-cards .jdgm-form .jdgm-cancel-rev {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    padding: 0 1.35rem !important;
+    margin: 0 !important;
+    border-radius: 999px !important;
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+    text-decoration: none !important;
+    text-underline-offset: unset !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      filter 0.2s ease,
+      box-shadow 0.2s ease !important;
+  }
+
+  /* Primary — Skicka recension */
+  .review-cards .jdgm-form .jdgm-btn--solid,
+  .review-cards .jdgm-form .jdgm-submit-rev,
+  .review-cards .jdgm-form input[type='submit'],
+  .review-cards .jdgm-form button[type='submit'] {
+    border: 1px solid var(--rc-accent, #2dd4bf) !important;
+    background: linear-gradient(
+      135deg,
+      var(--rc-accent, #2dd4bf),
+      color-mix(in srgb, #4cc9f0 35%, var(--rc-accent, #2dd4bf))
+    ) !important;
+    color: #071014 !important;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.35) inset,
+      0 14px 30px -14px color-mix(in srgb, var(--rc-accent, #2dd4bf) 75%, #000) !important;
+  }
+
+  .review-cards .jdgm-form .jdgm-btn--solid:hover,
+  .review-cards .jdgm-form .jdgm-submit-rev:hover,
+  .review-cards .jdgm-form input[type='submit']:hover,
+  .review-cards .jdgm-form button[type='submit']:hover {
+    filter: brightness(1.06);
+  }
+
+  /* Secondary — Avbryt recension (ghost pill) */
+  .review-cards .jdgm-form a.jdgm-cancel-rev,
+  .review-cards .jdgm-form .jdgm-cancel-rev,
+  .review-cards .jdgm-form .jdgm-btn--secondary,
+  .review-cards .jdgm-form .jdgm-btn--outline,
+  .review-cards .jdgm-form button[type='button'],
+  .review-cards .jdgm-form .jdgm-btn:not(.jdgm-btn--solid):not([type='submit']) {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+    border: 1.5px solid rgba(148, 163, 184, 0.45) !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+  }
+
+  .review-cards .jdgm-form a.jdgm-cancel-rev:hover,
+  .review-cards .jdgm-form .jdgm-cancel-rev:hover,
+  .review-cards .jdgm-form .jdgm-btn--secondary:hover,
+  .review-cards .jdgm-form .jdgm-btn--outline:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(45, 212, 191, 0.55) !important;
+    color: #f8fafc !important;
+    text-decoration: none !important;
+  }
+
+  .review-cards .jdgm-form a.jdgm-cancel-rev:focus-visible,
+  .review-cards .jdgm-form .jdgm-submit-rev:focus-visible,
+  .review-cards .jdgm-form .jdgm-btn:focus-visible {
+    outline: 2px solid var(--rc-accent, #2dd4bf) !important;
+    outline-offset: 3px !important;
+  }
+
+  @media screen and (min-width: 750px) {
+    .review-cards .jdgm-form,
+    .review-cards form.jdgm-form {
+      padding: 36px 36px 28px !important;
+      border-radius: 32px !important;
+    }
+
+    .review-cards .jdgm-rev {
+      padding: 24px 26px 20px !important;
+      border-radius: 30px 30px 30px 14px !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .review-cards .jdgm-rev,
+    .review-cards .jdgm-write-rev-link,
+    .review-cards .jdgm-rev__pics img {
+      transition: none;
+    }
+
+    .review-cards .jdgm-rev:hover {
+      transform: none;
+    }
+  }
+
   @media screen and (min-width: 540px) and (max-width: 749px) {
     .review-cards__list {
       grid-template-columns: repeat(2, 1fr);
@@ -364,6 +1187,204 @@
   }
 {% endstylesheet %}
 
+<script>
+  (function () {
+    var root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root) {
+      var script = document.currentScript;
+      root = script && script.closest ? script.closest('.shopify-section') : null;
+    }
+    if (!root) root = document.querySelector('.review-cards');
+    if (!root) return;
+
+    var REAL_PHOTO = /gravatar|googleusercontent|fbcdn|facebook|cdn\.shopify|cloudinary|imgix|judge\.me\/(?:.*\/)?(?:uploads|media|profiles|reviewer)/i;
+    var FAKE_PHOTO = /default|placeholder|avatar\.svg|user\.svg|person|silhouette|blank|data:image\/svg|fa-user|mystery|generic|no[_-]?photo|anonymous/i;
+
+    function isRealPhoto(value) {
+      if (!value) return false;
+      if (FAKE_PHOTO.test(value)) return false;
+      return REAL_PHOTO.test(value);
+    }
+
+    function polishIcon(icon) {
+      if (!icon || icon.dataset.ppPolished === '1') return;
+
+      var bg = icon.getAttribute('style') || '';
+      var computedBg = '';
+      try {
+        computedBg = window.getComputedStyle(icon).backgroundImage || '';
+      } catch (e) {}
+      var img = icon.querySelector('img');
+      var imgSrc = img ? img.currentSrc || img.getAttribute('src') || '' : '';
+      var hasGlyph = !!icon.querySelector('svg, i, .fa, [class*="fa-"]');
+      var hasReal =
+        isRealPhoto(bg) ||
+        isRealPhoto(computedBg) ||
+        isRealPhoto(imgSrc);
+
+      if (hasReal && !hasGlyph) {
+        icon.classList.remove('jdgm-rev__icon--blank');
+        icon.dataset.ppPolished = '1';
+        return;
+      }
+
+      icon.classList.add('jdgm-rev__icon--blank');
+      icon.style.setProperty('background-image', 'none', 'important');
+      icon.querySelectorAll('svg, i, img, .fa, [class*="fa-"]').forEach(function (node) {
+        node.remove();
+      });
+      icon.dataset.ppPolished = '1';
+    }
+
+    function alignFormActions() {
+      root.querySelectorAll('form.jdgm-form, .jdgm-form').forEach(function (form) {
+        if (form.querySelector('.pp-jdgm-form-actions')) return;
+
+        var cancel =
+          form.querySelector('a.jdgm-cancel-rev, .jdgm-cancel-rev, button.jdgm-cancel-rev') ||
+          Array.prototype.find.call(form.querySelectorAll('a, button'), function (el) {
+            return /avbryt/i.test((el.textContent || '').trim());
+          });
+        var submit =
+          form.querySelector('.jdgm-submit-rev, input[type="submit"], button[type="submit"]') ||
+          Array.prototype.find.call(form.querySelectorAll('button, input[type="submit"]'), function (el) {
+            return /skicka/i.test((el.value || el.textContent || '').trim());
+          });
+        if (!cancel || !submit) return;
+
+        cancel.classList.add('jdgm-cancel-rev');
+        if (submit.tagName !== 'INPUT') submit.classList.add('jdgm-submit-rev');
+
+        var parent = cancel.parentElement;
+        var shared =
+          parent &&
+          parent === submit.parentElement &&
+          parent !== form &&
+          Array.prototype.every.call(parent.children, function (child) {
+            return child === cancel || child === submit;
+          });
+
+        if (shared) {
+          parent.classList.add('pp-jdgm-form-actions');
+          return;
+        }
+
+        var row = document.createElement('div');
+        row.className = 'pp-jdgm-form-actions';
+        submit.parentNode.insertBefore(row, submit);
+        row.appendChild(cancel);
+        row.appendChild(submit);
+      });
+    }
+
+    function polishAll() {
+      root.querySelectorAll('.jdgm-rev__icon').forEach(polishIcon);
+      simplifyNameFormat();
+      alignFormActions();
+    }
+
+    function findNameFormatControl(form) {
+      return (
+        form.querySelector('select[name*="name_format"]') ||
+        form.querySelector('select[name*="reviewer_name_format"]') ||
+        form.querySelector('select[name="reviewer_name_format"]') ||
+        form.querySelector('[name="reviewer_name_format"]') ||
+        form.querySelector('.jdgm-form__reviewer-name-format') ||
+        form.querySelector('[class*="name-format"] select') ||
+        form.querySelector('[class*="name-format"]')
+      );
+    }
+
+    function simplifyNameFormat() {
+      root.querySelectorAll('form.jdgm-form, .jdgm-form').forEach(function (form) {
+        if (form.dataset.ppNameSimplified === '1') return;
+
+        var control = findNameFormatControl(form);
+        if (control) {
+          if (control.tagName === 'SELECT') {
+            var fullOpt = Array.prototype.find.call(control.options || [], function (opt) {
+              return opt.value === '' || opt.value === 'full_name' || opt.value === 'name';
+            });
+            if (!fullOpt && control.options && control.options.length) fullOpt = control.options[0];
+            if (fullOpt) {
+              control.value = fullOpt.value;
+              try {
+                control.dispatchEvent(new Event('change', { bubbles: true }));
+                control.dispatchEvent(new Event('input', { bubbles: true }));
+              } catch (e) {}
+            }
+          } else if (control.tagName === 'INPUT') {
+            control.value = '';
+          }
+          control.classList.add('pp-jdgm-name-format');
+        }
+
+        form.querySelectorAll('label, .jdgm-form__label, p, span, div, legend').forEach(function (el) {
+          if (el.dataset.ppNameLabelFixed === '1') return;
+          var text = (el.textContent || '').replace(/\s+/g, ' ').trim();
+          if (!/visningsnamn/i.test(text)) return;
+          if (!/visas offentligt|displayed as|publicly as/i.test(text)) return;
+
+          el.querySelectorAll('select, button, [role="listbox"], [role="combobox"], ul, .jdgm-dropdown, [class*="dropdown"]').forEach(function (node) {
+            node.classList.add('pp-jdgm-name-format');
+          });
+
+          if (!el.querySelector('input, textarea')) {
+            el.textContent = 'Visningsnamn';
+            el.classList.add('pp-jdgm-name-label');
+          }
+          el.dataset.ppNameLabelFixed = '1';
+        });
+
+        form.querySelectorAll('ul, [role="listbox"]').forEach(function (list) {
+          var t = (list.textContent || '').replace(/\s+/g, ' ');
+          if (/Anonym/i.test(t) && (/John|J\.S\./i.test(t) || /last_initial|all_initials/i.test(t))) {
+            list.classList.add('pp-jdgm-name-format');
+            if (list.previousElementSibling) list.previousElementSibling.classList.add('pp-jdgm-name-format');
+            if (list.parentElement && list.parentElement !== form) {
+              list.parentElement.classList.add('pp-jdgm-name-format');
+            }
+          }
+        });
+
+        form.querySelectorAll('select').forEach(function (sel) {
+          var opts = Array.prototype.map.call(sel.options || [], function (o) {
+            return (o.textContent || '').trim();
+          }).join(' ');
+          if (/Anonym/i.test(opts) && (/John|J\.S\./i.test(opts) || sel.options.length <= 6)) {
+            if (!sel.value || sel.selectedIndex > 0) {
+              sel.selectedIndex = 0;
+              try { sel.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
+            }
+            sel.classList.add('pp-jdgm-name-format');
+          }
+        });
+
+        form.dataset.ppNameSimplified = '1';
+      });
+    }
+
+    polishAll();
+
+    var scheduled = false;
+    var observer = new MutationObserver(function () {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(function () {
+        scheduled = false;
+        root.querySelectorAll('form.jdgm-form, .jdgm-form').forEach(function (form) {
+          if (!form.dataset.ppNameSimplified) return;
+          if (!form.querySelector('.pp-jdgm-name-label') && /visas offentligt/i.test(form.textContent || '')) {
+            form.dataset.ppNameSimplified = '';
+          }
+        });
+        polishAll();
+      });
+    });
+    observer.observe(root, { childList: true, subtree: true });
+  })();
+</script>
+
 {% schema %}
 {
   "name": "Review cards",
@@ -385,7 +1406,39 @@
       "type": "textarea",
       "id": "subheading",
       "label": "Subheading",
-      "default": "38 verifierade omdömen — alla 5 stjärnor."
+      "default": "Verifierade omdömen från Judge.me och Trustpilot."
+    },
+    {
+      "type": "header",
+      "content": "Live review sources"
+    },
+    {
+      "type": "paragraph",
+      "content": "Prefer app blocks (Judge.me Review Widget, TrustView). Enable Judge.me Core + TrustView under Theme settings → App embeds."
+    },
+    {
+      "type": "checkbox",
+      "id": "use_judgeme_widget",
+      "label": "Show Judge.me product reviews (metafield fallback)",
+      "info": "Uses product.metafields.judgeme.widget when no Judge.me app block is present. Requires Judge.me Core app embed.",
+      "default": true
+    },
+    {
+      "type": "liquid",
+      "id": "trustpilot_embed_html",
+      "label": "Trustpilot TrustBox HTML",
+      "info": "Optional. Paste TrustBox embed from Trustpilot Business, or add a TrustView app block instead."
+    },
+    {
+      "type": "header",
+      "content": "Placeholder cards (fallback only)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_placeholder_reviews",
+      "label": "Show placeholder review cards",
+      "info": "Turned off automatically when live Judge.me/Trustpilot content is present.",
+      "default": false
     },
     {
       "type": "number",
@@ -400,11 +1453,8 @@
       "default": "Alla 5 stjärnor"
     },
     {
-      "type": "checkbox",
-      "id": "show_placeholder_reviews",
-      "label": "Show placeholder review cards",
-      "info": "Turn off when Judge.me app block is added to this section.",
-      "default": true
+      "type": "header",
+      "content": "Colors"
     },
     {
       "type": "color",
@@ -478,32 +1528,10 @@
   "presets": [
     {
       "name": "Review cards",
-      "blocks": [
-        {
-          "type": "review",
-          "settings": {
-            "quote": "Smidig att ta med sig och fungerar perfekt efter en varm sommardag på fjället.",
-            "author": "Anna",
-            "context": "Camping"
-          }
-        },
-        {
-          "type": "review",
-          "settings": {
-            "quote": "Toppen att ha i bastun i vår stuga ute i skärgården!",
-            "author": "Erik",
-            "context": "Bastu"
-          }
-        },
-        {
-          "type": "review",
-          "settings": {
-            "quote": "Perfekt på båten, sköljer av salt och svett direkt på däck.",
-            "author": "Maria",
-            "context": "Båt"
-          }
-        }
-      ]
+      "settings": {
+        "show_placeholder_reviews": false,
+        "use_judgeme_widget": true
+      }
     }
   ]
 }

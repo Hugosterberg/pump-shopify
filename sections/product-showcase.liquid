@@ -90,7 +90,18 @@
           {% if section.settings.description != blank %}
             <div class="product-showcase__description">{{ section.settings.description }}</div>
           {% elsif showcase_product.description != blank %}
-            <div class="product-showcase__description">{{ showcase_product.description | strip_html | truncate: 200 }}</div>
+            {%- liquid
+              assign showcase_desc = showcase_product.description | replace: '✓', '|||✓' | replace: '✔', '|||✔' | strip_html | truncate: 480
+              assign showcase_desc = showcase_desc | replace: '|||', '<br>'
+            -%}
+            <div class="product-showcase__description">{{ showcase_desc }}</div>
+          {% endif %}
+
+          {% if showcase_product != blank %}
+            <a class="product-showcase__read-more" href="{{ showcase_product.url }}">
+              Läs mer om produkten
+              <span aria-hidden="true">→</span>
+            </a>
           {% endif %}
 
           <div class="product-showcase__purchase">
@@ -108,17 +119,17 @@
                 <input type="hidden" name="id" value="{{ current_variant.id }}">
               {% endif %}
 
-              {% capture showcase_qty_id %}ProductShowcase-Qty-{{ section.id }}{% endcapture %}
-              {% render 'pp-quantity-input',
-                id: showcase_qty_id,
-                wrapper_class: 'product-showcase__qty-row',
-                label: 'Antal',
-                label_class: 'product-showcase__label'
-              %}
+              <div class="product-showcase__actions-row">
+                {% capture showcase_qty_id %}ProductShowcase-Qty-{{ section.id }}{% endcapture %}
+                {% render 'pp-quantity-input',
+                  id: showcase_qty_id,
+                  wrapper_class: 'product-showcase__qty-row',
+                  label: 'Antal',
+                  label_class: 'product-showcase__label'
+                %}
 
-              <div class="product-showcase__checkout-actions">
                 <button
-                  class="product-showcase__submit pp-btn-primary pp-btn-lg pp-btn--full"
+                  class="product-showcase__submit pp-btn-primary pp-btn--full"
                   type="submit"
                   data-product-showcase-submit
                   {% unless current_variant.available %}
@@ -131,7 +142,9 @@
                     Slutsåld
                   {% endif %}
                 </button>
+              </div>
 
+              <div class="product-showcase__checkout-actions">
                 <p class="product-showcase__checkout-divider" aria-hidden="true">
                   <span>eller</span>
                 </p>
@@ -517,21 +530,44 @@
   }
 
   .product-showcase__description {
-    font-size: 0.86rem;
-    line-height: 1.6;
+    font-size: 0.92rem;
+    line-height: 1.65;
     color: var(--pshow-muted, #9aa8a2);
     padding-top: 0;
     display: -webkit-box;
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: 8;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .product-showcase__description > br:first-child {
+    display: none;
+  }
+
+  .product-showcase__read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--pshow-accent, #2dd4bf);
+    text-decoration: none;
+    letter-spacing: 0.01em;
+    transition: color 0.15s ease, gap 0.15s ease;
+  }
+
+  .product-showcase__read-more:hover {
+    color: color-mix(in srgb, var(--pshow-accent, #2dd4bf) 80%, #fff);
+    gap: 10px;
   }
 
   .product-showcase__purchase {
     display: flex;
     flex-direction: column;
     gap: 0;
-    margin-top: 2px;
+    margin-top: 10px;
     min-width: 0;
     max-width: 100%;
   }
@@ -539,17 +575,52 @@
   .product-showcase__form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     margin: 0;
     min-width: 0;
     max-width: 100%;
+  }
+
+  .product-showcase__actions-row {
+    display: grid;
+    grid-template-columns: minmax(108px, 132px) minmax(0, 1fr);
+    gap: 10px;
+    align-items: end;
+  }
+
+  .product-showcase__qty-row {
+    margin: 0;
+    max-width: none;
+  }
+
+  .product-showcase__qty-row .pp-qty {
+    min-height: 44px;
+    height: 44px;
+  }
+
+  .product-showcase__qty-row .pp-qty__btn {
+    width: 36px;
+  }
+
+  .product-showcase__submit {
+    min-height: 44px;
+    height: 44px;
+    padding-inline: 16px;
+    font-size: 0.9rem;
+    margin-top: 0;
+  }
+
+  @media screen and (max-width: 549px) {
+    .product-showcase__actions-row {
+      grid-template-columns: minmax(120px, 140px) minmax(0, 1fr);
+    }
   }
 
   .product-showcase__checkout-actions {
     display: flex;
     flex-direction: column;
     gap: 0;
-    margin-top: 4px;
+    margin-top: 0;
     min-width: 0;
     max-width: 100%;
     width: 100%;
@@ -559,8 +630,8 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin: 14px 0 12px;
-    font-size: 0.72rem;
+    margin: 8px 0 8px;
+    font-size: 0.68rem;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -763,10 +834,10 @@
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
-    min-height: 54px !important;
+    min-height: 44px !important;
     border-radius: var(--pp-radius-pill, 999px) !important;
     font-weight: 600 !important;
-    font-size: 1rem !important;
+    font-size: 0.9rem !important;
     border: 1px solid color-mix(in srgb, var(--pshow-text, #f6f7f2) 16%, transparent) !important;
     background: color-mix(in srgb, var(--pshow-text, #f6f7f2) 7%, transparent) !important;
     color: var(--pshow-text, #f6f7f2) !important;
@@ -806,7 +877,7 @@
   }
 
   .product-showcase__qty-row {
-    max-width: 148px;
+    max-width: none;
   }
 
   .product-showcase__submit {
