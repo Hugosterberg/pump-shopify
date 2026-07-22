@@ -549,21 +549,21 @@
     flex: 0 0 min(100%, 300px) !important;
     width: min(100%, 300px) !important;
     max-width: min(100%, 300px) !important;
-    min-height: 178px;
-    height: 178px;
+    min-height: 0;
+    height: auto !important;
     scroll-snap-align: start;
     position: relative;
     display: flex !important;
     flex-direction: column !important;
+    gap: 0 !important;
     margin: 0 0 8px !important;
-    padding: 14px 14px 18px !important;
+    padding: 12px 14px 14px !important;
     opacity: 1 !important;
     visibility: visible !important;
     border: 1px solid rgba(255, 255, 255, 0.72) !important;
-    border-radius: 30px 30px 30px 20px !important;
+    border-radius: 22px 22px 22px 16px !important;
     background:
       linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.72) 28%, transparent 55%),
-      radial-gradient(120% 90% at 100% 0%, rgba(45, 212, 191, 0.16), transparent 44%),
       linear-gradient(168deg, #ffffff 0%, #f5faf8 48%, #e7f3ef 100%) !important;
     color: var(--bubble-ink) !important;
     box-shadow:
@@ -633,8 +633,8 @@
     content: '';
     position: absolute;
     left: 0;
-    top: 14px;
-    bottom: 22px;
+    top: 12px;
+    bottom: 16px;
     width: 3px;
     border-radius: 999px;
     background: linear-gradient(180deg, #5eead4, var(--jc-accent, #2dd4bf) 40%, #38bdf8 75%, transparent);
@@ -647,12 +647,12 @@
   .pp-jdgm-carousel__rail .jdgm-carousel__item::after {
     content: '';
     position: absolute;
-    left: 30px;
-    bottom: -10px;
-    width: 22px;
-    height: 22px;
+    left: 26px;
+    bottom: -8px;
+    width: 16px;
+    height: 16px;
     background: linear-gradient(135deg, #e7f3ef 8%, #dcece8 100%);
-    border-radius: 0 0 6px 0;
+    border-radius: 0 0 4px 0;
     transform: rotate(45deg);
     box-shadow: 5px 5px 14px -7px rgba(0, 0, 0, 0.4);
     z-index: 0;
@@ -660,50 +660,65 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.25);
   }
 
+  /* Sheen / quote leftovers — keep rules so old markup never shows */
+  .pp-jdgm-carousel .jdgm-rev .pp-jdgm-sheen,
+  .pp-jdgm-carousel__rail .jdgm-rev .pp-jdgm-sheen,
   .pp-jdgm-carousel .jdgm-rev .pp-jdgm-quote,
   .pp-jdgm-carousel__rail .jdgm-rev .pp-jdgm-quote {
-    position: absolute;
-    top: 4px;
-    right: 12px;
-    font-size: 2.6rem;
-    line-height: 1;
-    font-family: Georgia, 'Times New Roman', serif;
-    font-weight: 700;
-    background: linear-gradient(180deg, color-mix(in srgb, var(--jc-accent, #2dd4bf) 42%, transparent), transparent 80%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    pointer-events: none;
-    user-select: none;
-    z-index: 0;
+    display: none !important;
   }
 
-  .pp-jdgm-carousel .jdgm-rev .pp-jdgm-sheen,
-  .pp-jdgm-carousel__rail .jdgm-rev .pp-jdgm-sheen {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.35) 48%, transparent 62%);
-    transform: translateX(-120%);
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  .pp-jdgm-carousel .jdgm-rev:hover .pp-jdgm-sheen,
-  .pp-jdgm-carousel__rail .jdgm-rev:hover .pp-jdgm-sheen {
-    animation: pp-jdgm-sheen 0.85s var(--jc-ease);
-  }
-
-  @keyframes pp-jdgm-sheen {
-    to { transform: translateX(120%); }
-  }
-
-  .pp-jdgm-carousel .jdgm-rev > *:not(.pp-jdgm-sheen):not(.pp-jdgm-quote),
-  .pp-jdgm-carousel__rail .jdgm-rev > *:not(.pp-jdgm-sheen):not(.pp-jdgm-quote),
+  .pp-jdgm-carousel .jdgm-rev > *,
+  .pp-jdgm-carousel__rail .jdgm-rev > *,
   .pp-jdgm-carousel .jdgm-carousel__item > *,
   .pp-jdgm-carousel__rail .jdgm-carousel__item > * {
     position: relative;
     z-index: 1;
+  }
+
+  /* Kill corner quote / loaders / broken media chrome */
+  .pp-jdgm-carousel .pp-jdgm-quote,
+  .pp-jdgm-carousel .pp-jdgm-sheen,
+  .pp-jdgm-carousel .jdgm-spinner,
+  .pp-jdgm-carousel .jdgm-loader,
+  .pp-jdgm-carousel [class*="jdgm"][class*="spinner"],
+  .pp-jdgm-carousel [class*="jdgm"][class*="loader"],
+  .pp-jdgm-carousel [class*="jdgm"][class*="loading"],
+  .pp-jdgm-carousel .jdgm-rev__timestamp,
+  .pp-jdgm-carousel__rail .jdgm-rev__timestamp,
+  .pp-jdgm-carousel .jdgm-rev__title:empty,
+  .pp-jdgm-carousel .jdgm-rev__prod-title,
+  .pp-jdgm-carousel .pp-jdgm-product-tag,
+  .pp-jdgm-carousel .jdgm-rev__buyer-badge,
+  .pp-jdgm-carousel .jdgm-rev__reply,
+  .pp-jdgm-carousel .jdgm-rev__custom-form,
+  .pp-jdgm-carousel .jdgm-rev img[src=""],
+  .pp-jdgm-carousel .jdgm-rev img:not([src]):not([data-src]) {
+    display: none !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__header,
+  .pp-jdgm-carousel__rail .jdgm-rev__header {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px 8px !important;
+    margin: 0 0 6px !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__author-wrapper,
+  .pp-jdgm-carousel__rail .jdgm-rev__author-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 4px !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__rating,
+  .pp-jdgm-carousel__rail .jdgm-rev__rating {
+    margin: 0 !important;
+    line-height: 1 !important;
   }
 
   .pp-jdgm-carousel .jdgm-rev__author,
@@ -712,28 +727,9 @@
   .pp-jdgm-carousel__rail .jdgm-carousel__author {
     color: #0f766e !important;
     font-weight: 750 !important;
-    font-size: 1rem !important;
+    font-size: 0.92rem !important;
     letter-spacing: -0.015em !important;
-  }
-
-  .pp-jdgm-carousel .jdgm-rev__body,
-  .pp-jdgm-carousel .jdgm-rev__content p,
-  .pp-jdgm-carousel .jdgm-rev__title,
-  .pp-jdgm-carousel__rail .jdgm-rev__body,
-  .pp-jdgm-carousel__rail .jdgm-rev__content p,
-  .pp-jdgm-carousel__rail .jdgm-rev__title,
-  .pp-jdgm-carousel .jdgm-carousel__content,
-  .pp-jdgm-carousel__rail .jdgm-carousel__content {
-    color: #1a3029 !important;
-    line-height: 1.45 !important;
-    font-size: 0.88rem !important;
-    text-wrap: pretty;
-  }
-
-  .pp-jdgm-carousel .jdgm-rev__timestamp,
-  .pp-jdgm-carousel__rail .jdgm-rev__timestamp {
-    color: var(--bubble-muted) !important;
-    font-size: 0.76rem !important;
+    margin: 0 !important;
   }
 
   .pp-jdgm-carousel .jdgm-star,
@@ -742,40 +738,11 @@
     filter: drop-shadow(0 0 7px rgba(45, 212, 191, 0.4));
   }
 
-  .pp-jdgm-carousel .jdgm-rev__buyer-badge,
-  .pp-jdgm-carousel__rail .jdgm-rev__buyer-badge {
-    background: linear-gradient(135deg, rgba(45,212,191,0.18), rgba(56,189,248,0.1)) !important;
-    color: #0f766e !important;
-    border: 1px solid color-mix(in srgb, var(--jc-accent, #2dd4bf) 42%, transparent) !important;
-    border-radius: 999px !important;
-    font-size: 0.66rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.03em !important;
-  }
-
-  .pp-jdgm-carousel .jdgm-rev__prod-title,
-  .pp-jdgm-carousel__rail .jdgm-rev__prod-title,
-  .pp-jdgm-carousel .pp-jdgm-product-tag {
-    display: inline-flex !important;
-    align-items: center;
-    margin-top: 12px !important;
-    padding: 5px 11px !important;
-    border-radius: 999px !important;
-    background: rgba(15, 118, 110, 0.09) !important;
-    color: #0f766e !important;
-    font-size: 0.68rem !important;
-    font-weight: 650 !important;
-    letter-spacing: 0.02em;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .pp-jdgm-carousel .jdgm-rev__icon,
   .pp-jdgm-carousel__rail .jdgm-rev__icon {
-    width: 36px !important;
-    height: 36px !important;
+    width: 32px !important;
+    height: 32px !important;
+    flex: 0 0 32px !important;
     border-radius: 50% !important;
     overflow: hidden !important;
     border: 2px solid #fff !important;
@@ -787,6 +754,7 @@
     color: transparent !important;
     font-size: 0 !important;
     line-height: 0 !important;
+    margin: 0 !important;
   }
 
   .pp-jdgm-carousel .jdgm-rev__icon--blank,
@@ -818,25 +786,37 @@
   .pp-jdgm-carousel .jdgm-carousel__content,
   .pp-jdgm-carousel__rail .jdgm-carousel__content {
     color: #1a3029 !important;
-    line-height: 1.45 !important;
-    font-size: 0.88rem !important;
+    line-height: 1.4 !important;
+    font-size: 0.86rem !important;
     text-wrap: pretty;
   }
 
-  /* Keep body height consistent — with or without photos */
+  /* Clamp text only — never the whole content wrapper (photos live there) */
   .pp-jdgm-carousel .jdgm-rev__body,
-  .pp-jdgm-carousel .jdgm-rev__content,
+  .pp-jdgm-carousel .jdgm-rev__body p,
   .pp-jdgm-carousel__rail .jdgm-rev__body,
+  .pp-jdgm-carousel__rail .jdgm-rev__body p,
+  .pp-jdgm-carousel .jdgm-carousel__content > p,
+  .pp-jdgm-carousel__rail .jdgm-carousel__content > p {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 4 !important;
+    overflow: hidden !important;
+    max-height: 5.6em !important;
+    margin: 0 !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__content,
   .pp-jdgm-carousel__rail .jdgm-rev__content,
   .pp-jdgm-carousel .jdgm-carousel__content,
   .pp-jdgm-carousel__rail .jdgm-carousel__content {
-    display: -webkit-box !important;
-    -webkit-box-orient: vertical !important;
-    -webkit-line-clamp: 3 !important;
-    overflow: hidden !important;
-    max-height: 4.4em !important;
-    margin: 6px 0 0 !important;
-    flex: 1 1 auto;
+    display: block !important;
+    overflow: visible !important;
+    max-height: none !important;
+    -webkit-line-clamp: unset !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .pp-jdgm-carousel .jdgm-rev__title,
@@ -845,50 +825,65 @@
     -webkit-box-orient: vertical !important;
     -webkit-line-clamp: 1 !important;
     overflow: hidden !important;
-    margin: 4px 0 0 !important;
-    font-size: 0.9rem !important;
+    margin: 0 0 4px !important;
+    font-size: 0.88rem !important;
     font-weight: 700 !important;
   }
 
-  /* Compact photo strip — same footprint whether 0, 1 or more images */
+  /* Cards with photos — thumbs sit tight under the copy */
+  .pp-jdgm-carousel .jdgm-rev.pp-jdgm-has-photos,
+  .pp-jdgm-carousel__rail .jdgm-rev.pp-jdgm-has-photos {
+    height: auto !important;
+    min-height: 0;
+  }
+
+  /* Review photo strip */
   .pp-jdgm-carousel .jdgm-rev__pics,
   .pp-jdgm-carousel__rail .jdgm-rev__pics,
   .pp-jdgm-carousel .jdgm-rev__media,
   .pp-jdgm-carousel__rail .jdgm-rev__media,
+  .pp-jdgm-carousel .jdgm-rev__pic-line,
+  .pp-jdgm-carousel__rail .jdgm-rev__pic-line,
   .pp-jdgm-carousel .pp-jdgm-thumbs {
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: center !important;
     gap: 6px !important;
-    margin: auto 0 0 !important;
-    padding: 8px 0 0 !important;
-    min-height: 40px !important;
-    max-height: 40px !important;
-    overflow: hidden !important;
+    margin: 8px 0 0 !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
     flex: 0 0 auto !important;
   }
 
   .pp-jdgm-carousel .jdgm-rev__pics a,
   .pp-jdgm-carousel__rail .jdgm-rev__pics a,
+  .pp-jdgm-carousel .jdgm-rev__pic-link,
+  .pp-jdgm-carousel__rail .jdgm-rev__pic-link,
   .pp-jdgm-carousel .jdgm-rev__pics .jdgm-rev__pic,
   .pp-jdgm-carousel__rail .jdgm-rev__pics .jdgm-rev__pic,
   .pp-jdgm-carousel .pp-jdgm-thumbs a,
   .pp-jdgm-carousel .pp-jdgm-thumbs .pp-jdgm-thumb {
-    flex: 0 0 40px !important;
-    width: 40px !important;
-    height: 40px !important;
+    flex: 0 0 48px !important;
+    width: 48px !important;
+    height: 48px !important;
     margin: 0 !important;
     padding: 0 !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     overflow: hidden !important;
     display: block !important;
     border: 1px solid rgba(15, 118, 110, 0.14) !important;
-    box-shadow: 0 4px 12px -8px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 6px 14px -8px rgba(0, 0, 0, 0.4);
     background: #e8f2ef !important;
   }
 
   .pp-jdgm-carousel .jdgm-rev__pics img,
   .pp-jdgm-carousel__rail .jdgm-rev__pics img,
+  .pp-jdgm-carousel .jdgm-rev__pic-img,
+  .pp-jdgm-carousel__rail .jdgm-rev__pic-img,
+  .pp-jdgm-carousel .jdgm-rev__pic-link img,
+  .pp-jdgm-carousel__rail .jdgm-rev__pic-link img,
   .pp-jdgm-carousel .pp-jdgm-thumbs img {
     width: 100% !important;
     height: 100% !important;
@@ -901,22 +896,18 @@
     box-shadow: none !important;
   }
 
-  .pp-jdgm-carousel .jdgm-rev__pics a:nth-child(n + 3),
-  .pp-jdgm-carousel__rail .jdgm-rev__pics a:nth-child(n + 3),
-  .pp-jdgm-carousel .jdgm-rev__pics .jdgm-rev__pic:nth-child(n + 3),
-  .pp-jdgm-carousel__rail .jdgm-rev__pics .jdgm-rev__pic:nth-child(n + 3),
-  .pp-jdgm-carousel .pp-jdgm-thumbs > :nth-child(n + 3) {
+  .pp-jdgm-carousel .pp-jdgm-thumbs > :nth-child(n + 4) {
     display: none !important;
   }
 
   .pp-jdgm-carousel .pp-jdgm-thumb-more {
-    flex: 0 0 40px !important;
-    width: 40px !important;
-    height: 40px !important;
+    flex: 0 0 48px !important;
+    width: 48px !important;
+    height: 48px !important;
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     background: rgba(15, 118, 110, 0.1) !important;
     color: #0f766e !important;
     font-size: 0.72rem !important;
@@ -956,9 +947,9 @@
       flex-basis: min(100%, 260px) !important;
       width: min(100%, 260px) !important;
       max-width: min(100%, 260px) !important;
-      min-height: 178px;
-    height: 178px;
-      padding: 14px 14px 18px !important;
+      min-height: 0;
+      height: auto !important;
+      padding: 11px 12px 12px !important;
     }
 
     .pp-jdgm-carousel .jdgm-rev:nth-child(odd),
@@ -1063,51 +1054,97 @@
       rev.style.setProperty('opacity', '1', 'important');
       rev.style.setProperty('visibility', 'visible', 'important');
       rev.style.removeProperty('display');
-      if (!rev.querySelector('.pp-jdgm-quote')) {
-        var q = document.createElement('span');
-        q.className = 'pp-jdgm-quote';
-        q.setAttribute('aria-hidden', 'true');
-        q.textContent = '“';
-        rev.appendChild(q);
-      }
-      if (!rev.querySelector('.pp-jdgm-sheen')) {
-        var sheen = document.createElement('span');
-        sheen.className = 'pp-jdgm-sheen';
-        sheen.setAttribute('aria-hidden', 'true');
-        rev.appendChild(sheen);
-      }
+      // Strip decorative quote, loaders, and leftover chrome
+      rev.querySelectorAll(
+        '.pp-jdgm-quote, .pp-jdgm-sheen, .jdgm-spinner, .jdgm-loader, [class*="spinner"], [class*="loader"], [class*="loading"]'
+      ).forEach(function (n) { n.remove(); });
+      // Empty titles create a tall gap above the body
+      rev.querySelectorAll('.jdgm-rev__title').forEach(function (title) {
+        if (!(title.textContent || '').trim()) title.remove();
+      });
       polishIcon(rev.querySelector('.jdgm-rev__icon'));
       compactPhotos(rev);
       rev.dataset.ppDecorated = '1';
     }
 
-    function compactPhotos(rev) {
-      var pics =
-        rev.querySelector('.jdgm-rev__pics') ||
-        rev.querySelector('.jdgm-rev__media') ||
-        rev.querySelector('.jdgm-rev__pictures');
-      if (!pics || pics.dataset.ppThumbs === '1') return;
+    function resolveImgSrc(img) {
+      if (!img) return '';
+      var src =
+        img.currentSrc ||
+        img.getAttribute('src') ||
+        img.getAttribute('data-src') ||
+        img.getAttribute('data-lazy-src') ||
+        img.getAttribute('data-original') ||
+        '';
+      if (!src || src.indexOf('data:image') === 0) {
+        var srcset = img.getAttribute('srcset') || img.getAttribute('data-srcset') || '';
+        if (srcset) {
+          src = srcset.split(',')[0].trim().split(/\s+/)[0] || src;
+        }
+      }
+      if (!src || src === '#' || src.indexOf('data:image') === 0) return '';
+      return src;
+    }
 
-      var images = Array.prototype.slice.call(pics.querySelectorAll('img'));
+    function collectReviewImages(rev) {
+      var seen = {};
+      var out = [];
+      var nodes = rev.querySelectorAll(
+        '.jdgm-rev__pics img, .jdgm-rev__media img, .jdgm-rev__pictures img, .jdgm-rev__pic-link img, .jdgm-rev__pic-img, a.jdgm-rev__pic-link img'
+      );
+      Array.prototype.forEach.call(nodes, function (img) {
+        // Skip author avatars
+        if (img.closest('.jdgm-rev__icon, .jdgm-rev__author-wrapper')) return;
+        var src = resolveImgSrc(img);
+        if (!src || seen[src]) return;
+        seen[src] = true;
+        out.push({ img: img, src: src });
+      });
+      // Fallback: any linked image that looks like Judge.me media
+      if (!out.length) {
+        Array.prototype.forEach.call(rev.querySelectorAll('a[href*="judge.me"] img, a[href*="judgeme"] img'), function (img) {
+          if (img.closest('.jdgm-rev__icon')) return;
+          var src = resolveImgSrc(img);
+          if (!src || seen[src]) return;
+          seen[src] = true;
+          out.push({ img: img, src: src });
+        });
+      }
+      return out;
+    }
+
+    function compactPhotos(rev) {
+      if (rev.dataset.ppThumbs === '1') return;
+
+      var images = collectReviewImages(rev);
+      // Remove empty photo containers / broken placeholders
+      rev.querySelectorAll('.jdgm-rev__pics, .jdgm-rev__media, .jdgm-rev__pictures, .jdgm-rev__pic-line').forEach(function (el) {
+        if (!el.querySelector('img[src], img[data-src], img[srcset], img[data-srcset]')) {
+          el.remove();
+        }
+      });
+
       if (!images.length) {
-        pics.remove();
+        rev.dataset.ppThumbs = '1';
         return;
       }
 
       var strip = document.createElement('div');
       strip.className = 'pp-jdgm-thumbs';
-      var maxShow = 2;
-      images.forEach(function (img, index) {
+      strip.dataset.ppThumbs = '1';
+      var maxShow = 3;
+      images.forEach(function (item, index) {
         if (index >= maxShow) return;
         var wrap = document.createElement('a');
         wrap.className = 'pp-jdgm-thumb';
-        wrap.href = img.currentSrc || img.src || '#';
+        wrap.href = item.src;
         wrap.target = '_blank';
         wrap.rel = 'noopener noreferrer';
-        var clone = img.cloneNode(true);
-        clone.removeAttribute('width');
-        clone.removeAttribute('height');
-        clone.removeAttribute('style');
+        var clone = document.createElement('img');
+        clone.src = item.src;
+        clone.alt = item.img.getAttribute('alt') || 'Recensionsbild';
+        clone.loading = 'lazy';
+        clone.decoding = 'async';
         wrap.appendChild(clone);
         strip.appendChild(wrap);
       });
@@ -1119,8 +1156,17 @@
         strip.appendChild(more);
       }
 
-      pics.replaceWith(strip);
-      strip.dataset.ppThumbs = '1';
+      // Drop original photo nodes so we don't show duplicates / placeholders
+      rev.querySelectorAll('.jdgm-rev__pics, .jdgm-rev__media, .jdgm-rev__pictures, .jdgm-rev__pic-line').forEach(function (el) {
+        el.remove();
+      });
+      rev.querySelectorAll('a.jdgm-rev__pic-link').forEach(function (el) {
+        if (!el.closest('.pp-jdgm-thumbs')) el.remove();
+      });
+
+      rev.appendChild(strip);
+      rev.classList.add('pp-jdgm-has-photos');
+      rev.dataset.ppThumbs = '1';
     }
 
     function getScroller() {
@@ -1155,8 +1201,19 @@
     prevBtn.addEventListener('click', function () { scrollByDir(-1); });
     nextBtn.addEventListener('click', function () { scrollByDir(1); });
 
+    function hydrateLazyImages(scope) {
+      if (!scope) return;
+      scope.querySelectorAll('img').forEach(function (img) {
+        var src = resolveImgSrc(img);
+        if (src && (!img.getAttribute('src') || img.getAttribute('src').indexOf('data:image') === 0)) {
+          img.setAttribute('src', src);
+        }
+      });
+    }
+
     function collectFromScope(scope, map) {
       if (!scope) return;
+      hydrateLazyImages(scope);
       scope.querySelectorAll(REVIEW_SEL).forEach(function (rev) {
         if (rev.closest('.pp-jdgm-carousel__rail')) return;
         // Skip nested wrappers that aren't actual review cards
@@ -1240,8 +1297,12 @@
 
       var ready = await waitForFirstReviews();
       if (ready) {
+        // Give Judge.me a beat to attach review photos after text cards
+        await sleep(450);
+        hydrateLazyImages(sources || root);
         collectFromScope(sources || root, map);
         await paginateSources(map);
+        hydrateLazyImages(sources || root);
         collectFromScope(sources || root, map);
       }
 
