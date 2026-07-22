@@ -163,10 +163,11 @@
 
   .scenes__heading {
     margin: 0;
-    font-size: clamp(1.6rem, 4.5vw, 2.75rem);
-    line-height: 1.1;
+    font-size: clamp(1.05rem, 2.8vw + 0.55rem, 2.75rem);
+    line-height: 1.15;
     letter-spacing: -0.02em;
     text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
   }
 
   .scenes__labels {
@@ -193,16 +194,24 @@
   /* No product image: hug the copy instead of forcing a tall empty stage */
   .scenes--text-only .scenes__stage {
     min-height: 0;
+    max-width: min(52rem, 100%);
   }
 
   .scenes--text-only .scenes__content {
     position: relative;
     padding: 28px 24px 24px;
+    text-align: center;
   }
 
   .scenes--text-only .scenes__labels {
     min-height: 1.5em;
     margin-top: 8px;
+  }
+
+  .scenes--text-only .scenes__label {
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
   }
 
   @media screen and (max-width: 749px) {
@@ -234,7 +243,8 @@
     }
 
     .scenes__heading {
-      font-size: clamp(1.35rem, 6vw, 1.75rem);
+      font-size: clamp(0.92rem, 3.6vw + 0.35rem, 1.35rem);
+      white-space: nowrap;
     }
 
     .scenes__label {

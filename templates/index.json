@@ -1453,9 +1453,9 @@
   },
   "order": [
     "premium_hero",
+    "instruction_video",
     "brand_promise",
     "trust_strip",
-    "instruction_video",
     "product_cards",
     "reviews",
     "use_cases",
