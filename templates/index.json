@@ -252,7 +252,8 @@
           "settings": {
             "product": "the-perfect-combo-portabel-dusch-vikbar-hink-1",
             "description": "Allt du behöver för att duscha var du vill, dusch + vikbar hink.",
-            "badge": ""
+            "badge": "",
+            "featured": false
           }
         },
         "p-2": {
@@ -260,7 +261,8 @@
           "settings": {
             "product": "portabel-dusch",
             "description": "Kompakt och kraftfull laddningsbar dusch. Liten i storlek, stor i funktion.",
-            "badge": ""
+            "badge": "",
+            "featured": false
           }
         },
         "p-3": {
@@ -268,7 +270,8 @@
           "settings": {
             "product": "portabel-hink",
             "description": "Vikbar hink som rymmer 20 liter. Perfekt komplement till duschen.",
-            "badge": ""
+            "badge": "",
+            "featured": false
           }
         }
       },
@@ -286,6 +289,56 @@
         "view_all_label": "Visa alla produkter",
         "view_all_url": "",
         "background_color": "#0b1117",
+        "surface_color": "#14212a",
+        "text_color": "#f6f7f2",
+        "muted_text_color": "#9aa8a2",
+        "accent_color": "#2dd4bf"
+      }
+    },
+    "reviews": {
+      "type": "review-cards",
+      "blocks": {
+        "r-1": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "quote": "Smidig att ta med sig och fungerar perfekt efter en varm sommardag på fjället.",
+            "author": "Anna",
+            "context": "Camping"
+          }
+        },
+        "r-2": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "quote": "Toppen att ha i bastun i vår stuga ute i skärgården!",
+            "author": "Erik",
+            "context": "Bastu"
+          }
+        },
+        "r-3": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "quote": "Perfekt på båten, sköljer av salt och svett direkt på däck.",
+            "author": "Maria",
+            "context": "Båt"
+          }
+        }
+      },
+      "block_order": [
+        "r-1",
+        "r-2",
+        "r-3"
+      ],
+      "settings": {
+        "eyebrow": "Omdömen",
+        "heading": "Det här säger våra kunder",
+        "subheading": "38 verifierade omdömen — alla 5 stjärnor. Här är några av dem.",
+        "total_review_count": 38,
+        "summary_note": "Alla 5 stjärnor",
+        "show_placeholder_reviews": true,
+        "background_color": "#071014",
         "surface_color": "#14212a",
         "text_color": "#f6f7f2",
         "muted_text_color": "#9aa8a2",
@@ -785,6 +838,7 @@
         "hp-2",
         "hp-3"
       ],
+      "disabled": true,
       "settings": {
         "eyebrow": "Närmare titt",
         "heading": "Genomtänkt in i minsta detalj",
@@ -1192,56 +1246,6 @@
         "accent_color": "#2dd4bf"
       }
     },
-    "reviews": {
-      "type": "review-cards",
-      "blocks": {
-        "r-1": {
-          "type": "review",
-          "settings": {
-            "rating": 5,
-            "quote": "Smidig att ta med sig och fungerar perfekt efter en varm sommardag på fjället.",
-            "author": "Anna",
-            "context": "Camping"
-          }
-        },
-        "r-2": {
-          "type": "review",
-          "settings": {
-            "rating": 5,
-            "quote": "Toppen att ha i bastun i vår stuga ute i skärgården!",
-            "author": "Erik",
-            "context": "Bastu"
-          }
-        },
-        "r-3": {
-          "type": "review",
-          "settings": {
-            "rating": 5,
-            "quote": "Perfekt på båten, sköljer av salt och svett direkt på däck.",
-            "author": "Maria",
-            "context": "Båt"
-          }
-        }
-      },
-      "block_order": [
-        "r-1",
-        "r-2",
-        "r-3"
-      ],
-      "settings": {
-        "eyebrow": "Omdömen",
-        "heading": "Det här säger våra kunder",
-        "subheading": "38 verifierade omdömen — alla 5 stjärnor. Här är några av dem.",
-        "total_review_count": 38,
-        "summary_note": "Alla 5 stjärnor",
-        "show_placeholder_reviews": true,
-        "background_color": "#071014",
-        "surface_color": "#14212a",
-        "text_color": "#f6f7f2",
-        "muted_text_color": "#9aa8a2",
-        "accent_color": "#2dd4bf"
-      }
-    },
     "blog_posts": {
       "type": "blog-posts",
       "settings": {
@@ -1456,16 +1460,16 @@
       "settings": {
         "eyebrow": "Vanliga frågor",
         "heading": "FAQ",
-        "show_cta": true,
-        "cta_heading": "Fortfarande osäker?",
-        "cta_text": "Köp tryggt med 14 dagars ångerrätt, 1 års garanti och fri frakt över 999 kr.",
-        "cta_button_label": "Till köp",
-        "cta_button_link": "#product-showcase",
         "background_color": "#071014",
         "surface_color": "#14212a",
         "text_color": "#f6f7f2",
         "muted_text_color": "#9aa8a2",
-        "accent_color": "#2dd4bf"
+        "accent_color": "#2dd4bf",
+        "show_cta": true,
+        "cta_heading": "Fortfarande osäker?",
+        "cta_text": "Köp tryggt med 14 dagars ångerrätt, 1 års garanti och fri frakt över 999 kr.",
+        "cta_button_label": "Till köp",
+        "cta_button_link": "#product-showcase"
       }
     },
     "final_cta": {
