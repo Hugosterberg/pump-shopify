@@ -51,55 +51,55 @@
 
   <div class="premium-hero__inner">
     <div class="premium-hero__content">
-      {% if section.settings.eyebrow != blank %}
-        <p class="premium-hero__eyebrow">{% render 'brand-mark-text', text: section.settings.eyebrow %}</p>
-      {% endif %}
+      <div class="premium-hero__lead">
+        {% if section.settings.eyebrow != blank %}
+          <p class="premium-hero__eyebrow">{% render 'brand-mark-text', text: section.settings.eyebrow %}</p>
+        {% endif %}
 
-      {% if section.settings.heading != blank or section.settings.subheading != blank %}
-        <div class="premium-hero__intro">
-          {% if section.settings.heading != blank %}
-            <h1 class="premium-hero__heading">{{ section.settings.heading }}</h1>
-          {% endif %}
+        {% if section.settings.heading != blank %}
+          <h1 class="premium-hero__heading">{{ section.settings.heading }}</h1>
+        {% endif %}
+      </div>
 
-          {% if section.settings.subheading != blank %}
-            <div class="premium-hero__subheading">{{ section.settings.subheading }}</div>
-          {% endif %}
-        </div>
-      {% endif %}
+      <div class="premium-hero__copy">
+        {% if section.settings.subheading != blank %}
+          <div class="premium-hero__subheading">{{ section.settings.subheading }}</div>
+        {% endif %}
 
-      {% if section.settings.primary_button_label != blank or section.settings.secondary_button_label != blank %}
-        <div class="premium-hero__actions">
-          {% if section.settings.primary_button_label != blank %}
-            <a class="premium-hero__btn premium-hero__btn--primary pp-btn-primary pp-btn-lg" href="{{ primary_url }}">
-              {{ section.settings.primary_button_label }}
-            </a>
-          {% endif %}
-          {% if section.settings.secondary_button_label != blank %}
-            <a class="premium-hero__btn premium-hero__btn--secondary pp-btn-secondary" href="{{ secondary_url }}">
-              {{ section.settings.secondary_button_label }}
-            </a>
-          {% endif %}
-        </div>
-      {% endif %}
+        {% if section.settings.primary_button_label != blank or section.settings.secondary_button_label != blank %}
+          <div class="premium-hero__actions">
+            {% if section.settings.primary_button_label != blank %}
+              <a class="premium-hero__btn premium-hero__btn--primary pp-btn-primary pp-btn-lg" href="{{ primary_url }}">
+                {{ section.settings.primary_button_label }}
+              </a>
+            {% endif %}
+            {% if section.settings.secondary_button_label != blank %}
+              <a class="premium-hero__btn premium-hero__btn--secondary pp-btn-secondary" href="{{ secondary_url }}">
+                {{ section.settings.secondary_button_label }}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
 
-      {% if section.blocks.size > 0 %}
-        <ul class="premium-hero__badges" role="list">
-          {% for block in section.blocks %}
-            <li class="premium-hero__badge" {{ block.shopify_attributes }}>
-              {% if block.settings.icon != blank %}
-                <span class="premium-hero__badge-icon">
-                  {{
-                    block.settings.icon
-                    | image_url: width: 96
-                    | image_tag: loading: 'lazy', width: 48, height: 48, alt: block.settings.label
-                  }}
-                </span>
-              {% endif %}
-              <span class="premium-hero__badge-label">{{ block.settings.label }}</span>
-            </li>
-          {% endfor %}
-        </ul>
-      {% endif %}
+        {% if section.blocks.size > 0 %}
+          <ul class="premium-hero__badges" role="list">
+            {% for block in section.blocks %}
+              <li class="premium-hero__badge" {{ block.shopify_attributes }}>
+                {% if block.settings.icon != blank %}
+                  <span class="premium-hero__badge-icon">
+                    {{
+                      block.settings.icon
+                      | image_url: width: 96
+                      | image_tag: loading: 'lazy', width: 48, height: 48, alt: block.settings.label
+                    }}
+                  </span>
+                {% endif %}
+                <span class="premium-hero__badge-label">{{ block.settings.label }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
     </div>
 
     <div class="premium-hero__media premium-hero__media--{{ section.settings.media_style | default: 'float' }}">
@@ -183,21 +183,26 @@
     align-items: flex-start;
   }
 
+  .premium-hero__lead,
+  .premium-hero__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    align-items: inherit;
+    text-align: inherit;
+  }
+
+  .premium-hero__copy {
+    gap: 18px;
+  }
+
   .premium-hero[style*='--hero-content-align: center'] .premium-hero__content {
     align-items: center;
   }
 
   .premium-hero[style*='--hero-content-align: center'] .premium-hero__actions {
     justify-content: center;
-  }
-
-  .premium-hero__intro {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    align-self: stretch;
-    width: 100%;
-    text-align: inherit;
   }
 
   .premium-hero__eyebrow {
@@ -241,9 +246,7 @@
     text-align: inherit;
   }
 
-  /* Override the global [class$='__subheading'] centering so the hero
-     subtext stays flush-left, directly under the heading. */
-  .premium-hero .premium-hero__intro .premium-hero__subheading {
+  .premium-hero .premium-hero__copy .premium-hero__subheading {
     margin-inline: 0;
   }
 
@@ -600,7 +603,126 @@
   }
 
   @media screen and (max-width: 749px) {
+    .premium-hero {
+      min-height: auto;
+      padding-block: 18px 28px;
+      align-items: start;
+    }
+
+    .premium-hero__inner {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Brand + heading, then product image, then copy/CTAs — all in first viewport */
+    .premium-hero__content {
+      display: contents;
+    }
+
+    .premium-hero__lead {
+      order: 1;
+      gap: 8px;
+    }
+
+    .premium-hero__media {
+      order: 2;
+    }
+
+    .premium-hero__copy {
+      order: 3;
+      gap: 14px;
+    }
+
+    .premium-hero__heading {
+      font-size: clamp(1.7rem, 7.2vw, 2.15rem);
+      max-width: 16ch;
+    }
+
+    .premium-hero__subheading {
+      font-size: 0.94rem;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+
+    .premium-hero__media-frame {
+      aspect-ratio: auto;
+      min-height: 0;
+    }
+
+    .premium-hero__media--float .premium-hero__media-frame {
+      min-height: min(42svh, 300px);
+      max-height: min(46svh, 320px);
+    }
+
+    .premium-hero__media--float .premium-hero__image {
+      width: auto;
+      height: auto;
+      max-width: min(100%, 340px);
+      max-height: min(42svh, 300px);
+      margin-inline: auto;
+      object-fit: contain;
+      object-position: center center;
+    }
+
+    .premium-hero__media--frame .premium-hero__image {
+      object-fit: contain;
+      object-position: center;
+      background: transparent;
+    }
+
+    .premium-hero__offer {
+      top: 8px;
+      left: 8px;
+      padding: 6px 10px;
+      font-size: 0.74rem;
+    }
+
+    .premium-hero__actions {
+      gap: 8px;
+    }
+
+    .premium-hero__btn {
+      min-height: 48px;
+      font-size: 0.9rem;
+    }
+
+    .premium-hero__btn--primary {
+      flex: 1 1 auto;
+    }
+
+    .premium-hero__btn--secondary {
+      display: none;
+    }
+
+    .premium-hero__badges {
+      gap: 6px;
+    }
+
+    .premium-hero__badge {
+      padding: 6px 10px;
+      font-size: 0.72rem;
+    }
+
     .premium-hero__particles {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 749px) and (max-height: 720px) {
+    .premium-hero__media--float .premium-hero__media-frame {
+      min-height: min(34svh, 240px);
+      max-height: min(36svh, 250px);
+    }
+
+    .premium-hero__media--float .premium-hero__image {
+      max-height: min(34svh, 240px);
+    }
+
+    .premium-hero__badges {
       display: none;
     }
   }
