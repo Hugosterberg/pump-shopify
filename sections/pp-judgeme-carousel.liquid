@@ -791,25 +791,44 @@
     text-wrap: pretty;
   }
 
-  /* Clamp text only — never the whole content wrapper (photos live there) */
+  /* Clamp only the body container — never nested <p> (double -webkit-box hides text) */
   .pp-jdgm-carousel .jdgm-rev__body,
-  .pp-jdgm-carousel .jdgm-rev__body p,
   .pp-jdgm-carousel__rail .jdgm-rev__body,
-  .pp-jdgm-carousel__rail .jdgm-rev__body p,
-  .pp-jdgm-carousel .jdgm-carousel__content > p,
-  .pp-jdgm-carousel__rail .jdgm-carousel__content > p {
+  .pp-jdgm-carousel .jdgm-carousel__content,
+  .pp-jdgm-carousel__rail .jdgm-carousel__content {
     display: -webkit-box !important;
     -webkit-box-orient: vertical !important;
     -webkit-line-clamp: 4 !important;
     overflow: hidden !important;
     max-height: 5.6em !important;
     margin: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    color: #1a3029 !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__body p,
+  .pp-jdgm-carousel__rail .jdgm-rev__body p,
+  .pp-jdgm-carousel .jdgm-carousel__content p,
+  .pp-jdgm-carousel__rail .jdgm-carousel__content p,
+  .pp-jdgm-carousel .jdgm-rev__content p,
+  .pp-jdgm-carousel__rail .jdgm-rev__content p {
+    display: inline !important;
+    -webkit-line-clamp: unset !important;
+    -webkit-box-orient: unset !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    color: inherit !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
   }
 
   .pp-jdgm-carousel .jdgm-rev__content,
-  .pp-jdgm-carousel__rail .jdgm-rev__content,
-  .pp-jdgm-carousel .jdgm-carousel__content,
-  .pp-jdgm-carousel__rail .jdgm-carousel__content {
+  .pp-jdgm-carousel__rail .jdgm-rev__content {
     display: block !important;
     overflow: visible !important;
     max-height: none !important;
@@ -817,6 +836,8 @@
     flex: 0 0 auto !important;
     margin: 0 !important;
     padding: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   .pp-jdgm-carousel .jdgm-rev__title,
@@ -828,6 +849,16 @@
     margin: 0 0 4px !important;
     font-size: 0.88rem !important;
     font-weight: 700 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .pp-jdgm-carousel .jdgm-rev__rating,
+  .pp-jdgm-carousel__rail .jdgm-rev__rating,
+  .pp-jdgm-carousel .jdgm-rev__stars,
+  .pp-jdgm-carousel__rail .jdgm-rev__stars {
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   /* Cards with photos — thumbs sit tight under the copy */
@@ -1048,19 +1079,60 @@
       icon.dataset.ppPolished = '1';
     }
 
+    function reviewBodyText(el) {
+      var body =
+        el.querySelector('.jdgm-rev__body') ||
+        el.querySelector('.jdgm-carousel__content') ||
+        el.querySelector('.jdgm-rev__content');
+      if (!body) return '';
+      // Prefer body text, strip author/rating leftovers if content wrapper was used
+      var clone = body.cloneNode(true);
+      clone.querySelectorAll(
+        '.jdgm-rev__author, .jdgm-rev__rating, .jdgm-rev__icon, .jdgm-rev__timestamp, .jdgm-rev__pics, .jdgm-rev__pic-link, .jdgm-star, .jdgm-rev__buyer-badge, .jdgm-rev__prod-title'
+      ).forEach(function (n) { n.remove(); });
+      return (clone.textContent || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function isCompleteReview(el) {
+      var body = reviewBodyText(el);
+      if (body.length >= 8) return true;
+      // Title-only reviews are rare but valid
+      var title = ((el.querySelector('.jdgm-rev__title') || {}).textContent || '').replace(/\s+/g, ' ').trim();
+      return title.length >= 8;
+    }
+
     function decorateCard(rev) {
       if (!rev || rev.dataset.ppDecorated === '1') return;
       rev.classList.add('jdgm-rev');
       rev.style.setProperty('opacity', '1', 'important');
       rev.style.setProperty('visibility', 'visible', 'important');
+      rev.style.setProperty('height', 'auto', 'important');
+      rev.style.setProperty('min-height', '0', 'important');
       rev.style.removeProperty('display');
       // Strip decorative quote, loaders, and leftover chrome
       rev.querySelectorAll(
         '.pp-jdgm-quote, .pp-jdgm-sheen, .jdgm-spinner, .jdgm-loader, [class*="spinner"], [class*="loader"], [class*="loading"]'
-      ).forEach(function (n) { n.remove(); });
+      ).forEach(function (n) {
+        // Never strip the review body / content itself
+        if (n.classList && (n.classList.contains('jdgm-rev__body') || n.classList.contains('jdgm-rev__content'))) return;
+        n.remove();
+      });
+      // Lone quote glyphs Judge.me / old builds leave in the corner
+      rev.querySelectorAll('span, i, em, b, strong').forEach(function (el) {
+        if (el.children.length) return;
+        var t = (el.textContent || '').trim();
+        if (t === '"' || t === '\u201C' || t === '\u201D' || t === '\u2018' || t === '\u2019' || t === "'") {
+          el.remove();
+        }
+      });
       // Empty titles create a tall gap above the body
       rev.querySelectorAll('.jdgm-rev__title').forEach(function (title) {
         if (!(title.textContent || '').trim()) title.remove();
+      });
+      // Force body visible (Judge.me sometimes leaves opacity:0)
+      rev.querySelectorAll('.jdgm-rev__body, .jdgm-rev__content, .jdgm-carousel__content, .jdgm-rev__rating, .jdgm-rev__title').forEach(function (el) {
+        el.style.setProperty('opacity', '1', 'important');
+        el.style.setProperty('visibility', 'visible', 'important');
       });
       polishIcon(rev.querySelector('.jdgm-rev__icon'));
       compactPhotos(rev);
@@ -1220,11 +1292,17 @@
         if (rev.querySelector(REVIEW_SEL) && !rev.classList.contains('jdgm-rev') && !rev.hasAttribute('data-review-id')) {
           return;
         }
+        if (!isCompleteReview(rev)) return;
         var key = reviewKey(rev);
-        if (!key || key === '|' || key === '||' || map.has(key)) return;
-        var text = (rev.textContent || '').replace(/\s+/g, ' ').trim();
-        if (text.length < 8) return;
-        map.set(key, rev.cloneNode(true));
+        if (!key || key === '|' || key === '||') return;
+        var clone = rev.cloneNode(true);
+        var bodyLen = reviewBodyText(clone).length;
+        // Prefer the clone with more body text if we already have a stub
+        if (map.has(key)) {
+          var existingLen = reviewBodyText(map.get(key)).length;
+          if (bodyLen <= existingLen) return;
+        }
+        map.set(key, clone);
       });
     }
 
@@ -1235,9 +1313,17 @@
       rail.className = 'pp-jdgm-carousel__rail';
       rail.setAttribute('data-pp-jdgm-rail', '');
       map.forEach(function (node) {
+        if (!isCompleteReview(node)) return;
         decorateCard(node);
+        // Final guard: drop cards that still have no readable copy
+        if (!isCompleteReview(node)) return;
         rail.appendChild(node);
       });
+      if (!rail.children.length) {
+        rail.remove();
+        rail = null;
+        return false;
+      }
       track.appendChild(rail);
       root.classList.add('is-ready');
       built = true;
