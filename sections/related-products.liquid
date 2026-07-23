@@ -47,10 +47,10 @@
               <a class="pp-product-card__media related-products__media" href="{{ related.url }}" aria-label="{{ related.title }}">
                 {% if related.compare_at_price > related.price %}
                   {% assign saving = related.compare_at_price | minus: related.price | times: 100.0 | divided_by: related.compare_at_price | round %}
-                  <span class="pp-product-card__badge">Spara {{ saving }}%</span>
+                  <span class="pp-product-card__badge">{{ 'products.save_percent' | t: percent: saving }}</span>
                 {% endif %}
                 {% unless related.available %}
-                  <span class="pp-product-card__badge pp-product-card__badge--soldout">Slutsåld</span>
+                  <span class="pp-product-card__badge pp-product-card__badge--soldout">{{ 'products.sold_out' | t }}</span>
                 {% endunless %}
                 {% if related.featured_image != blank %}
                   {{

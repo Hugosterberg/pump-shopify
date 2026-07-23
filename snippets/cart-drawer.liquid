@@ -19,10 +19,10 @@
   >
     <header class="cart-drawer__header">
       <h2 id="CartDrawerTitle" class="cart-drawer__title">
-        Varukorg
+        {{ 'cart.title' | t }}
         <span class="cart-drawer__count" data-cart-drawer-count>({{ cart.item_count }})</span>
       </h2>
-      <button type="button" class="cart-drawer__close" data-cart-close aria-label="Stäng varukorg">
+      <button type="button" class="cart-drawer__close" data-cart-close aria-label="{{ 'cart.close' | t }}">
         {% render 'icon', name: 'x', size: 20 %}
       </button>
     </header>
@@ -56,8 +56,8 @@
                 %}
                 <p class="cart-drawer__price">{{ price_label }}</p>
                 <div class="cart-drawer__qty">
-                  <label class="visually-hidden" for="CartDrawerQty-{{ forloop.index }}">Antal</label>
-                  <button type="button" class="cart-drawer__qty-btn" data-cart-qty-change data-line="{{ item.key }}" data-quantity="{{ item.quantity | minus: 1 }}" aria-label="Minska antal">−</button>
+                  <label class="visually-hidden" for="CartDrawerQty-{{ forloop.index }}">{{ 'cart.quantity' | t }}</label>
+                  <button type="button" class="cart-drawer__qty-btn" data-cart-qty-change data-line="{{ item.key }}" data-quantity="{{ item.quantity | minus: 1 }}" aria-label="{{ 'cart.decrease_quantity' | t }}">−</button>
                   <input
                     id="CartDrawerQty-{{ forloop.index }}"
                     class="cart-drawer__qty-input"
@@ -66,12 +66,12 @@
                     value="{{ item.quantity }}"
                     data-cart-qty-input
                     data-line="{{ item.key }}"
-                    aria-label="Antal"
+                    aria-label="{{ 'cart.quantity' | t }}"
                   >
-                  <button type="button" class="cart-drawer__qty-btn" data-cart-qty-change data-line="{{ item.key }}" data-quantity="{{ item.quantity | plus: 1 }}" aria-label="Öka antal">+</button>
+                  <button type="button" class="cart-drawer__qty-btn" data-cart-qty-change data-line="{{ item.key }}" data-quantity="{{ item.quantity | plus: 1 }}" aria-label="{{ 'cart.increase_quantity' | t }}">+</button>
                 </div>
               </div>
-              <button type="button" class="cart-drawer__remove" data-cart-remove data-line="{{ item.key }}" aria-label="Ta bort {{ item.product.title }}">
+              <button type="button" class="cart-drawer__remove" data-cart-remove data-line="{{ item.key }}" aria-label="{{ 'cart.remove_item' | t: title: item.product.title }}">
                 {% render 'icon', name: 'x', size: 16 %}
               </button>
             </li>
@@ -81,8 +81,8 @@
         {%- assign featured = all_products['the-perfect-combo-portabel-dusch-vikbar-hink-1'] -%}
         <div class="cart-drawer__empty" data-cart-drawer-empty>
           <span class="cart-drawer__empty-icon" aria-hidden="true">{% render 'icon', name: 'droplets', size: 32 %}</span>
-          <p class="cart-drawer__empty-title">Varukorgen är tom</p>
-          <p class="cart-drawer__empty-text">Du är ett steg från duschfrihet var du än är.</p>
+          <p class="cart-drawer__empty-title">{{ 'cart.empty' | t }}</p>
+          <p class="cart-drawer__empty-text">{{ 'cart.empty_text' | t }}</p>
           {% if featured != blank %}
             <a class="cart-drawer__empty-featured" href="{{ featured.url }}">
               {% if featured.featured_image %}
@@ -98,7 +98,7 @@
               </span>
             </a>
           {% endif %}
-          <a class="cart-drawer__continue" href="{{ routes.all_products_collection_url }}">Fortsätt handla</a>
+          <a class="cart-drawer__continue" href="{{ routes.all_products_collection_url }}">{{ 'cart.continue_shopping' | t }}</a>
         </div>
       {% endif %}
     </div>
@@ -112,18 +112,18 @@
 
       <div class="cart-drawer__summary">
         <p class="cart-drawer__subtotal">
-          <span>Delsumma</span>
+          <span>{{ 'cart.subtotal' | t }}</span>
           <strong data-cart-drawer-subtotal>{{ cart.total_price | money }}</strong>
         </p>
         <a class="cart-drawer__checkout pp-btn-primary pp-btn--full" href="{{ routes.root_url }}checkout" data-cart-checkout>
-          Gå till kassan
+          {{ 'cart.checkout_go' | t }}
         </a>
       </div>
 
       <div class="cart-drawer__reassurance">
         <p class="cart-drawer__trust-line">
           {% render 'icon', name: 'lock', size: 12 %}
-          Säker checkout · 14 dagars ångerrätt
+          {{ 'cart.trust_line' | t }}
         </p>
         {% render 'payment-icons', class_prefix: 'cart-drawer__payment', label: '', inline_row: true %}
       </div>
@@ -132,7 +132,7 @@
         {% render 'legal-links', class_prefix: 'cart-drawer__legal', compact: true %}
       </div>
 
-      <a class="cart-drawer__view-cart" href="{{ routes.cart_url }}">Visa varukorg</a>
+      <a class="cart-drawer__view-cart" href="{{ routes.cart_url }}">{{ 'cart.view_cart' | t }}</a>
     </footer>
 
     <p class="cart-drawer__status visually-hidden" data-cart-live-region aria-live="polite" aria-atomic="true"></p>
@@ -705,8 +705,8 @@
         price: {{ combo.selected_or_first_available_variant.price | json }},
         compareAtPrice: {{ combo.compare_at_price | default: 0 | json }},
         image: {{ combo.featured_image | image_url: width: 160 | json }},
-        label: 'Komplettera med Perfect Combo',
-        badge: 'Bästsäljare'
+        label: {{ 'cart.upsell_combo_label' | t | json }},
+        badge: {{ 'cart.upsell_badge_bestseller' | t | json }}
       },
       shower: {
         handle: {{ shower.handle | json }},
@@ -715,8 +715,8 @@
         price: {{ shower.selected_or_first_available_variant.price | json }},
         compareAtPrice: {{ shower.compare_at_price | default: 0 | json }},
         image: {{ shower.featured_image | image_url: width: 160 | json }},
-        label: 'Komplettera med duschen',
-        badge: 'Rekommenderat'
+        label: {{ 'cart.upsell_shower_label' | t | json }},
+        badge: {{ 'cart.upsell_badge_recommended' | t | json }}
       },
       bucket: {
         handle: {{ bucket.handle | json }},
@@ -725,19 +725,31 @@
         price: {{ bucket.selected_or_first_available_variant.price | json }},
         compareAtPrice: {{ bucket.compare_at_price | default: 0 | json }},
         image: {{ bucket.featured_image | image_url: width: 160 | json }},
-        label: 'Komplettera med hinken',
-        badge: 'Rekommenderat'
+        label: {{ 'cart.upsell_bucket_label' | t | json }},
+        badge: {{ 'cart.upsell_badge_recommended' | t | json }}
       }
     },
     strings: {
-      added: 'Produkten lades till i varukorgen',
-      error: 'Kunde inte uppdatera varukorgen. Försök igen.',
-      empty: 'Varukorgen är tom.',
-      emptyText: 'Du är ett steg från duschfrihet var du än är.',
-      checkout: 'Gå till kassan',
-      continue: 'Fortsätt handla',
-      subtotal: 'Delsumma',
-      remove: 'Ta bort'
+      added: {{ 'cart.added' | t | json }},
+      error: {{ 'cart.error' | t | json }},
+      empty: {{ 'cart.empty_dot' | t | json }},
+      emptyText: {{ 'cart.empty_text' | t | json }},
+      checkout: {{ 'cart.checkout_go' | t | json }},
+      continue: {{ 'cart.continue_shopping' | t | json }},
+      subtotal: {{ 'cart.subtotal' | t | json }},
+      remove: {{ 'cart.remove' | t | json }},
+      adding: {{ 'cart.adding' | t | json }},
+      addToCart: {{ 'products.add_to_cart' | t | json }},
+      shippingRemainingHtml: {{ 'cart.shipping_remaining_html' | t: amount: '__AMOUNT__' | json }},
+      shippingComplete: {{ 'cart.shipping_complete' | t | json }},
+      upsellUpgradeCombo: {{ 'cart.upsell_upgrade_combo' | t | json }},
+      upsellBadgeSave: {{ 'cart.upsell_badge_save' | t | json }},
+      upsellBadgeRecommended: {{ 'cart.upsell_badge_recommended' | t | json }},
+      upsellBadgeBestseller: {{ 'cart.upsell_badge_bestseller' | t | json }},
+      upsellAdd: {{ 'cart.upsell_add' | t | json }},
+      quantity: {{ 'cart.quantity' | t | json }},
+      increaseQuantity: {{ 'cart.increase_quantity' | t | json }},
+      decreaseQuantity: {{ 'cart.decrease_quantity' | t | json }}
     },
     featuredProduct: {
       handle: {{ combo.handle | json }},

@@ -4,28 +4,28 @@
   Usage: {% render 'predictive-search' %}
 {% endcomment %}
 
-<div class="predictive-search" data-predictive-search hidden aria-hidden="true">
+<div class="predictive-search" data-predictive-search data-no-results="{{ 'search.no_results' | t | escape }}" data-load-error="{{ 'search.load_error' | t | escape }}" hidden aria-hidden="true">
   <div class="predictive-search__backdrop" data-search-close tabindex="-1"></div>
   <div class="predictive-search__dialog" role="dialog" aria-modal="true" aria-labelledby="PredictiveSearchTitle">
     <div class="predictive-search__header">
-      <h2 id="PredictiveSearchTitle" class="predictive-search__title">Sök</h2>
-      <button type="button" class="predictive-search__close" data-search-close aria-label="Stäng">
+      <h2 id="PredictiveSearchTitle" class="predictive-search__title">{{ 'search.title' | t }}</h2>
+      <button type="button" class="predictive-search__close" data-search-close aria-label="{{ 'search.close' | t }}">
         {% render 'icon', name: 'x', size: 20 %}
       </button>
     </div>
 
     <form class="predictive-search__form" action="{{ routes.search_url }}" method="get" role="search">
-      <label class="visually-hidden" for="PredictiveSearchInput">Sök produkter</label>
+      <label class="visually-hidden" for="PredictiveSearchInput">{{ 'search.label' | t }}</label>
       <input
         id="PredictiveSearchInput"
         class="predictive-search__input"
         type="search"
         name="q"
         autocomplete="off"
-        placeholder="Sök produkter, sidor…"
+        placeholder="{{ 'search.placeholder_short' | t }}"
         data-predictive-search-input
       >
-      <button type="submit" class="predictive-search__submit">Sök</button>
+      <button type="submit" class="predictive-search__submit">{{ 'search.submit' | t }}</button>
     </form>
 
     <div class="predictive-search__results" data-predictive-search-results hidden></div>
@@ -219,6 +219,8 @@
     const input = root.querySelector('[data-predictive-search-input]');
     const results = root.querySelector('[data-predictive-search-results]');
     const status = root.querySelector('[data-predictive-search-status]');
+    const noResultsText = root.dataset.noResults || {{ 'search.no_results' | t | json }};
+    const loadErrorText = root.dataset.loadError || {{ 'search.load_error' | t | json }};
     let debounceTimer;
 
     function closeSearch() {
@@ -263,7 +265,7 @@
         results.hidden = true;
         if (status) {
           status.hidden = false;
-          status.textContent = 'Inga träffar. Prova ett annat sökord.';
+          status.textContent = noResultsText;
         }
         return;
       }
@@ -313,7 +315,7 @@
         .catch(function () {
           if (status) {
             status.hidden = false;
-            status.textContent = 'Kunde inte ladda sökförslag.';
+            status.textContent = loadErrorText;
           }
         });
     }

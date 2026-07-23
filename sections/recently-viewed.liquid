@@ -1,10 +1,20 @@
+{%- liquid
+  assign rv_buy_label = 'products.add_to_cart' | t
+  if section.settings.buy_label != blank
+    assign rv_buy_label = section.settings.buy_label
+  endif
+-%}
 <div
   class="recently-viewed full-width"
   data-recently-viewed
   data-max="{{ section.settings.max_products }}"
   data-heading="{{ section.settings.heading | escape }}"
   data-empty-text="{{ section.settings.empty_text | escape }}"
-  data-buy-label="{{ section.settings.buy_label | default: 'Lägg i varukorg' | escape }}"
+  data-buy-label="{{ rv_buy_label | escape }}"
+  data-sold-out-label="{{ 'products.sold_out' | t | escape }}"
+  data-choose-variant-label="{{ 'products.choose_variant' | t | escape }}"
+  data-learn-more-label="{{ 'products.learn_more' | t | escape }}"
+  data-save-percent-label="{{ 'products.save_percent' | t: percent: '__PCT__' | escape }}"
   style="
     --rv-bg: {{ section.settings.background_color }};
     --rv-surface: {{ section.settings.surface_color }};
@@ -115,7 +125,11 @@
 
     const toFetch = handles.slice(0, max);
 
-    const buyLabel = section.dataset.buyLabel || 'Lägg i varukorg';
+    const buyLabel = section.dataset.buyLabel || {{ 'products.add_to_cart' | t | json }};
+    const soldOutLabel = section.dataset.soldOutLabel || {{ 'products.sold_out' | t | json }};
+    const chooseVariantLabel = section.dataset.chooseVariantLabel || {{ 'products.choose_variant' | t | json }};
+    const learnMoreLabel = section.dataset.learnMoreLabel || {{ 'products.learn_more' | t | json }};
+    const savePercentLabel = section.dataset.savePercentLabel || {{ 'products.save_percent' | t: percent: '__PCT__' | json }};
 
     function formatMoney(cents) {
       if (window.PumpTheme && window.PumpTheme.moneyFormat && typeof Shopify !== 'undefined' && typeof Shopify.formatMoney === 'function') {
@@ -132,7 +146,7 @@
           '<div class="pp-price">' +
           '<span class="pp-price__meta">' +
           '<s class="pp-price__compare">' + formatMoney(product.compare_at_price) + '</s>' +
-          '<span class="pp-price__save">Spara ' + saving + '%</span>' +
+          '<span class="pp-price__save">' + savePercentLabel.replace('__PCT__', String(saving)) + '</span>' +
           '</span>' +
           '<span class="pp-price__current">' + current + '</span>' +
           '</div>'
@@ -144,13 +158,13 @@
     function renderActions(product) {
       const variants = product.variants || [];
       if (!product.available) {
-        return '<div class="pp-product-actions"><span class="pp-btn-primary pp-btn--full" aria-disabled="true">Slutsåld</span></div>';
+        return '<div class="pp-product-actions"><span class="pp-btn-primary pp-btn--full" aria-disabled="true">' + soldOutLabel + '</span></div>';
       }
       if (variants.length > 1) {
         return (
           '<div class="pp-product-actions">' +
-          '<a class="pp-btn-primary pp-btn--full" href="' + product.url + '">Välj variant</a>' +
-          '<a class="pp-btn-secondary pp-btn--full" href="' + product.url + '">Läs mer</a>' +
+          '<a class="pp-btn-primary pp-btn--full" href="' + product.url + '">' + chooseVariantLabel + '</a>' +
+          '<a class="pp-btn-secondary pp-btn--full" href="' + product.url + '">' + learnMoreLabel + '</a>' +
           '</div>'
         );
       }
@@ -161,7 +175,7 @@
         '<input type="hidden" name="id" value="' + variant.id + '">' +
         '<button type="submit" name="add" class="pp-btn-primary pp-btn--full">' + buyLabel + '</button>' +
         '</form>' +
-        '<a class="pp-btn-secondary pp-btn--full" href="' + product.url + '">Läs mer</a>' +
+        '<a class="pp-btn-secondary pp-btn--full" href="' + product.url + '">' + learnMoreLabel + '</a>' +
         '</div>'
       );
     }

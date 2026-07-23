@@ -125,12 +125,13 @@
           class="pp-jdgm-carousel__sources"
           data-pp-jdgm-sources
           aria-hidden="true"
+          tabindex="-1"
         >
           {% if review_scope == 'all_shop' %}
             {% if review_product != blank and review_product.metafields.judgeme.widget != blank %}
               <div
                 class="jdgm-widget jdgm-review-widget"
-                id="judgeme_product_reviews_{{ section.id }}_{{ review_product.id }}"
+                id="pp-jdgm-src-{{ section.id }}-{{ review_product.id }}"
                 data-id="{{ review_product.id }}"
                 data-product-title="{{ review_product.title | escape }}"
               >
@@ -139,12 +140,12 @@
             {% endif %}
 
             {% if source_products != blank %}
-              {% for p in source_products %}
+              {% for p in source_products limit: 6 %}
                 {% if review_product != blank and p.id == review_product.id %}{% continue %}{% endif %}
                 {% if p.metafields.judgeme.widget != blank %}
                   <div
                     class="jdgm-widget jdgm-review-widget"
-                    id="judgeme_product_reviews_{{ section.id }}_{{ p.id }}"
+                    id="pp-jdgm-src-{{ section.id }}-{{ p.id }}"
                     data-id="{{ p.id }}"
                     data-product-title="{{ p.title | escape }}"
                   >
@@ -153,12 +154,12 @@
                 {% endif %}
               {% endfor %}
             {% else %}
-              {% for p in collections.all.products limit: 24 %}
+              {% for p in collections.all.products limit: 6 %}
                 {% if review_product != blank and p.id == review_product.id %}{% continue %}{% endif %}
                 {% if p.metafields.judgeme.widget != blank %}
                   <div
                     class="jdgm-widget jdgm-review-widget"
-                    id="judgeme_product_reviews_{{ section.id }}_{{ p.id }}"
+                    id="pp-jdgm-src-{{ section.id }}-{{ p.id }}"
                     data-id="{{ p.id }}"
                     data-product-title="{{ p.title | escape }}"
                   >
@@ -170,7 +171,7 @@
           {% elsif review_product != blank and review_product.metafields.judgeme.widget != blank %}
             <div
               class="jdgm-widget jdgm-review-widget"
-              id="judgeme_product_reviews_{{ section.id }}"
+              id="pp-jdgm-src-{{ section.id }}"
               data-id="{{ review_product.id }}"
               data-product-title="{{ review_product.title | escape }}"
             >
@@ -178,7 +179,8 @@
             </div>
           {% endif %}
 
-          {% if featured_carousel != blank %}
+          {% if featured_carousel != blank and request.design_mode %}
+            {%- comment -%} Featured carousel is design-mode only — its autoplay/focus hijacks page scroll on the storefront. {%- endcomment -%}
             <div class="jdgm-widget pp-jdgm-featured-source" data-pp-jdgm-featured>
               {{ featured_carousel }}
             </div>
@@ -209,6 +211,52 @@
         </svg>
       </button>
     </div>
+
+    {%- liquid
+      assign reviews_cta_label = section.settings.cta_label | default: 'Se alla omdömen'
+      assign reviews_cta_url = section.settings.cta_url | strip
+      assign reviews_cta_external = false
+
+      if reviews_cta_url == blank
+        if pages.recensioner != empty and pages.recensioner.url != blank
+          assign reviews_cta_url = pages.recensioner.url
+        elsif pages.reviews != empty and pages.reviews.url != blank
+          assign reviews_cta_url = pages.reviews.url
+        elsif all_products['portabel-dusch'] != blank
+          assign reviews_cta_url = all_products['portabel-dusch'].url
+        endif
+      endif
+
+      if reviews_cta_url contains '://'
+        assign reviews_cta_external = true
+      endif
+    -%}
+    {% if section.settings.show_cta and reviews_cta_label != blank and reviews_cta_url != blank %}
+      <div class="pp-jdgm-carousel__cta">
+        <a
+          class="pp-jdgm-carousel__cta-link"
+          href="{{ reviews_cta_url }}"
+          {% if reviews_cta_external %}
+            target="_blank"
+            rel="noopener noreferrer"
+          {% endif %}
+        >
+          <span class="pp-jdgm-carousel__cta-glow" aria-hidden="true"></span>
+          <span class="pp-jdgm-carousel__cta-copy">
+            <span class="pp-jdgm-carousel__cta-kicker">Judge.me</span>
+            <span class="pp-jdgm-carousel__cta-label">{{ reviews_cta_label }}</span>
+          </span>
+          <span class="pp-jdgm-carousel__cta-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+        {% if section.settings.cta_hint != blank %}
+          <p class="pp-jdgm-carousel__cta-hint">{{ section.settings.cta_hint }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
   </div>
 </div>
 
@@ -217,6 +265,7 @@
     --jc-ease: cubic-bezier(0.22, 1, 0.36, 1);
     position: relative;
     isolation: isolate;
+    overflow-anchor: none;
     padding-block: clamp(36px, 5vw, 52px);
     padding-inline: var(--page-margin, 20px);
     background:
@@ -451,6 +500,131 @@
     transform: translateY(-1px) scale(0.98);
   }
 
+  .pp-jdgm-carousel__cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: clamp(22px, 4vw, 34px);
+    text-align: center;
+  }
+
+  .pp-jdgm-carousel__cta-link {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 56px;
+    padding: 12px 18px 12px 20px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--jc-text, #f6f7f2);
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--jc-accent, #2dd4bf) 18%, #0e171d), color-mix(in srgb, #0a1218 88%, #1a2a33));
+    border: 1px solid color-mix(in srgb, var(--jc-accent, #2dd4bf) 42%, transparent);
+    box-shadow:
+      0 18px 40px -24px rgba(0, 0, 0, 0.95),
+      inset 0 1px 0 color-mix(in srgb, #fff 10%, transparent);
+    transition: transform 0.28s var(--jc-ease), border-color 0.2s ease, box-shadow 0.28s ease, color 0.2s ease;
+  }
+
+  .pp-jdgm-carousel__cta-glow {
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: radial-gradient(120% 80% at 20% 20%, color-mix(in srgb, var(--jc-accent, #2dd4bf) 35%, transparent), transparent 55%);
+    opacity: 0.55;
+    z-index: -1;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+
+  .pp-jdgm-carousel__cta-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    text-align: left;
+  }
+
+  .pp-jdgm-carousel__cta-kicker {
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--jc-accent, #2dd4bf);
+  }
+
+  .pp-jdgm-carousel__cta-label {
+    font-size: clamp(0.95rem, 2.4vw, 1.05rem);
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  .pp-jdgm-carousel__cta-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    color: #071014;
+    background: linear-gradient(145deg, #5eead4, var(--jc-accent, #2dd4bf));
+    box-shadow: 0 8px 18px -10px color-mix(in srgb, var(--jc-accent, #2dd4bf) 80%, #000);
+    transition: transform 0.28s var(--jc-ease);
+  }
+
+  .pp-jdgm-carousel__cta-arrow svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .pp-jdgm-carousel__cta-link:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--jc-accent, #2dd4bf) 72%, transparent);
+    box-shadow:
+      0 22px 48px -22px color-mix(in srgb, var(--jc-accent, #2dd4bf) 55%, #000),
+      inset 0 1px 0 color-mix(in srgb, #fff 14%, transparent);
+  }
+
+  .pp-jdgm-carousel__cta-link:hover .pp-jdgm-carousel__cta-glow {
+    opacity: 0.9;
+  }
+
+  .pp-jdgm-carousel__cta-link:hover .pp-jdgm-carousel__cta-arrow {
+    transform: translateX(3px);
+  }
+
+  .pp-jdgm-carousel__cta-link:active {
+    transform: translateY(-1px);
+  }
+
+  .pp-jdgm-carousel__cta-hint {
+    margin: 0;
+    max-width: 28rem;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--jc-muted, #9aa8a2) 88%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pp-jdgm-carousel__cta-link,
+    .pp-jdgm-carousel__cta-arrow,
+    .pp-jdgm-carousel__cta-glow {
+      transition: none;
+    }
+
+    .pp-jdgm-carousel__cta-link:hover {
+      transform: none;
+    }
+
+    .pp-jdgm-carousel__cta-link:hover .pp-jdgm-carousel__cta-arrow {
+      transform: none;
+    }
+  }
+
   .pp-jdgm-carousel__viewport {
     position: relative;
     overflow: hidden;
@@ -460,19 +634,26 @@
     mask-image: linear-gradient(90deg, transparent, #000 2.5%, #000 97.5%, transparent);
   }
 
-  /* Keep sources off-screen but renderable so Judge.me can hydrate widgets */
+  /* Keep a real box so Judge.me can hydrate, but park far off-screen via transform */
   .pp-jdgm-carousel__sources {
-    position: absolute;
-    left: -10000px;
-    top: 0;
-    width: 720px;
-    height: 600px;
-    overflow: auto;
-    opacity: 0.01;
-    pointer-events: none;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 640px !important;
+    height: 480px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+    transform: translate3d(-200vw, -200vh, 0) !important;
+    contain: strict;
   }
 
-  .pp-jdgm-carousel.is-ready .pp-jdgm-carousel__sources {
+  .pp-jdgm-carousel.is-ready .pp-jdgm-carousel__sources,
+  .pp-jdgm-carousel__sources.is-done {
     display: none !important;
   }
 
@@ -560,17 +741,14 @@
     padding: 12px 14px 14px !important;
     opacity: 1 !important;
     visibility: visible !important;
-    border: 1px solid rgba(255, 255, 255, 0.72) !important;
-    border-radius: 22px 22px 22px 16px !important;
-    background:
-      linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.72) 28%, transparent 55%),
-      linear-gradient(168deg, #ffffff 0%, #f5faf8 48%, #e7f3ef 100%) !important;
+    border: 2px solid rgba(12, 84, 78, 0.2) !important;
+    border-radius: 22px !important;
+    background: #f7fcfa !important;
     color: var(--bubble-ink) !important;
     box-shadow:
-      0 1.5px 0 rgba(255, 255, 255, 0.95) inset,
-      0 0 0 1px rgba(13, 148, 136, 0.06) inset,
-      0 28px 56px -30px rgba(0, 0, 0, 0.82),
-      0 12px 28px -18px rgba(45, 212, 191, 0.4);
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 0 0 1px rgba(7, 95, 88, 0.06) inset,
+      0 12px 28px -18px rgba(0, 0, 0, 0.5);
     transition:
       transform 0.35s var(--jc-ease),
       box-shadow 0.35s ease;
@@ -595,35 +773,34 @@
   .pp-jdgm-carousel__rail .jdgm-rev:nth-child(5) { animation-delay: 0.28s; }
 
   @keyframes pp-jdgm-bubble-in-a {
-    from { opacity: 0; transform: translateY(18px) rotate(-1.2deg) scale(0.96); }
-    to { opacity: 1; transform: translateY(0) rotate(-0.4deg) scale(1); }
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   @keyframes pp-jdgm-bubble-in-b {
-    from { opacity: 0; transform: translateY(18px) rotate(1.2deg) scale(0.96); }
-    to { opacity: 1; transform: translateY(0) rotate(0.45deg) scale(1); }
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   .pp-jdgm-carousel .jdgm-rev:nth-child(odd),
   .pp-jdgm-carousel__rail .jdgm-rev:nth-child(odd) {
-    transform: rotate(-0.4deg);
+    transform: none;
   }
 
   .pp-jdgm-carousel .jdgm-rev:nth-child(even),
   .pp-jdgm-carousel__rail .jdgm-rev:nth-child(even) {
-    transform: rotate(0.45deg);
+    transform: none;
   }
 
   .pp-jdgm-carousel .jdgm-rev:hover,
   .pp-jdgm-carousel__rail .jdgm-rev:hover,
   .pp-jdgm-carousel .jdgm-carousel__item:hover,
   .pp-jdgm-carousel__rail .jdgm-carousel__item:hover {
-    transform: translateY(-8px) rotate(0deg) scale(1.015);
+    transform: translateY(-4px) scale(1.01);
     box-shadow:
-      0 1.5px 0 rgba(255, 255, 255, 0.95) inset,
-      0 34px 64px -24px rgba(0, 0, 0, 0.85),
-      0 16px 36px -14px rgba(45, 212, 191, 0.5),
-      0 0 0 1px color-mix(in srgb, var(--jc-accent, #2dd4bf) 22%, transparent);
+      0 1px 0 rgba(255, 255, 255, 0.95) inset,
+      0 16px 32px -18px rgba(0, 0, 0, 0.55),
+      0 0 0 1px color-mix(in srgb, var(--jc-accent, #2dd4bf) 20%, transparent);
   }
 
   .pp-jdgm-carousel .jdgm-rev::before,
@@ -632,13 +809,13 @@
   .pp-jdgm-carousel__rail .jdgm-carousel__item::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 12px;
-    bottom: 16px;
-    width: 3px;
+    left: 10px;
+    right: 10px;
+    top: 0;
+    height: 4px;
     border-radius: 999px;
-    background: linear-gradient(180deg, #5eead4, var(--jc-accent, #2dd4bf) 40%, #38bdf8 75%, transparent);
-    box-shadow: 0 0 16px color-mix(in srgb, var(--jc-accent, #2dd4bf) 55%, transparent);
+    background: color-mix(in srgb, var(--jc-accent, #2dd4bf) 45%, #d9efea);
+    box-shadow: none;
   }
 
   .pp-jdgm-carousel .jdgm-rev::after,
@@ -647,17 +824,17 @@
   .pp-jdgm-carousel__rail .jdgm-carousel__item::after {
     content: '';
     position: absolute;
-    left: 26px;
-    bottom: -8px;
-    width: 16px;
-    height: 16px;
-    background: linear-gradient(135deg, #e7f3ef 8%, #dcece8 100%);
-    border-radius: 0 0 4px 0;
+    left: 20px;
+    bottom: -10px;
+    width: 18px;
+    height: 18px;
+    background: #f7fcfa;
+    border-radius: 2px;
     transform: rotate(45deg);
-    box-shadow: 5px 5px 14px -7px rgba(0, 0, 0, 0.4);
+    box-shadow: none;
     z-index: 0;
-    border-right: 1px solid rgba(255, 255, 255, 0.45);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    border-right: 2px solid rgba(12, 84, 78, 0.2);
+    border-bottom: 2px solid rgba(12, 84, 78, 0.2);
   }
 
   /* Sheen / quote leftovers — keep rules so old markup never shows */
@@ -684,16 +861,20 @@
   .pp-jdgm-carousel [class*="jdgm"][class*="spinner"],
   .pp-jdgm-carousel [class*="jdgm"][class*="loader"],
   .pp-jdgm-carousel [class*="jdgm"][class*="loading"],
+  .pp-jdgm-carousel [aria-busy="true"],
+  .pp-jdgm-carousel .jdgm-spin,
+  .pp-jdgm-carousel [class*="spin"],
   .pp-jdgm-carousel .jdgm-rev__timestamp,
   .pp-jdgm-carousel__rail .jdgm-rev__timestamp,
   .pp-jdgm-carousel .jdgm-rev__title:empty,
   .pp-jdgm-carousel .jdgm-rev__prod-title,
   .pp-jdgm-carousel .pp-jdgm-product-tag,
-  .pp-jdgm-carousel .jdgm-rev__buyer-badge,
   .pp-jdgm-carousel .jdgm-rev__reply,
   .pp-jdgm-carousel .jdgm-rev__custom-form,
+  .pp-jdgm-carousel .jdgm-rev__icon--blank,
+  .pp-jdgm-carousel__rail .jdgm-rev__icon--blank,
   .pp-jdgm-carousel .jdgm-rev img[src=""],
-  .pp-jdgm-carousel .jdgm-rev img:not([src]):not([data-src]) {
+  .pp-jdgm-carousel .jdgm-rev img:not([src]):not([data-src]):not(.pp-jdgm-thumb img) {
     display: none !important;
   }
 
@@ -738,43 +919,51 @@
     filter: drop-shadow(0 0 7px rgba(45, 212, 191, 0.4));
   }
 
+  /* Real avatars only — blank silhouette icons are hidden */
   .pp-jdgm-carousel .jdgm-rev__icon,
   .pp-jdgm-carousel__rail .jdgm-rev__icon {
-    width: 32px !important;
-    height: 32px !important;
-    flex: 0 0 32px !important;
+    width: 28px !important;
+    height: 28px !important;
+    flex: 0 0 28px !important;
     border-radius: 50% !important;
     overflow: hidden !important;
-    border: 2px solid #fff !important;
-    box-shadow:
-      0 0 0 1px rgba(15, 118, 110, 0.14),
-      0 8px 18px -8px rgba(15, 118, 110, 0.55);
-    background: linear-gradient(145deg, #e4fbf5, #6fcbb9) !important;
+    border: 1.5px solid rgba(15, 118, 110, 0.18) !important;
+    box-shadow: none;
+    background: #e8f2ef !important;
     background-size: cover !important;
+    background-position: center !important;
     color: transparent !important;
     font-size: 0 !important;
     line-height: 0 !important;
     margin: 0 !important;
   }
 
-  .pp-jdgm-carousel .jdgm-rev__icon--blank,
-  .pp-jdgm-carousel__rail .jdgm-rev__icon--blank {
-    background-image: linear-gradient(145deg, #e4fbf5, #6fcbb9) !important;
+  .pp-jdgm-carousel .jdgm-rev__icon:not(.jdgm-rev__icon--blank) img,
+  .pp-jdgm-carousel__rail .jdgm-rev__icon:not(.jdgm-rev__icon--blank) img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
   }
 
-  .pp-jdgm-carousel .jdgm-rev:nth-child(3n + 2) .jdgm-rev__icon--blank,
-  .pp-jdgm-carousel__rail .jdgm-rev:nth-child(3n + 2) .jdgm-rev__icon--blank {
-    background-image: linear-gradient(145deg, #eaf1ff, #8aa4d4) !important;
-  }
-
-  .pp-jdgm-carousel .jdgm-rev:nth-child(3n) .jdgm-rev__icon--blank,
-  .pp-jdgm-carousel__rail .jdgm-rev:nth-child(3n) .jdgm-rev__icon--blank {
-    background-image: linear-gradient(145deg, #fff3e8, #d0a882) !important;
-  }
-
-  .pp-jdgm-carousel .jdgm-rev__icon--blank *,
-  .pp-jdgm-carousel__rail .jdgm-rev__icon--blank * {
-    display: none !important;
+  .pp-jdgm-carousel .jdgm-rev__buyer-badge,
+  .pp-jdgm-carousel__rail .jdgm-rev__buyer-badge,
+  .pp-jdgm-carousel .jdgm-rev__icon .jdgm-rev__buyer-badge,
+  .pp-jdgm-carousel span.jdgm-rev__buyer-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    margin: 2px 0 0 !important;
+    padding: 2px 8px !important;
+    border-radius: 999px !important;
+    background: color-mix(in srgb, var(--jc-accent, #2dd4bf) 14%, #fff) !important;
+    color: #0f766e !important;
+    border: 1px solid color-mix(in srgb, var(--jc-accent, #2dd4bf) 35%, transparent) !important;
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+    line-height: 1.2 !important;
   }
 
   .pp-jdgm-carousel .jdgm-rev__body,
@@ -1048,6 +1237,43 @@
       return new Promise(function (resolve) { setTimeout(resolve, ms); });
     }
 
+    var MAX_CARDS = 16;
+    var MAX_PAGES_PER_WIDGET = 0; // Never paginate via .click() — it focuses hidden widgets and yanks page scroll
+    var MAX_WIDGETS = 6;
+    var bootStarted = false;
+    var focusGuardAttached = false;
+
+    function attachFocusGuard() {
+      if (!sources || focusGuardAttached) return;
+      focusGuardAttached = true;
+      sources.addEventListener(
+        'focusin',
+        function (e) {
+          try {
+            if (e.target && typeof e.target.blur === 'function') e.target.blur();
+          } catch (err) {}
+        },
+        true
+      );
+    }
+
+    function parkSources() {
+      if (!sources) return;
+      // Keep sources in-section (do NOT move to body — that invites focus/scroll jumps)
+      sources.setAttribute('aria-hidden', 'true');
+      sources.setAttribute('tabindex', '-1');
+      try {
+        sources.inert = true;
+      } catch (e) {}
+      sources.querySelectorAll('a, button, input, select, textarea, [tabindex]').forEach(function (node) {
+        node.setAttribute('tabindex', '-1');
+      });
+      sources.querySelectorAll('[id^="judgeme_product_reviews"], [id*="judgeme"]').forEach(function (node, i) {
+        node.id = 'pp-jdgm-src-reloc-{{ section.id }}-' + i;
+      });
+      attachFocusGuard();
+    }
+
     function reviewKey(el) {
       return (
         el.getAttribute('data-review-id') ||
@@ -1067,14 +1293,18 @@
       if (!icon || icon.dataset.ppPolished === '1') return;
       var bg = (icon.getAttribute('style') || '') + ' ' + (window.getComputedStyle(icon).backgroundImage || '');
       var img = icon.querySelector('img');
-      var src = img ? img.currentSrc || img.src || '' : '';
+      var src = img ? img.currentSrc || img.src || img.getAttribute('data-src') || '' : '';
       var real = /gravatar|googleusercontent|fbcdn|cdn\.shopify|cloudinary|judge\.me\/(?:.*\/)?(?:uploads|media|profiles)/i.test(
         bg + ' ' + src
       );
       if (!real) {
+        // Hide empty silhouette avatars — keep verified badges + review photos elsewhere
         icon.classList.add('jdgm-rev__icon--blank');
-        icon.style.setProperty('background-image', 'none', 'important');
+        icon.style.setProperty('display', 'none', 'important');
         icon.querySelectorAll('svg, i, img').forEach(function (n) { n.remove(); });
+      } else {
+        icon.classList.remove('jdgm-rev__icon--blank');
+        icon.style.removeProperty('display');
       }
       icon.dataset.ppPolished = '1';
     }
@@ -1111,7 +1341,7 @@
       rev.style.removeProperty('display');
       // Strip decorative quote, loaders, and leftover chrome
       rev.querySelectorAll(
-        '.pp-jdgm-quote, .pp-jdgm-sheen, .jdgm-spinner, .jdgm-loader, [class*="spinner"], [class*="loader"], [class*="loading"]'
+        '.pp-jdgm-quote, .pp-jdgm-sheen, .jdgm-spinner, .jdgm-loader, .jdgm-spin, [aria-busy="true"], [class*="spinner"], [class*="loader"], [class*="loading"], [class*="spin"]'
       ).forEach(function (n) {
         // Never strip the review body / content itself
         if (n.classList && (n.classList.contains('jdgm-rev__body') || n.classList.contains('jdgm-rev__content'))) return;
@@ -1133,6 +1363,16 @@
       rev.querySelectorAll('.jdgm-rev__body, .jdgm-rev__content, .jdgm-carousel__content, .jdgm-rev__rating, .jdgm-rev__title').forEach(function (el) {
         el.style.setProperty('opacity', '1', 'important');
         el.style.setProperty('visibility', 'visible', 'important');
+      });
+      rev.querySelectorAll('.jdgm-rev__buyer-badge').forEach(function (badge) {
+        badge.style.setProperty('opacity', '1', 'important');
+        badge.style.setProperty('visibility', 'visible', 'important');
+        badge.style.setProperty('display', 'inline-flex', 'important');
+      });
+      // If verified badge lives inside the avatar node, pull it out before we hide blank icons
+      rev.querySelectorAll('.jdgm-rev__icon .jdgm-rev__buyer-badge').forEach(function (badge) {
+        var host = badge.closest('.jdgm-rev__header, .jdgm-rev__author-wrapper') || rev;
+        host.appendChild(badge);
       });
       polishIcon(rev.querySelector('.jdgm-rev__icon'));
       compactPhotos(rev);
@@ -1284,9 +1524,10 @@
     }
 
     function collectFromScope(scope, map) {
-      if (!scope) return;
+      if (!scope || map.size >= MAX_CARDS) return;
       hydrateLazyImages(scope);
       scope.querySelectorAll(REVIEW_SEL).forEach(function (rev) {
+        if (map.size >= MAX_CARDS) return;
         if (rev.closest('.pp-jdgm-carousel__rail')) return;
         // Skip nested wrappers that aren't actual review cards
         if (rev.querySelector(REVIEW_SEL) && !rev.classList.contains('jdgm-rev') && !rev.hasAttribute('data-review-id')) {
@@ -1326,6 +1567,10 @@
       }
       track.appendChild(rail);
       root.classList.add('is-ready');
+      if (sources) {
+        sources.classList.add('is-done');
+        try { sources.remove(); } catch (e) {}
+      }
       built = true;
       if (emptyEl) emptyEl.hidden = true;
       return true;
@@ -1344,36 +1589,17 @@
     }
 
     async function waitForFirstReviews() {
-      for (var i = 0; i < 50; i++) {
+      for (var i = 0; i < 25; i++) {
         var host = sources || root;
         if (host.querySelector(REVIEW_SEL)) return true;
-        await sleep(160);
+        await sleep(120);
       }
       return false;
     }
 
     async function paginateSources(map) {
-      if (!sources) return;
-      var widgets = sources.querySelectorAll('.jdgm-widget, .jdgm-review-widget, .jdgm-rev-widg');
-      var list = widgets.length ? Array.prototype.slice.call(widgets) : [sources];
-
-      for (var w = 0; w < list.length; w++) {
-        var widget = list[w];
-        for (var i = 0; i < 12; i++) {
-          var before = map.size;
-          collectFromScope(widget, map);
-          var next = findNextPageButton(widget);
-          if (!next) break;
-          try { next.click(); } catch (e) {}
-          await sleep(380);
-          for (var t = 0; t < 10; t++) {
-            collectFromScope(widget, map);
-            if (map.size > before) break;
-            await sleep(100);
-          }
-          if (map.size === before) break;
-        }
-      }
+      // Intentionally disabled: clicking Judge.me pagination focuses hidden widgets and scrolls the page.
+      return;
     }
 
     async function loadAllPages() {
@@ -1381,43 +1607,75 @@
       loading = true;
       var map = new Map();
 
-      var ready = await waitForFirstReviews();
-      if (ready) {
-        // Give Judge.me a beat to attach review photos after text cards
-        await sleep(450);
-        hydrateLazyImages(sources || root);
-        collectFromScope(sources || root, map);
-        await paginateSources(map);
-        hydrateLazyImages(sources || root);
-        collectFromScope(sources || root, map);
-      }
+      try {
+        var ready = await waitForFirstReviews();
+        if (ready) {
+          await sleep(200);
+          hydrateLazyImages(sources || root);
+          collectFromScope(sources || root, map);
+          if (map.size < MAX_CARDS && MAX_PAGES_PER_WIDGET > 0) {
+            await paginateSources(map);
+          }
+          hydrateLazyImages(sources || root);
+          collectFromScope(sources || root, map);
+        }
 
-      if (map.size > 0) {
-        buildRail(map);
-      } else if (emptyEl) {
-        emptyEl.hidden = false;
+        if (map.size > 0) {
+          buildRail(map);
+        } else if (emptyEl) {
+          emptyEl.hidden = false;
+        }
+      } finally {
+        loading = false;
       }
-
-      loading = false;
     }
 
-    // Judge.me often hydrates after its own script boots
-    loadAllPages();
-    window.setTimeout(function () { if (!built) loadAllPages(); }, 1200);
-    window.setTimeout(function () { if (!built) loadAllPages(); }, 3000);
-    window.addEventListener('load', function () {
-      if (!built) loadAllPages();
-    });
+    function startBoot() {
+      if (bootStarted || built) return;
+      bootStarted = true;
+      parkSources();
 
-    if (sources) {
-      var observer = new MutationObserver(function () {
-        if (built) return;
-        if (loading) return;
-        requestAnimationFrame(function () {
-          if (!built && !loading) loadAllPages();
+      var observer = null;
+      if (sources) {
+        observer = new MutationObserver(function () {
+          if (built) {
+            if (observer) observer.disconnect();
+            return;
+          }
+          if (loading) return;
+          requestAnimationFrame(function () {
+            if (!built && !loading) loadAllPages();
+          });
         });
+        observer.observe(sources, { childList: true, subtree: true });
+      }
+
+      loadAllPages();
+      window.setTimeout(function () { if (!built) loadAllPages(); }, 1500);
+    }
+
+    // Boot only when the reviews section is actually in view
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(
+        function (entries) {
+          var hit = entries.some(function (e) {
+            return e.isIntersecting && e.intersectionRatio >= 0.12;
+          });
+          if (!hit) return;
+          io.disconnect();
+          if (window.requestIdleCallback) {
+            window.requestIdleCallback(function () { startBoot(); }, { timeout: 2000 });
+          } else {
+            window.setTimeout(startBoot, 250);
+          }
+        },
+        { rootMargin: '0px 0px', threshold: [0.12, 0.25] }
+      );
+      io.observe(root);
+    } else {
+      window.addEventListener('load', function () {
+        window.setTimeout(startBoot, 800);
       });
-      observer.observe(sources, { childList: true, subtree: true });
     }
   })();
 </script>
@@ -1466,8 +1724,8 @@
       "type": "product_list",
       "id": "products",
       "label": "Products to pull reviews from",
-      "limit": 20,
-      "info": "Optional. Leave empty to use up to 40 products from the All collection."
+      "limit": 6,
+      "info": "Recommended: 3–6 products. Leave empty to use up to 6 products from the All collection."
     },
     {
       "type": "product",
@@ -1480,6 +1738,30 @@
       "id": "product_handle",
       "label": "Fallback product handle",
       "default": "portabel-dusch"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show “See all reviews” button",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "Se alla omdömen"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA link",
+      "info": "Paste your Judge.me Reviews store URL (https://judge.me/reviews/stores/…) or a Shopify page. Leave empty to use /pages/recensioner, /pages/reviews, or the portable shower product."
+    },
+    {
+      "type": "text",
+      "id": "cta_hint",
+      "label": "CTA hint",
+      "default": "Verifierade omdömen via Judge.me"
     },
     {
       "type": "color",

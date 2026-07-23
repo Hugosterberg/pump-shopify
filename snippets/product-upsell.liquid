@@ -14,22 +14,24 @@
 
   assign upsell_product = blank
   assign upsell_label = ''
-  assign upsell_badge = 'Rekommenderat'
+  assign upsell_badge = 'cart.upsell_badge_recommended' | t
+  assign atc_fallback = 'products.add_to_cart' | t
+  assign sold_out_fallback = 'products.sold_out' | t
 
   if source.handle == 'portabel-dusch'
     assign upsell_product = combo
-    assign upsell_label = 'Uppgradera till Perfect Combo'
-    assign upsell_badge = 'Spara mer'
+    assign upsell_label = 'cart.upsell_upgrade_combo' | t
+    assign upsell_badge = 'cart.upsell_badge_save' | t
   elsif source.handle == 'portabel-hink'
     assign upsell_product = combo
-    assign upsell_label = 'Komplettera med duschen — Perfect Combo'
-    assign upsell_badge = 'Bästsäljare'
+    assign upsell_label = 'cart.upsell_combo_label' | t
+    assign upsell_badge = 'cart.upsell_badge_bestseller' | t
   endif
 -%}
 
 {%- if upsell_product != blank and upsell_product.id != source.id -%}
   {%- assign upsell_variant = upsell_product.selected_or_first_available_variant -%}
-  <aside class="product-upsell" aria-label="Rekommenderad produkt">
+  <aside class="product-upsell" aria-label="{{ 'cart.upsell_badge_recommended' | t }}">
     <p class="product-upsell__label">{{ upsell_label }}</p>
     <div class="product-upsell__card">
       <span class="product-upsell__badge">{{ upsell_badge }}</span>
@@ -54,7 +56,7 @@
       {% form 'product', upsell_product, class: 'product-upsell__form ajax-cart-form' %}
         <input type="hidden" name="id" value="{{ upsell_variant.id }}">
         <button type="submit" class="product-upsell__add pp-btn-primary pp-btn-sm" {% unless upsell_variant.available %}disabled{% endunless %}>
-          {% if upsell_variant.available %}{{ buy_label | default: 'Lägg i varukorg' }}{% else %}Slutsåld{% endif %}
+          {% if upsell_variant.available %}{{ buy_label | default: atc_fallback }}{% else %}{{ sold_out_fallback }}{% endif %}
         </button>
       {% endform %}
     </div>

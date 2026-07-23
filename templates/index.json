@@ -303,7 +303,16 @@
         "subheading": "Verifierade omdömen från Judge.me",
         "review_scope": "all_shop",
         "all_products_label": "från alla våra produkter",
+        "products": [
+          "the-perfect-combo-portabel-dusch-vikbar-hink-1",
+          "portabel-dusch",
+          "portabel-hink"
+        ],
         "product_handle": "portabel-dusch",
+        "show_cta": false,
+        "cta_label": "Se alla omdömen på Judge.me",
+        "cta_url": "",
+        "cta_hint": "Verifierade kundomdömen via Judge.me",
         "background_color": "#071014",
         "surface_color": "#14212a",
         "text_color": "#f6f7f2",

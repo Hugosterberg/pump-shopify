@@ -220,11 +220,18 @@
             <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
           {% endif %}
 
+          {% assign qty_label = 'products.quantity' | t %}
+          {% assign atc_label = 'products.add_to_cart' | t %}
+          {% assign sold_out_label = 'products.sold_out' | t %}
+          {% if section.settings.button_label != blank %}
+            {% assign atc_label = section.settings.button_label %}
+          {% endif %}
+
           {% capture main_qty_id %}MainProduct-Qty-{{ section.id }}{% endcapture %}
           {% render 'pp-quantity-input',
             id: main_qty_id,
             wrapper_class: 'main-product__qty-row',
-            label: 'Antal',
+            label: qty_label,
             label_class: 'main-product__label'
           %}
 
@@ -233,19 +240,21 @@
               class="main-product__submit pp-btn-primary pp-btn-lg pp-btn--full"
               type="submit"
               data-main-product-submit
+              data-available-label="{{ atc_label | escape }}"
+              data-sold-out-label="{{ sold_out_label | escape }}"
               {% unless current_variant.available %}
                 disabled
               {% endunless %}
             >
               {% if current_variant.available %}
-                {{ section.settings.button_label | default: 'Lägg i varukorg' }}
+                {{ atc_label }}
               {% else %}
-                Slutsåld
+                {{ sold_out_label }}
               {% endif %}
             </button>
 
             <p class="main-product__checkout-divider" aria-hidden="true">
-              <span>eller</span>
+              <span>{{ 'products.or' | t }}</span>
             </p>
 
             {{ form | payment_button }}
@@ -254,7 +263,8 @@
 
         <div class="main-product__buy-trust">
           {% render 'trust-near-atc', class_prefix: 'main-product__trust-atc', show_payment_icons: false %}
-          {% render 'payment-icons', class_prefix: 'main-product__payment', label: 'Betala enkelt med', inline_row: true %}
+          {% assign pay_label = 'trust.pay_easily_with' | t %}
+          {% render 'payment-icons', class_prefix: 'main-product__payment', label: pay_label, inline_row: true %}
         </div>
 
         {% render 'product-upsell', product: product %}
@@ -1312,7 +1322,7 @@
           if (saveBadge) {
             const pct = Math.round(((variant.compare_at_price - variant.price) * 100) / variant.compare_at_price);
             saveBadge.hidden = false;
-            saveBadge.textContent = 'Spara ' + pct + '%';
+            saveBadge.textContent = {{ 'products.save_percent' | t: percent: '__PCT__' | json }}.replace('__PCT__', String(pct));
           }
         } else {
           priceCompare.hidden = true;
@@ -1322,7 +1332,9 @@
 
       if (submitBtn) {
         submitBtn.disabled = !variant.available;
-        submitBtn.textContent = variant.available ? submitBtn.dataset.availableLabel || 'Lägg i varukorg' : 'Slutsåld';
+        submitBtn.textContent = variant.available
+          ? submitBtn.dataset.availableLabel || {{ 'products.add_to_cart' | t | json }}
+          : submitBtn.dataset.soldOutLabel || {{ 'products.sold_out' | t | json }};
       }
 
       if (variant.featured_media_id) {

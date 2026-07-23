@@ -113,11 +113,14 @@
     const progress = Math.min(100, Math.round((cart.total_price * 100) / threshold));
 
     if (remaining > 0) {
+      const amountHtml = escapeHtml(formatMoney(remaining));
+      const text = (config.strings.shippingRemainingHtml || 'Add <strong>__amount__</strong> more for free shipping')
+        .replace('__amount__', amountHtml);
       shippingWrap.innerHTML =
         '<div class="cart-drawer__shipping" data-free-shipping-bar>' +
-        '<p class="cart-drawer__shipping__text">Lägg till <strong>' +
-        escapeHtml(formatMoney(remaining)) +
-        '</strong> till för fri frakt</p>' +
+        '<p class="cart-drawer__shipping__text">' +
+        text +
+        '</p>' +
         '<div class="cart-drawer__shipping__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' +
         progress +
         '"><span class="cart-drawer__shipping__fill" style="width:' +
@@ -126,7 +129,9 @@
     } else {
       shippingWrap.innerHTML =
         '<div class="cart-drawer__shipping" data-free-shipping-bar>' +
-        '<p class="cart-drawer__shipping__text cart-drawer__shipping__text--complete">Du har uppnått fri frakt</p>' +
+        '<p class="cart-drawer__shipping__text cart-drawer__shipping__text--complete">' +
+        escapeHtml(config.strings.shippingComplete || 'You\'ve unlocked free shipping') +
+        '</p>' +
         '<div class="cart-drawer__shipping__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">' +
         '<span class="cart-drawer__shipping__fill" style="width:100%;"></span></div></div>';
     }
@@ -148,12 +153,12 @@
 
     let product = null;
     let label = '';
-    let badge = 'Rekommenderat';
+    let badge = config.strings.upsellBadgeRecommended || 'Recommended';
 
     if (handles.indexOf('portabel-dusch') !== -1 && handles.indexOf('portabel-hink') !== -1) {
       product = config.upsellProducts.combo;
-      label = 'Uppgradera till Perfect Combo';
-      badge = 'Spara mer';
+      label = config.strings.upsellUpgradeCombo || 'Upgrade to Perfect Combo';
+      badge = config.strings.upsellBadgeSave || 'Save more';
     } else if (handles.indexOf('portabel-dusch') !== -1) {
       product = config.upsellProducts.bucket;
       label = product.label;
@@ -165,7 +170,7 @@
     } else {
       product = config.upsellProducts.combo;
       label = product.label;
-      badge = product.badge || 'Bästsäljare';
+      badge = product.badge || config.strings.upsellBadgeBestseller || 'Bestseller';
     }
 
     if (!product || !product.variantId) {
@@ -213,9 +218,11 @@
       '</span></div></div>' +
       '<button type="button" class="cart-upsell__add" data-cart-upsell-add data-variant-id="' +
       product.variantId +
-      '" aria-label="Lägg till ' +
-      escapeHtml(product.title) +
-      '"><span aria-hidden="true">+</span> Lägg till</button></div>';
+      '" aria-label="' +
+      escapeHtml((config.strings.upsellAdd || 'Add') + ' ' + product.title) +
+      '"><span aria-hidden="true">+</span> ' +
+      escapeHtml(config.strings.upsellAdd || 'Add') +
+      '</button></div>';
   }
 
   function renderCart(cart) {
@@ -314,24 +321,32 @@
           '<div class="cart-drawer__qty">' +
           '<label class="visually-hidden" for="CartDrawerQtyJs-' +
           index +
-          '">Antal</label>' +
+          '">' +
+          escapeHtml(config.strings.quantity || 'Quantity') +
+          '</label>' +
           '<button type="button" class="cart-drawer__qty-btn" data-cart-qty-change data-line="' +
           escapeHtml(item.key) +
           '" data-quantity="' +
           (item.quantity - 1) +
-          '" aria-label="Minska antal">−</button>' +
+          '" aria-label="' +
+          escapeHtml(config.strings.decreaseQuantity || 'Decrease quantity') +
+          '">−</button>' +
           '<input id="CartDrawerQtyJs-' +
           index +
           '" class="cart-drawer__qty-input" type="number" min="0" value="' +
           item.quantity +
           '" data-cart-qty-input data-line="' +
           escapeHtml(item.key) +
-          '" aria-label="Antal">' +
+          '" aria-label="' +
+          escapeHtml(config.strings.quantity || 'Quantity') +
+          '">' +
           '<button type="button" class="cart-drawer__qty-btn" data-cart-qty-change data-line="' +
           escapeHtml(item.key) +
           '" data-quantity="' +
           (item.quantity + 1) +
-          '" aria-label="Öka antal">+</button>' +
+          '" aria-label="' +
+          escapeHtml(config.strings.increaseQuantity || 'Increase quantity') +
+          '">+</button>' +
           '</div></div>' +
           '<button type="button" class="cart-drawer__remove" data-cart-remove data-line="' +
           escapeHtml(item.key) +
@@ -557,14 +572,14 @@
       }
       submitBtn.disabled = true;
       submitBtn.classList.add('is-loading');
-      submitBtn.textContent = 'Lägger till…';
+      submitBtn.textContent = (config.strings && config.strings.adding) || 'Adding…';
     }
 
     addItems(items).finally(function () {
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.classList.remove('is-loading');
-        submitBtn.textContent = submitBtn.dataset.defaultLabel || 'Lägg i varukorg';
+        submitBtn.textContent = submitBtn.dataset.defaultLabel || (config.strings && config.strings.addToCart) || 'Add to cart';
       }
       document.dispatchEvent(new CustomEvent('pump:cart-settled'));
     });

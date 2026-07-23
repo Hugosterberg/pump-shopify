@@ -1,0 +1,115 @@
+{
+  "404": {
+    "title": "404",
+    "not_found": "Sidan hittades inte.",
+    "back_to_shopping": "Fortsätt handla"
+  },
+  "blog": {
+    "article_comments": "Kommentarer",
+    "article_metadata_html": "{{ date }} av {{ author }}",
+    "comment_form_body": "Kommentar",
+    "comment_form_email": "E-post",
+    "comment_form_name": "Namn",
+    "comment_form_submit": "Skicka",
+    "comment_form_title": "Lämna en kommentar"
+  },
+  "cart": {
+    "title": "Varukorg",
+    "checkout": "Till kassan",
+    "checkout_go": "Gå till kassan",
+    "update": "Uppdatera",
+    "remove": "Ta bort",
+    "view_cart": "Visa varukorg",
+    "subtotal": "Delsumma",
+    "empty": "Varukorgen är tom",
+    "empty_dot": "Varukorgen är tom.",
+    "empty_text": "Du är ett steg från duschfrihet var du än är.",
+    "continue_shopping": "Fortsätt handla",
+    "close": "Stäng varukorg",
+    "increase_quantity": "Öka antal",
+    "decrease_quantity": "Minska antal",
+    "quantity": "Antal",
+    "remove_item": "Ta bort {{ title }}",
+    "added": "Produkten lades till i varukorgen",
+    "error": "Kunde inte uppdatera varukorgen. Försök igen.",
+    "adding": "Lägger till…",
+    "trust_line": "Säker checkout · 14 dagars ångerrätt",
+    "shipping_remaining_html": "Lägg till <strong>{{ amount }}</strong> till för fri frakt",
+    "shipping_complete": "Du har uppnått fri frakt",
+    "upsell_combo_label": "Komplettera med Perfect Combo",
+    "upsell_shower_label": "Komplettera med duschen",
+    "upsell_bucket_label": "Komplettera med hinken",
+    "upsell_upgrade_combo": "Uppgradera till Perfect Combo",
+    "upsell_badge_bestseller": "Bästsäljare",
+    "upsell_badge_recommended": "Rekommenderat",
+    "upsell_badge_save": "Spara mer",
+    "upsell_add": "Lägg till"
+  },
+  "products": {
+    "add_to_cart": "Lägg i varukorg",
+    "sold_out": "Slutsåld",
+    "choose_variant": "Välj variant",
+    "learn_more": "Läs mer",
+    "learn_more_about": "Läs mer om produkten",
+    "bestseller": "Bästsäljare",
+    "adding": "Lägger till…",
+    "or": "eller",
+    "quantity": "Antal",
+    "save_percent": "Spara {{ percent }}%",
+    "in_stock": "I lager",
+    "delivery_days": "2–5 dagar"
+  },
+  "trust": {
+    "guarantees": "Köpgarantier",
+    "free_shipping_pill": "Fri frakt {{ amount }} kr+",
+    "free_shipping_over": "Fri frakt över {{ amount }} kr",
+    "free_shipping_footer": "Fri frakt på order över {{ amount }} kr inom Sverige.",
+    "warranty_1y": "1 års garanti",
+    "returns_14d": "14 dagars ångerrätt",
+    "delivery_title": "Leverans 2–5 dagar",
+    "secure_payment": "Säker betalning",
+    "payment_methods": "Klarna, kort & mer",
+    "pay_easily_with": "Betala enkelt med"
+  },
+  "customers": {
+    "login": {
+      "email": "E-post",
+      "password": "Lösenord",
+      "submit": "Logga in",
+      "title": "Logga in"
+    }
+  },
+  "collections": {
+    "title": "Kollektioner"
+  },
+  "gift_card": {
+    "add_to_apple_wallet": "Lägg till i Apple Wallet",
+    "card": "Presentkort",
+    "expired": "Detta presentkort har gått ut",
+    "expires_on": "Går ut {{ expires_on }}",
+    "use_at_checkout": "Använd presentkortet i kassan"
+  },
+  "password": {
+    "title": "Butiken är lösenordsskyddad",
+    "password": "Lösenord",
+    "enter": "Gå in"
+  },
+  "search": {
+    "title": "Sök",
+    "placeholder": "Sök produkter, sidor eller artiklar",
+    "placeholder_short": "Sök produkter, sidor…",
+    "label": "Sök produkter",
+    "submit": "Sök",
+    "close": "Stäng",
+    "no_results": "Inga träffar. Prova ett annat sökord.",
+    "no_results_html": "Inga resultat för {{ terms }}",
+    "results_for_html": "{{ count }} resultat för {{ terms }}",
+    "load_error": "Kunde inte ladda sökförslag."
+  },
+  "accessibility": {
+    "close": "Stäng",
+    "search": "Sök",
+    "open_menu": "Öppna meny",
+    "close_menu": "Stäng meny"
+  }
+}

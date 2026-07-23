@@ -14,7 +14,8 @@
   assign qty_name = name | default: 'quantity'
   assign qty_value = value | default: 1
   assign qty_min = min | default: 1
-  assign qty_label = label | default: 'Antal'
+  assign default_qty_label = 'products.quantity' | t
+  assign qty_label = label | default: default_qty_label
 %}
 
 <div class="pp-qty-wrap{% if wrapper_class != blank %} {{ wrapper_class }}{% endif %}">
@@ -32,7 +33,7 @@
       type="button"
       class="pp-qty__btn pp-qty__btn--minus"
       data-pp-qty-minus
-      aria-label="Minska antal"
+      aria-label="{{ 'cart.decrease_quantity' | t }}"
     >
       <span aria-hidden="true">−</span>
     </button>
@@ -51,7 +52,7 @@
       type="button"
       class="pp-qty__btn pp-qty__btn--plus"
       data-pp-qty-plus
-      aria-label="Öka antal"
+      aria-label="{{ 'cart.increase_quantity' | t }}"
     >
       <span aria-hidden="true">+</span>
     </button>

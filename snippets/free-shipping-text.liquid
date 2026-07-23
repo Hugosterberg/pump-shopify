@@ -2,7 +2,7 @@
   Dynamic free-shipping copy from theme settings.
 
   Params:
-  - format: 'short' (999 kr) | 'over' (Fri frakt över 999 kr) | 'footer' (full sentence)
+  - format: 'short' (999 kr) | 'over' (Fri frakt över 999 kr) | 'footer' (full sentence) | 'pill'
   - use_announcement: true = use announcement_shipping_threshold instead of cart threshold
 
   Usage:
@@ -22,7 +22,9 @@
   {%- when 'short' -%}
     {{- threshold -}}
   {%- when 'footer' -%}
-    Fri frakt på order över {{ threshold }} kr inom Sverige.
+    {{- 'trust.free_shipping_footer' | t: amount: threshold -}}
+  {%- when 'pill' -%}
+    {{- 'trust.free_shipping_pill' | t: amount: threshold -}}
   {%- else -%}
-    Fri frakt över {{ threshold }} kr
+    {{- 'trust.free_shipping_over' | t: amount: threshold -}}
 {%- endcase -%}

@@ -49,13 +49,26 @@
         </div>
         {% render 'trust-near-atc', class_prefix: 'sticky-mobile-atc__trust', compact: true, dense: true %}
       </div>
+      {%- liquid
+        assign sticky_atc_label = 'products.add_to_cart' | t
+        if section.settings.button_label != blank
+          assign sticky_atc_label = section.settings.button_label
+        endif
+      -%}
       {% if request.page_type == 'product' %}
-        <button type="button" class="sticky-mobile-atc__btn pp-btn-primary pp-btn-sm" data-sticky-atc-submit data-default-label="{{ section.settings.button_label | default: 'Lägg i varukorg' | escape }}">
-          {{ section.settings.button_label | default: 'Lägg i varukorg' }}
+        <button
+          type="button"
+          class="sticky-mobile-atc__btn pp-btn-primary pp-btn-sm"
+          data-sticky-atc-submit
+          data-default-label="{{ sticky_atc_label | escape }}"
+          data-sold-out-label="{{ 'products.sold_out' | t | escape }}"
+          data-adding-label="{{ 'products.adding' | t | escape }}"
+        >
+          {{ sticky_atc_label }}
         </button>
       {% else %}
         <a class="sticky-mobile-atc__btn pp-btn-primary pp-btn-sm" href="#{{ target_id }}">
-          {{ section.settings.button_label | default: 'Lägg i varukorg' }}
+          {{ sticky_atc_label }}
         </a>
       {% endif %}
     </div>
@@ -244,8 +257,8 @@
       if (submitBtn) {
         submitBtn.disabled = !event.detail.available;
         submitBtn.textContent = event.detail.available
-          ? submitBtn.dataset.defaultLabel || 'Lägg i varukorg'
-          : 'Slutsåld';
+          ? submitBtn.dataset.defaultLabel || {{ 'products.add_to_cart' | t | json }}
+          : submitBtn.dataset.soldOutLabel || {{ 'products.sold_out' | t | json }};
         submitBtn.classList.remove('is-loading');
       }
     });
@@ -254,7 +267,7 @@
       if (!submitBtn) return;
       submitBtn.classList.remove('is-loading');
       submitBtn.disabled = false;
-      submitBtn.textContent = submitBtn.dataset.defaultLabel || 'Lägg i varukorg';
+      submitBtn.textContent = submitBtn.dataset.defaultLabel || {{ 'products.add_to_cart' | t | json }};
     });
 
     if (submitBtn) {
@@ -266,7 +279,7 @@
           }
           submitBtn.disabled = true;
           submitBtn.classList.add('is-loading');
-          submitBtn.textContent = 'Lägger till…';
+          submitBtn.textContent = submitBtn.dataset.addingLabel || {{ 'products.adding' | t | json }};
 
           if (typeof form.requestSubmit === 'function') {
             form.requestSubmit();

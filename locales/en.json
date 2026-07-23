@@ -1,0 +1,115 @@
+{
+  "404": {
+    "title": "404",
+    "not_found": "Page not found.",
+    "back_to_shopping": "Continue shopping"
+  },
+  "blog": {
+    "article_comments": "Comments",
+    "article_metadata_html": "{{ date }} by {{ author }}",
+    "comment_form_body": "Comment",
+    "comment_form_email": "Email",
+    "comment_form_name": "Name",
+    "comment_form_submit": "Post",
+    "comment_form_title": "Leave a comment"
+  },
+  "cart": {
+    "title": "Cart",
+    "checkout": "Checkout",
+    "checkout_go": "Go to checkout",
+    "update": "Update",
+    "remove": "Remove",
+    "view_cart": "View cart",
+    "subtotal": "Subtotal",
+    "empty": "Your cart is empty",
+    "empty_dot": "Your cart is empty.",
+    "empty_text": "You're one step away from shower freedom, wherever you are.",
+    "continue_shopping": "Continue shopping",
+    "close": "Close cart",
+    "increase_quantity": "Increase quantity",
+    "decrease_quantity": "Decrease quantity",
+    "quantity": "Quantity",
+    "remove_item": "Remove {{ title }}",
+    "added": "Product added to cart",
+    "error": "Couldn't update the cart. Please try again.",
+    "adding": "Adding…",
+    "trust_line": "Secure checkout · 14-day returns",
+    "shipping_remaining_html": "Add <strong>{{ amount }}</strong> more for free shipping",
+    "shipping_complete": "You've unlocked free shipping",
+    "upsell_combo_label": "Complete with Perfect Combo",
+    "upsell_shower_label": "Complete with the shower",
+    "upsell_bucket_label": "Complete with the bucket",
+    "upsell_upgrade_combo": "Upgrade to Perfect Combo",
+    "upsell_badge_bestseller": "Bestseller",
+    "upsell_badge_recommended": "Recommended",
+    "upsell_badge_save": "Save more",
+    "upsell_add": "Add"
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "choose_variant": "Choose options",
+    "learn_more": "Learn more",
+    "learn_more_about": "Learn more about the product",
+    "bestseller": "Bestseller",
+    "adding": "Adding…",
+    "or": "or",
+    "quantity": "Quantity",
+    "save_percent": "Save {{ percent }}%",
+    "in_stock": "In stock",
+    "delivery_days": "2–5 days"
+  },
+  "trust": {
+    "guarantees": "Purchase guarantees",
+    "free_shipping_pill": "Free shipping {{ amount }} kr+",
+    "free_shipping_over": "Free shipping over {{ amount }} kr",
+    "free_shipping_footer": "Free shipping on orders over {{ amount }} kr within Sweden.",
+    "warranty_1y": "1-year warranty",
+    "returns_14d": "14-day returns",
+    "delivery_title": "Delivery in 2–5 days",
+    "secure_payment": "Secure payment",
+    "payment_methods": "Klarna, cards & more",
+    "pay_easily_with": "Pay easily with"
+  },
+  "customers": {
+    "login": {
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "title": "Sign in"
+    }
+  },
+  "collections": {
+    "title": "Collections"
+  },
+  "gift_card": {
+    "add_to_apple_wallet": "Add to Apple Wallet",
+    "card": "Gift card",
+    "expired": "This gift card has expired",
+    "expires_on": "Expires {{ expires_on }}",
+    "use_at_checkout": "Use this gift card at checkout"
+  },
+  "password": {
+    "title": "This store is password protected",
+    "password": "Password",
+    "enter": "Enter"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search products, pages or articles",
+    "placeholder_short": "Search products, pages…",
+    "label": "Search products",
+    "submit": "Search",
+    "close": "Close",
+    "no_results": "No results. Try another search term.",
+    "no_results_html": "No results for {{ terms }}",
+    "results_for_html": "{{ count }} results for {{ terms }}",
+    "load_error": "Couldn't load search suggestions."
+  },
+  "accessibility": {
+    "close": "Close",
+    "search": "Search",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu"
+  }
+}

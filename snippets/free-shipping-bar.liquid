@@ -21,17 +21,18 @@
   if embedded == true
     assign use_embedded = true
   endif
+  assign remaining_money = remaining | money
 -%}
 
 {%- if threshold > 0 -%}
   <div class="{{ class_prefix }}{% if use_compact %} pp-shipping-bar--compact{% endif %}{% if use_embedded %} pp-shipping-bar--embedded{% endif %}" data-free-shipping-bar>
     {%- if remaining > 0 -%}
       <p class="{{ class_prefix }}__text">
-        Lägg till <strong>{{ remaining | money }}</strong> till för fri frakt
+        {{ 'cart.shipping_remaining_html' | t: amount: remaining_money }}
       </p>
     {%- else -%}
       <p class="{{ class_prefix }}__text {{ class_prefix }}__text--complete">
-        Du har uppnått fri frakt
+        {{ 'cart.shipping_complete' | t }}
       </p>
     {%- endif -%}
     <div class="{{ class_prefix }}__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}">
@@ -39,106 +40,3 @@
     </div>
   </div>
 {%- endif -%}
-
-{% stylesheet %}
-  .free-shipping-bar,
-  [class*='__shipping']:not([class*='__shipping__']) {
-    padding: 14px 16px;
-    border-radius: var(--pp-radius-md, 14px);
-    background: color-mix(in srgb, var(--pp-accent, #2dd4bf) 6%, transparent);
-    border: 1px solid color-mix(in srgb, var(--pp-accent, #2dd4bf) 18%, transparent);
-  }
-
-  .free-shipping-bar__text,
-  [class*='__shipping__text'] {
-    margin: 0 0 10px;
-    font-size: 0.88rem;
-    line-height: 1.45;
-    color: var(--pp-text, #f6f7f2);
-    padding: 0;
-    border: 0;
-    background: transparent;
-    border-radius: 0;
-  }
-
-  [class*='__shipping__text--complete'] {
-    color: var(--pp-accent, #2dd4bf);
-    font-weight: 600;
-  }
-
-  .free-shipping-bar__track,
-  [class*='__shipping__track'] {
-    height: 6px;
-    border-radius: var(--pp-radius-pill, 999px);
-    overflow: hidden;
-    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 10%, transparent);
-    padding: 0;
-    border: 0;
-  }
-
-  .free-shipping-bar__fill,
-  [class*='__shipping__fill'] {
-    display: block;
-    height: 100%;
-    border-radius: inherit;
-    background: linear-gradient(90deg, var(--pp-accent, #2dd4bf), var(--pp-accent-blue, #4cc9f0));
-    box-shadow: 0 0 12px color-mix(in srgb, var(--pp-accent, #2dd4bf) 45%, transparent);
-    transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .pp-shipping-bar--compact {
-    padding: 10px 12px !important;
-    border-radius: 12px !important;
-  }
-
-  .pp-shipping-bar--compact [class*='__shipping__text'],
-  .pp-shipping-bar--compact .free-shipping-bar__text {
-    margin-bottom: 8px !important;
-    font-size: 0.8rem !important;
-    line-height: 1.4 !important;
-  }
-
-  .pp-shipping-bar--compact [class*='__shipping__track'],
-  .pp-shipping-bar--compact .free-shipping-bar__track {
-    height: 5px !important;
-  }
-
-  .pp-shipping-bar--embedded {
-    padding: 0 !important;
-    margin: 0;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-
-  .pp-shipping-bar--embedded [class*='__shipping__text'],
-  .pp-shipping-bar--embedded .free-shipping-bar__text {
-    margin: 0 0 10px !important;
-    font-size: 0.8rem !important;
-    line-height: 1.45 !important;
-    color: var(--pp-muted, #9aa8a2) !important;
-  }
-
-  .pp-shipping-bar--embedded [class*='__shipping__text'] strong,
-  .pp-shipping-bar--embedded .free-shipping-bar__text strong {
-    color: var(--pp-text, #f6f7f2);
-    font-weight: 600;
-  }
-
-  .pp-shipping-bar--embedded [class*='__shipping__text--complete'],
-  .pp-shipping-bar--embedded .free-shipping-bar__text--complete {
-    color: var(--pp-accent, #2dd4bf) !important;
-  }
-
-  .pp-shipping-bar--embedded [class*='__shipping__track'],
-  .pp-shipping-bar--embedded .free-shipping-bar__track {
-    height: 6px !important;
-    background: color-mix(in srgb, var(--pp-text, #f6f7f2) 12%, transparent) !important;
-  }
-
-  .pp-shipping-bar--embedded [class*='__shipping__fill'],
-  .pp-shipping-bar--embedded .free-shipping-bar__fill {
-    box-shadow: none !important;
-  }
-{% endstylesheet %}

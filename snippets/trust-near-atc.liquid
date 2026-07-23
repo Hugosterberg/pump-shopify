@@ -18,19 +18,23 @@
   endif
 -%}
 
+{%- liquid
+  assign shipping_amount = settings.free_shipping_threshold | default: 999
+-%}
+
 {% if compact %}
-  <div class="pp-trust-atc pp-trust-atc--compact{% if dense %} pp-trust-atc--dense{% endif %} {{ class_prefix }} {{ class_prefix }}--compact" aria-label="Köpgarantier">
+  <div class="pp-trust-atc pp-trust-atc--compact{% if dense %} pp-trust-atc--dense{% endif %} {{ class_prefix }} {{ class_prefix }}--compact" aria-label="{{ 'trust.guarantees' | t }}">
     <span class="pp-trust-atc__pill {{ class_prefix }}__pill">
       <span class="pp-trust-atc__pill-icon {{ class_prefix }}__pill-icon" aria-hidden="true">{% render 'icon', name: 'truck', size: 14 %}</span>
-      <span class="pp-trust-atc__pill-text">Fri frakt {% render 'free-shipping-text', format: 'short' %} kr+</span>
+      <span class="pp-trust-atc__pill-text">{{ 'trust.free_shipping_pill' | t: amount: shipping_amount }}</span>
     </span>
     <span class="pp-trust-atc__pill {{ class_prefix }}__pill">
       <span class="pp-trust-atc__pill-icon {{ class_prefix }}__pill-icon" aria-hidden="true">{% render 'icon', name: 'shield', size: 14 %}</span>
-      <span class="pp-trust-atc__pill-text">1 års garanti</span>
+      <span class="pp-trust-atc__pill-text">{{ 'trust.warranty_1y' | t }}</span>
     </span>
     <span class="pp-trust-atc__pill {{ class_prefix }}__pill">
       <span class="pp-trust-atc__pill-icon {{ class_prefix }}__pill-icon" aria-hidden="true">{% render 'icon', name: 'check', size: 14 %}</span>
-      <span class="pp-trust-atc__pill-text">14 dagars ångerrätt</span>
+      <span class="pp-trust-atc__pill-text">{{ 'trust.returns_14d' | t }}</span>
     </span>
   </div>
 {% else %}
@@ -39,33 +43,33 @@
       <li class="pp-trust-atc__chip {{ class_prefix }}__chip">
         <span class="pp-trust-atc__chip-icon {{ class_prefix }}__chip-icon" aria-hidden="true">{% render 'icon', name: 'truck', size: 16 %}</span>
         <span class="pp-trust-atc__chip-text {{ class_prefix }}__chip-text">
-          <strong>Leverans 2–5 dagar</strong>
-          <span>Fri frakt över {% render 'free-shipping-text', format: 'short' %} kr</span>
+          <strong>{{ 'trust.delivery_title' | t }}</strong>
+          <span>{{ 'trust.free_shipping_over' | t: amount: shipping_amount }}</span>
         </span>
       </li>
       <li class="pp-trust-atc__chip {{ class_prefix }}__chip">
         <span class="pp-trust-atc__chip-icon {{ class_prefix }}__chip-icon" aria-hidden="true">{% render 'icon', name: 'shield', size: 16 %}</span>
         <span class="pp-trust-atc__chip-text {{ class_prefix }}__chip-text">
-          <strong>1 års garanti</strong>
-          <span>14 dagars ångerrätt</span>
+          <strong>{{ 'trust.warranty_1y' | t }}</strong>
+          <span>{{ 'trust.returns_14d' | t }}</span>
         </span>
       </li>
       <li class="pp-trust-atc__chip {{ class_prefix }}__chip">
         <span class="pp-trust-atc__chip-icon {{ class_prefix }}__chip-icon" aria-hidden="true">{% render 'icon', name: 'lock', size: 16 %}</span>
         <span class="pp-trust-atc__chip-text {{ class_prefix }}__chip-text">
-          <strong>Säker betalning</strong>
-          <span>Klarna, kort &amp; mer</span>
+          <strong>{{ 'trust.secure_payment' | t }}</strong>
+          <span>{{ 'trust.payment_methods' | t }}</span>
         </span>
       </li>
     </ul>
 
     {% if render_payment_icons %}
       <div class="pp-trust-atc__divider {{ class_prefix }}__divider" aria-hidden="true"></div>
-      {% render 'payment-icons', class_prefix: class_prefix | append: '__payment', label: 'Betala enkelt med', inline_row: true %}
+      {% assign pay_label = 'trust.pay_easily_with' | t %}
+      {% render 'payment-icons', class_prefix: class_prefix | append: '__payment', label: pay_label, inline_row: true %}
     {% endif %}
   </div>
 {% endif %}
-
 {% stylesheet %}
   .pp-trust-atc-wrap {
     margin-top: 4px;

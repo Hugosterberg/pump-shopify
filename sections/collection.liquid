@@ -45,13 +45,13 @@
             >
               <a class="pp-product-card__media main-collection__media" href="{{ product.url }}" aria-label="{{ product.title }}">
                 {% if is_featured %}
-                  <span class="pp-product-card__badge">Bästsäljare</span>
+                  <span class="pp-product-card__badge">{{ 'products.bestseller' | t }}</span>
                 {% elsif product.compare_at_price > product.price %}
                   {% assign saving = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round %}
-                  <span class="pp-product-card__badge">Spara {{ saving }}%</span>
+                  <span class="pp-product-card__badge">{{ 'products.save_percent' | t: percent: saving }}</span>
                 {% endif %}
                 {% unless product.available %}
-                  <span class="pp-product-card__badge pp-product-card__badge--soldout">Slutsåld</span>
+                  <span class="pp-product-card__badge pp-product-card__badge--soldout">{{ 'products.sold_out' | t }}</span>
                 {% endunless %}
                 {% if product.featured_image != blank %}
                   {{

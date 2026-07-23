@@ -50,10 +50,10 @@
 
         <div class="product-showcase__buy">
           <div class="product-showcase__meta">
-            <span class="product-showcase__badge">Bästsäljare</span>
+            <span class="product-showcase__badge">{{ 'products.bestseller' | t }}</span>
             <span class="product-showcase__badge product-showcase__badge--muted">
               {% render 'icon', name: 'truck', size: 12 %}
-              2–5 dagar
+              {{ 'products.delivery_days' | t }}
             </span>
             <span
               class="product-showcase__badge product-showcase__badge--muted"
@@ -61,7 +61,7 @@
               {% unless current_variant.available %}hidden{% endunless %}
             >
               {% render 'icon', name: 'check', size: 12 %}
-              I lager
+              {{ 'products.in_stock' | t }}
             </span>
           </div>
 
@@ -74,7 +74,7 @@
                   <s>{{ current_variant.compare_at_price | money }}</s>
                 </span>
                 {% assign saving = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round %}
-                <span class="product-showcase__save" data-save-badge>Spara {{ saving }}%</span>
+                <span class="product-showcase__save" data-save-badge>{{ 'products.save_percent' | t: percent: saving }}</span>
               {% else %}
                 <span class="product-showcase__price-compare" data-price-compare hidden></span>
                 <span class="product-showcase__save" data-save-badge hidden></span>
@@ -99,7 +99,7 @@
 
           {% if showcase_product != blank %}
             <a class="product-showcase__read-more" href="{{ showcase_product.url }}">
-              Läs mer om produkten
+              {{ 'products.learn_more_about' | t }}
               <span aria-hidden="true">→</span>
             </a>
           {% endif %}
@@ -119,12 +119,21 @@
                 <input type="hidden" name="id" value="{{ current_variant.id }}">
               {% endif %}
 
+              {%- liquid
+                assign showcase_qty_label = 'products.quantity' | t
+                assign showcase_atc_label = 'products.add_to_cart' | t
+                assign showcase_sold_out = 'products.sold_out' | t
+                if section.settings.button_label != blank
+                  assign showcase_atc_label = section.settings.button_label
+                endif
+              -%}
+
               <div class="product-showcase__actions-row">
                 {% capture showcase_qty_id %}ProductShowcase-Qty-{{ section.id }}{% endcapture %}
                 {% render 'pp-quantity-input',
                   id: showcase_qty_id,
                   wrapper_class: 'product-showcase__qty-row',
-                  label: 'Antal',
+                  label: showcase_qty_label,
                   label_class: 'product-showcase__label'
                 %}
 
@@ -132,21 +141,23 @@
                   class="product-showcase__submit pp-btn-primary pp-btn--full"
                   type="submit"
                   data-product-showcase-submit
+                  data-available-label="{{ showcase_atc_label | escape }}"
+                  data-sold-out-label="{{ showcase_sold_out | escape }}"
                   {% unless current_variant.available %}
                     disabled
                   {% endunless %}
                 >
                   {% if current_variant.available %}
-                    {{ section.settings.button_label | default: 'Lägg i varukorg' }}
+                    {{ showcase_atc_label }}
                   {% else %}
-                    Slutsåld
+                    {{ showcase_sold_out }}
                   {% endif %}
                 </button>
               </div>
 
               <div class="product-showcase__checkout-actions">
                 <p class="product-showcase__checkout-divider" aria-hidden="true">
-                  <span>eller</span>
+                  <span>{{ 'products.or' | t }}</span>
                 </p>
 
                 {{ form | payment_button }}
@@ -244,7 +255,7 @@
         }
         if (saveBadge) {
           saveBadge.hidden = false;
-          saveBadge.textContent = 'Spara ' + saving + '%';
+          saveBadge.textContent = {{ 'products.save_percent' | t: percent: '__PCT__' | json }}.replace('__PCT__', String(saving));
         }
       } else {
         if (priceCompare) priceCompare.hidden = true;
@@ -254,8 +265,8 @@
       if (submitBtn) {
         submitBtn.disabled = !variant.available;
         submitBtn.textContent = variant.available
-          ? {{ section.settings.button_label | default: 'Lägg i varukorg' | json }}
-          : 'Slutsåld';
+          ? submitBtn.dataset.availableLabel || {{ 'products.add_to_cart' | t | json }}
+          : submitBtn.dataset.soldOutLabel || {{ 'products.sold_out' | t | json }};
       }
 
       if (stockBadge) {
