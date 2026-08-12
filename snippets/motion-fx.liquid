@@ -16,7 +16,6 @@
     transition:
       opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
       transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
-    will-change: opacity, transform;
   }
 
   .mfx-reveal.mfx-in {
@@ -100,7 +99,8 @@
       var sections = document.querySelectorAll('.shopify-section');
       for (var s = 0; s < sections.length; s++) {
         var sec = sections[s];
-        if (sec.querySelector('.site-header, .site-footer')) continue; // skip chrome
+        // Skip chrome and interactive product buy-box (protects gallery INP)
+        if (sec.querySelector('.site-header, .site-footer, [data-main-product]')) continue;
         var child = sec.firstElementChild;
         if (child && targets.indexOf(child) === -1) targets.push(child);
       }
@@ -115,6 +115,10 @@
             if (entry.isIntersecting) {
               entry.target.classList.add('mfx-in');
               io.unobserve(entry.target);
+              // Drop compositor hint after the reveal finishes
+              setTimeout(function () {
+                entry.target.style.willChange = 'auto';
+              }, 800);
             }
           });
         },
