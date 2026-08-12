@@ -507,29 +507,42 @@
   }
 
   .main-product__modal {
-    width: min(960px, calc(100vw - 32px));
-    max-height: calc(100vh - 32px);
+    position: fixed;
+    inset: 0;
+    width: min(960px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
+    height: fit-content;
+    max-height: min(calc(100dvh - 24px), calc(100vh - 24px));
+    margin: auto;
     padding: 0;
     border: none;
     border-radius: var(--pp-radius-lg, 20px);
     background: var(--mp-bg, #071014);
     color: var(--mp-text, #f6f7f2);
     box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.7);
+    overflow: hidden;
   }
 
   .main-product__modal::backdrop {
-    background: rgba(0, 0, 0, 0.82);
+    background: rgba(0, 0, 0, 0.86);
   }
 
   .main-product__modal-inner {
     position: relative;
-    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 48px 12px 16px;
+    max-height: min(calc(100dvh - 24px), calc(100vh - 24px));
+    box-sizing: border-box;
   }
 
   .main-product__modal-close {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: max(8px, env(safe-area-inset-top, 0px));
+    right: max(8px, env(safe-area-inset-right, 0px));
     z-index: 2;
     display: inline-flex;
     align-items: center;
@@ -541,12 +554,27 @@
     cursor: pointer;
     color: var(--mp-text, #f6f7f2);
     background: color-mix(in srgb, var(--mp-bg, #071014) 80%, transparent);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .main-product__modal-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 0;
+    flex: 1 1 auto;
   }
 
   .main-product__modal-content img,
   .main-product__modal-content video {
-    width: 100%;
-    max-height: calc(100vh - 120px);
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: min(calc(100dvh - 160px), calc(100vh - 160px));
+    margin: 0 auto;
     object-fit: contain;
     border-radius: 12px;
   }
@@ -554,8 +582,9 @@
   .main-product__modal-nav {
     display: flex;
     justify-content: center;
+    flex-shrink: 0;
     gap: 12px;
-    margin-top: 12px;
+    margin-top: 0;
   }
 
   .main-product__modal-prev,
@@ -568,6 +597,60 @@
     color: var(--mp-text, #f6f7f2);
     font-size: 1.4rem;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  @media screen and (max-width: 749px) {
+    .main-product {
+      padding-block: 32px 56px;
+    }
+
+    .main-product__media-nav--prev {
+      left: 8px;
+    }
+
+    .main-product__media-nav--next {
+      right: 8px;
+    }
+
+    .main-product__thumbs {
+      gap: 8px;
+      scroll-padding-inline: 4px;
+    }
+
+    .main-product__thumb-btn {
+      width: 64px;
+      height: 64px;
+    }
+
+    .main-product__form-wrap {
+      padding: 16px;
+    }
+
+    .main-product__buy-trust {
+      margin-top: 16px;
+      padding: 14px;
+      gap: 12px;
+    }
+
+    .main-product__modal {
+      width: calc(100vw - 16px);
+      max-width: calc(100vw - 16px);
+      max-height: min(calc(100dvh - 16px), calc(100vh - 16px));
+      border-radius: 16px;
+    }
+
+    .main-product__modal-inner {
+      padding: 52px 10px 12px;
+      max-height: min(calc(100dvh - 16px), calc(100vh - 16px));
+    }
+
+    .main-product__modal-content img,
+    .main-product__modal-content video {
+      max-height: min(calc(100dvh - 150px), calc(100vh - 150px));
+      border-radius: 10px;
+    }
   }
 
   .main-product__thumbs {
@@ -1638,6 +1721,10 @@
 
     function openModal(index) {
       if (!modal) return;
+      // Keep dialog outside section layout so mobile centering is reliable
+      if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+      }
       const mediaEl = mediaWrap ? mediaWrap.querySelector('[data-media-id]') : null;
       renderModalMedia(typeof index === 'number' ? index : findMediaIndex(mediaEl && mediaEl.dataset.mediaId));
       if (typeof modal.showModal === 'function') {

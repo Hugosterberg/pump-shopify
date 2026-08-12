@@ -151,8 +151,9 @@
       </button>
     </div>
   </div>
+</header>
 
-  <div class="site-header__mobile-overlay" data-mobile-nav hidden>
+  <div class="site-header__mobile-overlay full-width" data-mobile-nav hidden>
     <div class="site-header__mobile-backdrop" data-mobile-nav-close tabindex="-1"></div>
     <nav
       id="SiteHeaderMobileNav"
@@ -213,7 +214,6 @@
       {% endif %}
     </nav>
   </div>
-</header>
 
 {% stylesheet %}
   .site-header {
@@ -334,6 +334,18 @@
     align-items: center;
     gap: 10px;
     margin-left: auto;
+  }
+
+  @media screen and (max-width: 749px) {
+    .site-header__actions {
+      gap: 4px;
+    }
+
+    .site-header__icon-btn,
+    .site-header__menu-toggle {
+      width: 44px;
+      height: 44px;
+    }
   }
 
   .site-header__cta {
@@ -463,11 +475,11 @@
   .site-header__mobile-overlay {
     position: fixed;
     inset: 0;
-    z-index: 220;
+    z-index: 400;
   }
 
   .site-header__mobile-overlay[hidden] {
-    display: none;
+    display: none !important;
   }
 
   body.mobile-nav-open {
@@ -496,12 +508,19 @@
     display: flex;
     flex-direction: column;
     gap: 0;
-    padding: 20px;
+    padding:
+      max(20px, env(safe-area-inset-top, 0px))
+      max(20px, env(safe-area-inset-right, 0px))
+      max(20px, env(safe-area-inset-bottom, 0px))
+      20px;
     background: linear-gradient(180deg, var(--hdr-bg, #071014) 0%, color-mix(in srgb, var(--hdr-bg, #071014) 92%, #000) 100%);
     border-left: 1px solid var(--hdr-border, rgba(255, 255, 255, 0.08));
     box-shadow: -24px 0 60px rgb(0 0 0 / 45%);
     transform: translateX(100%);
     transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
   }
 
   .site-header__mobile-overlay.is-open .site-header__mobile-panel {
@@ -646,17 +665,29 @@
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    const mobileNav = header.querySelector('[data-mobile-nav]');
+    const section = header.closest('.shopify-section');
+    const mobileNav =
+      (section && section.querySelector('[data-mobile-nav]')) ||
+      document.querySelector('[data-mobile-nav]');
     const mobileOpen = header.querySelector('[data-mobile-nav-open]');
-    const mobilePanel = header.querySelector('[data-mobile-nav-panel]');
+    const mobilePanel = mobileNav ? mobileNav.querySelector('[data-mobile-nav-panel]') : null;
     let mobileLastFocus = null;
+
+    // Keep the drawer outside sticky/backdrop-filter ancestors so position:fixed
+    // covers the full viewport (otherwise the menu only paints inside the header).
+    if (mobileNav && mobileNav.parentElement !== document.body) {
+      document.body.appendChild(mobileNav);
+    }
 
     function openMobileNav() {
       if (!mobileNav || !mobileOpen) return;
       mobileLastFocus = document.activeElement;
       mobileNav.hidden = false;
+      // Force a reflow so the open transition runs after un-hiding
+      void mobileNav.offsetWidth;
       mobileNav.classList.add('is-open');
       mobileOpen.setAttribute('aria-expanded', 'true');
+      mobileOpen.setAttribute('aria-label', 'Stäng meny');
       document.body.classList.add('mobile-nav-open');
       window.requestAnimationFrame(function () {
         const firstLink = mobilePanel && mobilePanel.querySelector('a, button');
@@ -668,6 +699,7 @@
       if (!mobileNav || !mobileOpen) return;
       mobileNav.classList.remove('is-open');
       mobileOpen.setAttribute('aria-expanded', 'false');
+      mobileOpen.setAttribute('aria-label', 'Öppna meny');
       document.body.classList.remove('mobile-nav-open');
       window.setTimeout(function () {
         if (!mobileNav.classList.contains('is-open')) {
@@ -679,8 +711,10 @@
       }
     }
 
-    if (mobileOpen) {
-      mobileOpen.addEventListener('click', function () {
+    if (mobileOpen && mobileNav) {
+      mobileOpen.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
         if (mobileNav.classList.contains('is-open')) {
           closeMobileNav();
         } else {
@@ -689,9 +723,11 @@
       });
     }
 
-    header.querySelectorAll('[data-mobile-nav-close]').forEach(function (el) {
-      el.addEventListener('click', closeMobileNav);
-    });
+    if (mobileNav) {
+      mobileNav.querySelectorAll('[data-mobile-nav-close]').forEach(function (el) {
+        el.addEventListener('click', closeMobileNav);
+      });
+    }
 
     if (mobilePanel) {
       mobilePanel.querySelectorAll('a').forEach(function (link) {

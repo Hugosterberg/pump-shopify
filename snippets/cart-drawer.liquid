@@ -182,6 +182,7 @@
     flex-direction: column;
     width: min(100%, 420px);
     height: 100%;
+    padding-top: env(safe-area-inset-top, 0px);
     background: linear-gradient(180deg, var(--pp-surface-light, #1d2b35) 0%, var(--pp-surface, #14212a) 18%);
     color: var(--pp-text, #f6f7f2);
     border-left: 1px solid var(--pp-border);
@@ -241,7 +242,9 @@
   .cart-drawer__body {
     flex: 1;
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 16px 20px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .cart-drawer__items {
@@ -313,15 +316,17 @@
   }
 
   .cart-drawer__qty-btn {
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
     border: none;
     border-radius: 999px;
     background: transparent;
     color: inherit;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.05rem;
     transition: background 0.15s ease, color 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   .cart-drawer__qty-btn:hover {
@@ -330,8 +335,8 @@
   }
 
   .cart-drawer__qty-input {
-    width: 36px;
-    height: 34px;
+    width: 40px;
+    height: 44px;
     border: none;
     background: transparent;
     color: inherit;
@@ -345,13 +350,15 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     border: none;
     border-radius: 999px;
     cursor: pointer;
     color: var(--pp-muted, #9aa8a2);
     background: color-mix(in srgb, var(--pp-text, #f6f7f2) 6%, transparent);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   .cart-drawer__empty {
@@ -469,7 +476,7 @@
   }
 
   .cart-drawer__footer {
-    padding: 0 20px 20px;
+    padding: 0 20px max(20px, env(safe-area-inset-bottom, 0px));
     border-top: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 8%, transparent);
     display: flex;
     flex-direction: column;

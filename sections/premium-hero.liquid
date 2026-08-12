@@ -644,7 +644,7 @@
       line-height: 1.45;
       display: -webkit-box;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       overflow: hidden;
     }
 
@@ -654,15 +654,15 @@
     }
 
     .premium-hero__media--float .premium-hero__media-frame {
-      min-height: min(42svh, 300px);
-      max-height: min(46svh, 320px);
+      min-height: min(36svh, 260px);
+      max-height: min(40svh, 280px);
     }
 
     .premium-hero__media--float .premium-hero__image {
       width: auto;
       height: auto;
-      max-width: min(100%, 340px);
-      max-height: min(42svh, 300px);
+      max-width: min(100%, 320px);
+      max-height: min(36svh, 260px);
       margin-inline: auto;
       object-fit: contain;
       object-position: center center;
@@ -682,11 +682,15 @@
     }
 
     .premium-hero__actions {
+      flex-direction: column;
+      align-items: stretch;
       gap: 8px;
+      width: 100%;
     }
 
     .premium-hero__btn {
       min-height: 48px;
+      width: 100%;
       font-size: 0.9rem;
     }
 
@@ -695,7 +699,7 @@
     }
 
     .premium-hero__btn--secondary {
-      display: none;
+      display: inline-flex;
     }
 
     .premium-hero__badges {

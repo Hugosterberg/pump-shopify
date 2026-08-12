@@ -72,7 +72,7 @@ p:empty {
 }
 
 body.has-sticky-atc {
-  padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
 }
 
 /** Theme styles below */
@@ -243,7 +243,7 @@ body {
 }
 
 .pp-variant-picker__pill {
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 16px;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--pp-text, #f6f7f2) 18%, transparent);
@@ -252,6 +252,8 @@ body {
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   transition:
     border-color 0.18s ease,
     background 0.18s ease,
@@ -789,7 +791,17 @@ textarea,
 
 @media screen and (max-width: 749px) {
   .pp-trust-atc:not(.pp-trust-atc--compact):not(.pp-trust-atc--inline) {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px;
+  }
+
+  .pp-trust-atc:not(.pp-trust-atc--compact):not(.pp-trust-atc--inline) .pp-trust-atc__chip {
+    padding: 8px 4px;
+  }
+
+  .pp-trust-atc:not(.pp-trust-atc--compact):not(.pp-trust-atc--inline) .pp-trust-atc__chip-text {
+    font-size: 0.68rem;
+    line-height: 1.25;
   }
 }
 

@@ -52,7 +52,7 @@
 
 {% stylesheet %}
   .announcement-bar {
-    padding: 10px var(--page-margin, 20px);
+    padding: 10px max(12px, var(--page-margin, 20px));
     background: linear-gradient(
       90deg,
       var(--ab-bg, #14212a),
@@ -66,6 +66,7 @@
     font-size: 0.84rem;
     font-weight: 500;
     letter-spacing: 0.02em;
+    line-height: 1.35;
     border-bottom: 1px solid var(--pp-border);
     overflow: hidden;
   }
@@ -83,7 +84,7 @@
 
   .announcement-bar__track {
     position: relative;
-    min-height: 1.4em;
+    min-height: 2.7em;
   }
 
   .announcement-bar--rotate .announcement-bar__slide {
@@ -104,11 +105,22 @@
     pointer-events: auto;
   }
 
+  .announcement-bar__text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    max-width: 100%;
+    text-wrap: balance;
+  }
+
   .announcement-bar__link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    max-width: 100%;
     color: inherit;
     text-decoration: none;
     transition: color 0.15s ease;
@@ -116,14 +128,6 @@
 
   .announcement-bar__link:hover {
     color: var(--ab-accent, #2dd4bf);
-  }
-
-  .announcement-bar__text {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin: 0;
   }
 
   .announcement-bar__icon {
