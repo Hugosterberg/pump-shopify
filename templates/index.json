@@ -59,6 +59,85 @@
         "accent_text_color": "#071014"
       }
     },
+    "instruction_video": {
+      "type": "instruction-video",
+      "blocks": {
+        "clip-1": {
+          "type": "clip",
+          "settings": {
+            "image": "shopify://shop_images/komplett_set.png",
+            "video_url": "",
+            "caption": "Ta fram delarna",
+            "side": "left"
+          }
+        },
+        "clip-2": {
+          "type": "clip",
+          "settings": {
+            "image": "shopify://shop_images/27E091C3-5041-4D03-B125-B3282D873A95.png",
+            "video_url": "",
+            "caption": "Skruva fast slangen i pumpen",
+            "side": "left"
+          }
+        },
+        "clip-3": {
+          "type": "clip",
+          "settings": {
+            "image": "shopify://shop_images/pump_dusch.png",
+            "video_url": "",
+            "caption": "Skruva fast slangen i duschmunstycket",
+            "side": "left"
+          }
+        },
+        "clip-4": {
+          "type": "clip",
+          "settings": {
+            "image": "shopify://shop_images/vikt_bucket_hand.png",
+            "video_url": "",
+            "caption": "Ta fram vikbara hinken",
+            "side": "right"
+          }
+        },
+        "clip-5": {
+          "type": "clip",
+          "settings": {
+            "image": "shopify://shop_images/bucket-shower-blur-2048-2048_18662d9b-b3ea-4fc0-94d0-fbcbbe6759bd.png",
+            "video_url": "",
+            "caption": "Använd hink med duschmunstycke",
+            "side": "right"
+          }
+        },
+        "clip-6": {
+          "type": "clip",
+          "settings": {
+            "image": "shopify://shop_images/IMG_7320.png",
+            "video_url": "",
+            "caption": "Använd hink med sprutmunstycke",
+            "side": "right"
+          }
+        }
+      },
+      "block_order": [
+        "clip-1",
+        "clip-2",
+        "clip-3",
+        "clip-4",
+        "clip-5",
+        "clip-6"
+      ],
+      "settings": {
+        "eyebrow": "Så funkar den",
+        "heading": "Se hur enkelt det är",
+        "subheading": "En kort instruktionsvideo, från lösa delar till färdig dusch på sekundrar.",
+        "video_url": "",
+        "video": "shopify://files/videos/Portabel. Kraftfull. Alltid redo – med 6000 mAh batteri och exakt temperaturdisplay. (1).mp4",
+        "max_width": 880,
+        "background_color": "#060c11",
+        "text_color": "#f6f7f2",
+        "muted_text_color": "#9aa8a2",
+        "accent_color": "#2dd4bf"
+      }
+    },
     "brand_promise": {
       "type": "brand-promise",
       "blocks": {
@@ -165,85 +244,6 @@
         "accent_color": "#2dd4bf"
       }
     },
-    "instruction_video": {
-      "type": "instruction-video",
-      "blocks": {
-        "clip-1": {
-          "type": "clip",
-          "settings": {
-            "image": "shopify://shop_images/komplett_set.png",
-            "video_url": "",
-            "caption": "Ta fram delarna",
-            "side": "left"
-          }
-        },
-        "clip-2": {
-          "type": "clip",
-          "settings": {
-            "image": "shopify://shop_images/27E091C3-5041-4D03-B125-B3282D873A95.png",
-            "video_url": "",
-            "caption": "Skruva fast slangen i pumpen",
-            "side": "left"
-          }
-        },
-        "clip-3": {
-          "type": "clip",
-          "settings": {
-            "image": "shopify://shop_images/pump_dusch.png",
-            "video_url": "",
-            "caption": "Skruva fast slangen i duschmunstycket",
-            "side": "left"
-          }
-        },
-        "clip-4": {
-          "type": "clip",
-          "settings": {
-            "image": "shopify://shop_images/vikt_bucket_hand.png",
-            "video_url": "",
-            "caption": "Ta fram vikbara hinken",
-            "side": "right"
-          }
-        },
-        "clip-5": {
-          "type": "clip",
-          "settings": {
-            "image": "shopify://shop_images/bucket-shower-blur-2048-2048_18662d9b-b3ea-4fc0-94d0-fbcbbe6759bd.png",
-            "video_url": "",
-            "caption": "Använd hink med duschmunstycke",
-            "side": "right"
-          }
-        },
-        "clip-6": {
-          "type": "clip",
-          "settings": {
-            "image": "shopify://shop_images/IMG_7320.png",
-            "video_url": "",
-            "caption": "Använd hink med sprutmunstycke",
-            "side": "right"
-          }
-        }
-      },
-      "block_order": [
-        "clip-1",
-        "clip-2",
-        "clip-3",
-        "clip-4",
-        "clip-5",
-        "clip-6"
-      ],
-      "settings": {
-        "eyebrow": "Så funkar den",
-        "heading": "Se hur enkelt det är",
-        "subheading": "En kort instruktionsvideo, från lösa delar till färdig dusch på sekundrar.",
-        "video_url": "",
-        "video": "shopify://files/videos/Portabel. Kraftfull. Alltid redo – med 6000 mAh batteri och exakt temperaturdisplay. (1).mp4",
-        "max_width": 880,
-        "background_color": "#060c11",
-        "text_color": "#f6f7f2",
-        "muted_text_color": "#9aa8a2",
-        "accent_color": "#2dd4bf"
-      }
-    },
     "product_cards": {
       "type": "product-cards",
       "blocks": {
@@ -308,6 +308,7 @@
           "portabel-dusch",
           "portabel-hink"
         ],
+        "product": "",
         "product_handle": "portabel-dusch",
         "show_cta": false,
         "cta_label": "Se alla omdömen på Judge.me",
@@ -1085,8 +1086,11 @@
         "cta_link": "#product-showcase",
         "feature_column_label": "Funktion",
         "us_column_label": "The Portable Shower",
+        "us_column_label_short": "pump",
         "them_column_label": "Vanlig lösning",
+        "them_column_label_short": "Vanliga",
         "them2_column_label": "Kända konkurrenter",
+        "them2_column_label_short": "Andra",
         "background_color": "#101820",
         "surface_color": "#14212a",
         "text_color": "#f6f7f2",
@@ -1114,11 +1118,25 @@
             "fallback_title": "The Portable Bucket"
           }
         },
+        "product_BH9NLH": {
+          "type": "product",
+          "settings": {
+            "product": "the-portable-tent",
+            "fallback_title": "Produkt"
+          }
+        },
         "ec-3": {
           "type": "product",
           "settings": {
             "product": "the-perfect-combo-portabel-dusch-vikbar-hink-1",
             "fallback_title": "The Perfect Combo"
+          }
+        },
+        "product_erJgBF": {
+          "type": "product",
+          "settings": {
+            "product": "the-portable-combo",
+            "fallback_title": "Produkt"
           }
         },
         "ec-4": {
@@ -1133,7 +1151,9 @@
       "block_order": [
         "ec-1",
         "ec-2",
+        "product_BH9NLH",
         "ec-3",
+        "product_erJgBF",
         "ec-4"
       ],
       "settings": {
