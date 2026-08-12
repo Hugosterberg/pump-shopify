@@ -5,10 +5,12 @@
   endif
 
   assign emit_faq_schema = false
-  if section.settings.enable_faq_schema
+  if template.suffix == 'faq'
     assign emit_faq_schema = true
-  elsif template.suffix == 'faq'
-    assign emit_faq_schema = true
+  elsif section.settings.enable_faq_schema == true
+    if request.page_type != 'index' and request.page_type != 'product'
+      assign emit_faq_schema = true
+    endif
   endif
 -%}
 
