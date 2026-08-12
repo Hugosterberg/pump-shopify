@@ -1141,7 +1141,7 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
+<script>
   (function () {
     const root = document.querySelector('[data-main-product]');
     if (!root) return;
@@ -1151,8 +1151,15 @@
     const variantsJson = document.getElementById('ProductVariants-' + sectionId);
     if (!mediaJson || !variantsJson) return;
 
-    const mediaItems = JSON.parse(mediaJson.textContent);
-    const variants = JSON.parse(variantsJson.textContent);
+    let mediaItems = [];
+    let variants = [];
+    try {
+      mediaItems = JSON.parse(mediaJson.textContent);
+      variants = JSON.parse(variantsJson.textContent);
+    } catch (e) {
+      return;
+    }
+
     const mediaWrap = root.querySelector('[data-main-product-media]');
     const variantSelect = root.querySelector('[data-variant-select]');
     const hiddenVariantId = root.querySelector('[data-variant-id]');
@@ -1163,13 +1170,16 @@
     const stockBadge = root.querySelector('[data-stock-badge]');
     const urgencyBadge = root.querySelector('[data-urgency-badge]');
     const urgencyCount = root.querySelector('[data-urgency-count]');
-    const thumbButtons = root.querySelectorAll('[data-media-index]');
-    const mediaPrevBtn = root.querySelector('[data-media-prev]');
-    const mediaNextBtn = root.querySelector('[data-media-next]');
     const mediaCounter = root.querySelector('[data-media-counter]');
+    const modal = document.querySelector('[data-media-modal]');
+    const modalContent = document.querySelector('[data-media-modal-content]');
 
     const moneyFormat = (window.PumpTheme && window.PumpTheme.moneyFormat) || '';
+    const labelAddToCart = {{ 'products.add_to_cart' | t | json }};
+    const labelSoldOut = {{ 'products.sold_out' | t | json }};
+    const labelSavePercent = {{ 'products.save_percent' | t: percent: '__PCT__' | json }};
     let currentMediaIndex = 0;
+    let modalIndex = 0;
     let touchStartX = 0;
     let touchStartY = 0;
 
@@ -1191,7 +1201,7 @@
     }
 
     function setActiveThumb(index) {
-      thumbButtons.forEach((btn) => {
+      root.querySelectorAll('[data-media-index]').forEach((btn) => {
         const active = Number(btn.dataset.mediaIndex) === index;
         btn.classList.toggle('is-active', active);
         btn.setAttribute('aria-pressed', active ? 'true' : 'false');
@@ -1334,7 +1344,7 @@
           if (saveBadge) {
             const pct = Math.round(((variant.compare_at_price - variant.price) * 100) / variant.compare_at_price);
             saveBadge.hidden = false;
-            saveBadge.textContent = {{ 'products.save_percent' | t: percent: '__PCT__' | json }}.replace('__PCT__', String(pct));
+            saveBadge.textContent = labelSavePercent.replace('__PCT__', String(pct));
           }
         } else {
           priceCompare.hidden = true;
@@ -1345,8 +1355,8 @@
       if (submitBtn) {
         submitBtn.disabled = !variant.available;
         submitBtn.textContent = variant.available
-          ? submitBtn.dataset.availableLabel || {{ 'products.add_to_cart' | t | json }}
-          : submitBtn.dataset.soldOutLabel || {{ 'products.sold_out' | t | json }};
+          ? submitBtn.dataset.availableLabel || labelAddToCart
+          : submitBtn.dataset.soldOutLabel || labelSoldOut;
       }
 
       if (variant.featured_media_id) {
@@ -1361,28 +1371,34 @@
       submitBtn.dataset.availableLabel = submitBtn.textContent.trim();
     }
 
-    thumbButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        showMedia(Number(btn.dataset.mediaIndex));
-      });
-    });
+    // Event delegation — works even if controls are re-rendered
+    root.addEventListener('click', (event) => {
+      const thumb = event.target.closest('[data-media-index]');
+      if (thumb && root.contains(thumb)) {
+        event.preventDefault();
+        showMedia(Number(thumb.dataset.mediaIndex));
+        return;
+      }
 
-    mediaPrevBtn?.addEventListener('click', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      goToMedia(-1);
-    });
+      if (event.target.closest('[data-media-prev]')) {
+        event.preventDefault();
+        event.stopPropagation();
+        goToMedia(-1);
+        return;
+      }
 
-    mediaNextBtn?.addEventListener('click', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      goToMedia(1);
-    });
+      if (event.target.closest('[data-media-next]')) {
+        event.preventDefault();
+        event.stopPropagation();
+        goToMedia(1);
+        return;
+      }
 
-    const modal = document.querySelector('[data-media-modal]');
-    const modalContent = document.querySelector('[data-media-modal-content]');
-    const modalOpenBtn = root.querySelector('[data-media-modal-open]');
-    let modalIndex = 0;
+      if (event.target.closest('[data-media-modal-open]')) {
+        const activeThumb = root.querySelector('.main-product__thumb-btn.is-active');
+        openModal(activeThumb ? Number(activeThumb.dataset.mediaIndex) : currentMediaIndex);
+      }
+    });
 
     if (mediaWrap && mediaItems.length > 1) {
       mediaWrap.addEventListener(
@@ -1418,7 +1434,7 @@
 
     root.addEventListener('keydown', (event) => {
       if (mediaItems.length <= 1) return;
-      if (modal?.open) return;
+      if (modal && modal.open) return;
       if (event.target.closest('input, textarea, select')) return;
 
       if (event.key === 'ArrowLeft') {
@@ -1430,7 +1446,9 @@
       }
     });
 
-    const initialMediaId = mediaWrap?.querySelector('[data-media-id]')?.dataset.mediaId;
+    const initialMediaId = mediaWrap && mediaWrap.querySelector('[data-media-id]')
+      ? mediaWrap.querySelector('[data-media-id]').dataset.mediaId
+      : null;
     if (initialMediaId) {
       currentMediaIndex = findMediaIndex(initialMediaId);
     } else if (mediaItems.length) {
@@ -1476,13 +1494,15 @@
 
     function openModal(index) {
       if (!modal) return;
-      renderModalMedia(typeof index === 'number' ? index : findMediaIndex(mediaWrap?.querySelector('[data-media-id]')?.dataset.mediaId));
+      const mediaEl = mediaWrap ? mediaWrap.querySelector('[data-media-id]') : null;
+      renderModalMedia(typeof index === 'number' ? index : findMediaIndex(mediaEl && mediaEl.dataset.mediaId));
       if (typeof modal.showModal === 'function') {
         modal.showModal();
       } else {
         modal.setAttribute('open', '');
       }
-      modal.querySelector('[data-media-modal-close]')?.focus();
+      const closeBtn = modal.querySelector('[data-media-modal-close]');
+      if (closeBtn) closeBtn.focus();
     }
 
     function closeModal() {
@@ -1494,51 +1514,55 @@
       }
     }
 
-    modalOpenBtn?.addEventListener('click', () => {
-      const activeThumb = root.querySelector('.main-product__thumb-btn.is-active');
-      openModal(activeThumb ? Number(activeThumb.dataset.mediaIndex) : 0);
-    });
+    const modalCloseBtn = document.querySelector('[data-media-modal-close]');
+    if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+    if (modal) {
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) closeModal();
+      });
+    }
 
-    document.querySelector('[data-media-modal-close]')?.addEventListener('click', closeModal);
-    modal?.addEventListener('click', (event) => {
-      if (event.target === modal) closeModal();
-    });
-
-    document.querySelector('[data-media-modal-prev]')?.addEventListener('click', () => {
-      const next = (modalIndex - 1 + mediaItems.length) % mediaItems.length;
-      renderModalMedia(next);
-      showMedia(next);
-    });
-
-    document.querySelector('[data-media-modal-next]')?.addEventListener('click', () => {
-      const next = (modalIndex + 1) % mediaItems.length;
-      renderModalMedia(next);
-      showMedia(next);
-    });
-
-    modal?.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        closeModal();
-        modalOpenBtn?.focus();
-        return;
-      }
-
-      if (mediaItems.length <= 1) return;
-
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        const prev = (modalIndex - 1 + mediaItems.length) % mediaItems.length;
-        renderModalMedia(prev);
-        showMedia(prev);
-      } else if (event.key === 'ArrowRight') {
-        event.preventDefault();
+    const modalPrev = document.querySelector('[data-media-modal-prev]');
+    const modalNext = document.querySelector('[data-media-modal-next]');
+    if (modalPrev) {
+      modalPrev.addEventListener('click', () => {
+        const next = (modalIndex - 1 + mediaItems.length) % mediaItems.length;
+        renderModalMedia(next);
+        showMedia(next);
+      });
+    }
+    if (modalNext) {
+      modalNext.addEventListener('click', () => {
         const next = (modalIndex + 1) % mediaItems.length;
         renderModalMedia(next);
         showMedia(next);
-      }
-    });
+      });
+    }
+
+    if (modal) {
+      modal.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          closeModal();
+          return;
+        }
+
+        if (mediaItems.length <= 1) return;
+
+        if (event.key === 'ArrowLeft') {
+          event.preventDefault();
+          const prev = (modalIndex - 1 + mediaItems.length) % mediaItems.length;
+          renderModalMedia(prev);
+          showMedia(prev);
+        } else if (event.key === 'ArrowRight') {
+          event.preventDefault();
+          const next = (modalIndex + 1) % mediaItems.length;
+          renderModalMedia(next);
+          showMedia(next);
+        }
+      });
+    }
   })();
-{% endjavascript %}
+</script>
 
 {% schema %}
 {
