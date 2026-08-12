@@ -34,25 +34,6 @@
     <div class="main-product__gallery">
       {% if product.media.size > 0 %}
         <div class="main-product__media-main" id="MainProductMedia-{{ section.id }}" data-main-product-media>
-          {% if product.media.size > 1 %}
-            <button
-              type="button"
-              class="main-product__media-nav main-product__media-nav--prev"
-              data-media-prev
-              aria-label="Föregående bild"
-            >
-              ‹
-            </button>
-            <button
-              type="button"
-              class="main-product__media-nav main-product__media-nav--next"
-              data-media-next
-              aria-label="Nästa bild"
-            >
-              ›
-            </button>
-            <span class="main-product__media-counter" data-media-counter aria-live="polite">{{ initial_media_index }} / {{ product.media.size }}</span>
-          {% endif %}
           <button
             type="button"
             class="main-product__media-open"
@@ -82,6 +63,27 @@
             {% endif %}
             <span class="main-product__media-zoom" aria-hidden="true">{% render 'icon', name: 'search', size: 18 %}</span>
           </button>
+          {% if product.media.size > 1 %}
+            <div class="main-product__media-controls">
+              <button
+                type="button"
+                class="main-product__media-nav main-product__media-nav--prev"
+                data-media-prev
+                aria-label="Föregående bild"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                class="main-product__media-nav main-product__media-nav--next"
+                data-media-next
+                aria-label="Nästa bild"
+              >
+                ›
+              </button>
+              <span class="main-product__media-counter" data-media-counter aria-live="polite">{{ initial_media_index }} / {{ product.media.size }}</span>
+            </div>
+          {% endif %}
         </div>
         {% if product.media.size > 1 %}
           <ul class="main-product__thumbs" role="list" data-main-product-thumbs>
@@ -378,10 +380,17 @@
     touch-action: pan-y pinch-zoom;
   }
 
+  .main-product__media-controls {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+  }
+
   .main-product__media-nav {
     position: absolute;
     top: 50%;
-    z-index: 3;
+    z-index: 6;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -394,6 +403,7 @@
     font-size: 1.5rem;
     line-height: 1;
     cursor: pointer;
+    pointer-events: auto;
     color: var(--mp-text, #f6f7f2);
     background: color-mix(in srgb, var(--mp-bg, #071014) 78%, transparent);
     backdrop-filter: blur(6px);
@@ -405,10 +415,12 @@
       opacity 0.18s ease;
   }
 
-  .main-product__media-nav:hover {
+  .main-product__media-nav:hover,
+  .main-product__media-nav:focus-visible {
     border-color: color-mix(in srgb, var(--mp-accent, #2dd4bf) 45%, transparent);
     background: color-mix(in srgb, var(--mp-accent, #2dd4bf) 16%, var(--mp-bg, #071014));
     color: var(--mp-accent, #2dd4bf);
+    outline: none;
   }
 
   .main-product__media-nav--prev {
@@ -423,18 +435,18 @@
     position: absolute;
     top: 12px;
     left: 12px;
-    z-index: 3;
+    z-index: 6;
     padding: 5px 10px;
     border-radius: 999px;
     font-size: 0.72rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.02em;
+    pointer-events: none;
     color: var(--mp-text, #f6f7f2);
     background: color-mix(in srgb, var(--mp-bg, #071014) 78%, transparent);
     border: 1px solid color-mix(in srgb, var(--mp-text, #f6f7f2) 12%, transparent);
     backdrop-filter: blur(6px);
-    pointer-events: none;
   }
 
   .main-product__media-open {
@@ -1356,14 +1368,21 @@
     });
 
     mediaPrevBtn?.addEventListener('click', (event) => {
+      event.preventDefault();
       event.stopPropagation();
       goToMedia(-1);
     });
 
     mediaNextBtn?.addEventListener('click', (event) => {
+      event.preventDefault();
       event.stopPropagation();
       goToMedia(1);
     });
+
+    const modal = document.querySelector('[data-media-modal]');
+    const modalContent = document.querySelector('[data-media-modal-content]');
+    const modalOpenBtn = root.querySelector('[data-media-modal-open]');
+    let modalIndex = 0;
 
     if (mediaWrap && mediaItems.length > 1) {
       mediaWrap.addEventListener(
@@ -1428,11 +1447,6 @@
     } else if (hiddenVariantId) {
       updateVariant(hiddenVariantId.value);
     }
-
-    const modal = document.querySelector('[data-media-modal]');
-    const modalContent = document.querySelector('[data-media-modal-content]');
-    const modalOpenBtn = root.querySelector('[data-media-modal-open]');
-    let modalIndex = 0;
 
     function renderModalMedia(index) {
       const media = mediaItems[index];
