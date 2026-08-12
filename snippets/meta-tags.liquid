@@ -151,6 +151,11 @@
     {%- elsif shop.description != blank -%}
     ,"description": {{ shop.description | strip_html | truncate: 300 | json }}
     {%- endif -%}
+    ,"areaServed": {
+      "@type": "Country",
+      "name": "Sweden"
+    }
+    ,"availableLanguage": ["sv", "en"]
     {%- liquid
       assign same_as_count = 0
       if settings.social_instagram != blank

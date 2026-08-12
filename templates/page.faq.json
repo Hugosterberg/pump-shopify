@@ -25,8 +25,7 @@
       "settings": {
         "eyebrow": "Vanliga frågor",
         "heading": "FAQ",
-        "heading_as_h1": true,
-        "enable_faq_schema": true
+        "heading_as_h1": true
       }
     }
   },

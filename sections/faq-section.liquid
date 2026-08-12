@@ -4,13 +4,10 @@
     assign faq_heading_tag = 'h1'
   endif
 
+  # FAQPage JSON-LD only on the dedicated FAQ page — never homepage/product.
   assign emit_faq_schema = false
-  if template.suffix == 'faq'
+  if request.page_type == 'page' and template.suffix == 'faq'
     assign emit_faq_schema = true
-  elsif section.settings.enable_faq_schema == true
-    if request.page_type != 'index' and request.page_type != 'product'
-      assign emit_faq_schema = true
-    endif
   endif
 -%}
 
@@ -429,11 +426,8 @@
       "info": "Enable on the dedicated FAQ page. Keep off on homepage/product (H1 already used)."
     },
     {
-      "type": "checkbox",
-      "id": "enable_faq_schema",
-      "label": "Force FAQ JSON-LD schema",
-      "default": false,
-      "info": "FAQ page template emits schema automatically. Only force this on if you want schema elsewhere."
+      "type": "paragraph",
+      "content": "FAQ JSON-LD emits automatically on the FAQ page template only (not homepage)."
     },
     {
       "type": "color",
