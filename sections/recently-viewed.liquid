@@ -88,7 +88,7 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
+<script>
   (function () {
     const STORAGE_KEY = 'pump_recently_viewed';
     const section = document.querySelector('[data-recently-viewed]');
@@ -125,11 +125,11 @@
 
     const toFetch = handles.slice(0, max);
 
-    const buyLabel = section.dataset.buyLabel || {{ 'products.add_to_cart' | t | json }};
-    const soldOutLabel = section.dataset.soldOutLabel || {{ 'products.sold_out' | t | json }};
-    const chooseVariantLabel = section.dataset.chooseVariantLabel || {{ 'products.choose_variant' | t | json }};
-    const learnMoreLabel = section.dataset.learnMoreLabel || {{ 'products.learn_more' | t | json }};
-    const savePercentLabel = section.dataset.savePercentLabel || {{ 'products.save_percent' | t: percent: '__PCT__' | json }};
+    const buyLabel = section.dataset.buyLabel || 'Lägg i varukorg';
+    const soldOutLabel = section.dataset.soldOutLabel || 'Slutsåld';
+    const chooseVariantLabel = section.dataset.chooseVariantLabel || 'Välj variant';
+    const learnMoreLabel = section.dataset.learnMoreLabel || 'Läs mer';
+    const savePercentLabel = section.dataset.savePercentLabel || 'Spara __PCT__%';
 
     function formatMoney(cents) {
       if (window.PumpTheme && window.PumpTheme.moneyFormat && typeof Shopify !== 'undefined' && typeof Shopify.formatMoney === 'function') {
@@ -215,7 +215,7 @@
         .join('');
     });
   })();
-{% endjavascript %}
+</script>
 
 {% schema %}
 {

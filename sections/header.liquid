@@ -653,95 +653,104 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
+<script>
   (function () {
-    const header = document.querySelector('.site-header');
-    if (!header) return;
+    function initSiteHeaderNav() {
+      var header = document.querySelector('.site-header');
+      if (!header || header.dataset.mobileNavReady === 'true') return;
+      header.dataset.mobileNavReady = 'true';
 
-    function onScroll() {
-      header.classList.toggle('is-scrolled', window.scrollY > 8);
-    }
-
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-
-    const section = header.closest('.shopify-section');
-    const mobileNav =
-      (section && section.querySelector('[data-mobile-nav]')) ||
-      document.querySelector('[data-mobile-nav]');
-    const mobileOpen = header.querySelector('[data-mobile-nav-open]');
-    const mobilePanel = mobileNav ? mobileNav.querySelector('[data-mobile-nav-panel]') : null;
-    let mobileLastFocus = null;
-
-    // Keep the drawer outside sticky/backdrop-filter ancestors so position:fixed
-    // covers the full viewport (otherwise the menu only paints inside the header).
-    if (mobileNav && mobileNav.parentElement !== document.body) {
-      document.body.appendChild(mobileNav);
-    }
-
-    function openMobileNav() {
-      if (!mobileNav || !mobileOpen) return;
-      mobileLastFocus = document.activeElement;
-      mobileNav.hidden = false;
-      // Force a reflow so the open transition runs after un-hiding
-      void mobileNav.offsetWidth;
-      mobileNav.classList.add('is-open');
-      mobileOpen.setAttribute('aria-expanded', 'true');
-      mobileOpen.setAttribute('aria-label', 'Stäng meny');
-      document.body.classList.add('mobile-nav-open');
-      window.requestAnimationFrame(function () {
-        const firstLink = mobilePanel && mobilePanel.querySelector('a, button');
-        if (firstLink) firstLink.focus();
-      });
-    }
-
-    function closeMobileNav() {
-      if (!mobileNav || !mobileOpen) return;
-      mobileNav.classList.remove('is-open');
-      mobileOpen.setAttribute('aria-expanded', 'false');
-      mobileOpen.setAttribute('aria-label', 'Öppna meny');
-      document.body.classList.remove('mobile-nav-open');
-      window.setTimeout(function () {
-        if (!mobileNav.classList.contains('is-open')) {
-          mobileNav.hidden = true;
-        }
-      }, 280);
-      if (mobileLastFocus && typeof mobileLastFocus.focus === 'function') {
-        mobileLastFocus.focus();
+      function onScroll() {
+        header.classList.toggle('is-scrolled', window.scrollY > 8);
       }
-    }
 
-    if (mobileOpen && mobileNav) {
-      mobileOpen.addEventListener('click', function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        if (mobileNav.classList.contains('is-open')) {
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      var mobileNav = document.querySelector('[data-mobile-nav]');
+      var mobileOpen = header.querySelector('[data-mobile-nav-open]');
+      if (!mobileNav || !mobileOpen) return;
+
+      var mobilePanel = mobileNav.querySelector('[data-mobile-nav-panel]');
+      var mobileLastFocus = null;
+
+      // Escape sticky/backdrop-filter ancestors so fixed positioning covers the viewport
+      if (mobileNav.parentElement !== document.body) {
+        document.body.appendChild(mobileNav);
+      }
+
+      function openMobileNav() {
+        mobileLastFocus = document.activeElement;
+        mobileNav.hidden = false;
+        mobileNav.removeAttribute('hidden');
+        void mobileNav.offsetWidth;
+        mobileNav.classList.add('is-open');
+        mobileOpen.setAttribute('aria-expanded', 'true');
+        mobileOpen.setAttribute('aria-label', 'Stäng meny');
+        document.body.classList.add('mobile-nav-open');
+        window.requestAnimationFrame(function () {
+          var focusEl = mobilePanel && mobilePanel.querySelector('a, button');
+          if (focusEl) focusEl.focus();
+        });
+      }
+
+      function closeMobileNav() {
+        mobileNav.classList.remove('is-open');
+        mobileOpen.setAttribute('aria-expanded', 'false');
+        mobileOpen.setAttribute('aria-label', 'Öppna meny');
+        document.body.classList.remove('mobile-nav-open');
+        window.setTimeout(function () {
+          if (!mobileNav.classList.contains('is-open')) {
+            mobileNav.hidden = true;
+          }
+        }, 280);
+        if (mobileLastFocus && typeof mobileLastFocus.focus === 'function') {
+          mobileLastFocus.focus();
+        }
+      }
+
+      // Event delegation: survives DOM moves and partial re-renders
+      document.addEventListener('click', function (event) {
+        var openBtn = event.target.closest('[data-mobile-nav-open]');
+        if (openBtn && header.contains(openBtn)) {
+          event.preventDefault();
+          event.stopPropagation();
+          if (mobileNav.classList.contains('is-open')) {
+            closeMobileNav();
+          } else {
+            openMobileNav();
+          }
+          return;
+        }
+
+        if (!mobileNav.classList.contains('is-open')) return;
+
+        if (event.target.closest('[data-mobile-nav-close]')) {
+          event.preventDefault();
           closeMobileNav();
-        } else {
-          openMobileNav();
+          return;
+        }
+
+        var link = event.target.closest('[data-mobile-nav-panel] a');
+        if (link && mobileNav.contains(link)) {
+          closeMobileNav();
+        }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && mobileNav.classList.contains('is-open')) {
+          closeMobileNav();
         }
       });
     }
 
-    if (mobileNav) {
-      mobileNav.querySelectorAll('[data-mobile-nav-close]').forEach(function (el) {
-        el.addEventListener('click', closeMobileNav);
-      });
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSiteHeaderNav);
+    } else {
+      initSiteHeaderNav();
     }
-
-    if (mobilePanel) {
-      mobilePanel.querySelectorAll('a').forEach(function (link) {
-        link.addEventListener('click', closeMobileNav);
-      });
-    }
-
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && mobileNav && mobileNav.classList.contains('is-open')) {
-        closeMobileNav();
-      }
-    });
   })();
-{% endjavascript %}
+</script>
 
 {% schema %}
 {

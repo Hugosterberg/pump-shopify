@@ -230,89 +230,103 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
+<script>
   (function () {
-    const bar = document.querySelector('[data-sticky-atc]');
-    if (!bar) return;
+    function initStickyAtc() {
+      var bar = document.querySelector('[data-sticky-atc]');
+      if (!bar || bar.dataset.ready === 'true') return;
+      bar.dataset.ready = 'true';
 
-    const targetId = bar.dataset.targetId || 'product-showcase';
-    const target = document.getElementById(targetId);
-    if (!target) return;
+      var targetId = bar.dataset.targetId || 'product-showcase';
+      var target = document.getElementById(targetId);
+      if (!target) return;
 
-    const priceEl = bar.querySelector('[data-sticky-price]');
-    const compareEl = bar.querySelector('[data-sticky-compare]');
-    const submitBtn = bar.querySelector('[data-sticky-atc-submit]');
+      var priceEl = bar.querySelector('[data-sticky-price]');
+      var compareEl = bar.querySelector('[data-sticky-compare]');
+      var submitBtn = bar.querySelector('[data-sticky-atc-submit]');
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        bar.classList.toggle('is-visible', !entry.isIntersecting);
-      },
-      { threshold: 0, rootMargin: '0px 0px -80px 0px' }
-    );
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(
+          function (entries) {
+            var entry = entries[0];
+            if (!entry) return;
+            bar.classList.toggle('is-visible', !entry.isIntersecting);
+          },
+          { threshold: 0, rootMargin: '0px 0px -80px 0px' }
+        );
+        observer.observe(target);
 
-    observer.observe(target);
-
-    const bodyObserver = new IntersectionObserver(
-      ([entry]) => {
-        document.body.classList.toggle('has-sticky-atc', !entry.isIntersecting);
-      },
-      { threshold: 0, rootMargin: '0px 0px -80px 0px' }
-    );
-    bodyObserver.observe(target);
-
-    document.addEventListener('pump:variant-change', (event) => {
-      if (!event.detail) return;
-      if (priceEl && event.detail.formattedPrice) {
-        priceEl.textContent = event.detail.formattedPrice;
+        var bodyObserver = new IntersectionObserver(
+          function (entries) {
+            var entry = entries[0];
+            if (!entry) return;
+            document.body.classList.toggle('has-sticky-atc', !entry.isIntersecting);
+          },
+          { threshold: 0, rootMargin: '0px 0px -80px 0px' }
+        );
+        bodyObserver.observe(target);
       }
-      if (compareEl) {
-        if (event.detail.formattedComparePrice) {
-          compareEl.hidden = false;
-          compareEl.textContent = event.detail.formattedComparePrice;
-        } else {
-          compareEl.hidden = true;
+
+      document.addEventListener('pump:variant-change', function (event) {
+        if (!event.detail) return;
+        if (priceEl && event.detail.formattedPrice) {
+          priceEl.textContent = event.detail.formattedPrice;
         }
-      }
-      if (submitBtn) {
-        submitBtn.disabled = !event.detail.available;
-        submitBtn.textContent = event.detail.available
-          ? submitBtn.dataset.defaultLabel || {{ 'products.add_to_cart' | t | json }}
-          : submitBtn.dataset.soldOutLabel || {{ 'products.sold_out' | t | json }};
-        submitBtn.classList.remove('is-loading');
-      }
-    });
-
-    document.addEventListener('pump:cart-settled', () => {
-      if (!submitBtn) return;
-      submitBtn.classList.remove('is-loading');
-      submitBtn.disabled = false;
-      submitBtn.textContent = submitBtn.dataset.defaultLabel || {{ 'products.add_to_cart' | t | json }};
-    });
-
-    if (submitBtn) {
-      submitBtn.addEventListener('click', () => {
-        const form = document.querySelector('.main-product__form, .product-showcase .ajax-cart-form');
-        if (form) {
-          if (!submitBtn.dataset.defaultLabel) {
-            submitBtn.dataset.defaultLabel = submitBtn.textContent.trim();
-          }
-          submitBtn.disabled = true;
-          submitBtn.classList.add('is-loading');
-          submitBtn.textContent = submitBtn.dataset.addingLabel || {{ 'products.adding' | t | json }};
-
-          if (typeof form.requestSubmit === 'function') {
-            form.requestSubmit();
+        if (compareEl) {
+          if (event.detail.formattedComparePrice) {
+            compareEl.hidden = false;
+            compareEl.textContent = event.detail.formattedComparePrice;
           } else {
-            form.submit();
+            compareEl.hidden = true;
           }
-          return;
         }
-
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (submitBtn) {
+          submitBtn.disabled = !event.detail.available;
+          submitBtn.textContent = event.detail.available
+            ? submitBtn.dataset.defaultLabel || submitBtn.textContent
+            : submitBtn.dataset.soldOutLabel || 'Slutsåld';
+          submitBtn.classList.remove('is-loading');
+        }
       });
+
+      document.addEventListener('pump:cart-settled', function () {
+        if (!submitBtn) return;
+        submitBtn.classList.remove('is-loading');
+        submitBtn.disabled = false;
+        submitBtn.textContent = submitBtn.dataset.defaultLabel || submitBtn.textContent;
+      });
+
+      if (submitBtn) {
+        submitBtn.addEventListener('click', function () {
+          var form = document.querySelector('.main-product__form, .product-showcase .ajax-cart-form');
+          if (form) {
+            if (!submitBtn.dataset.defaultLabel) {
+              submitBtn.dataset.defaultLabel = submitBtn.textContent.trim();
+            }
+            submitBtn.disabled = true;
+            submitBtn.classList.add('is-loading');
+            submitBtn.textContent = submitBtn.dataset.addingLabel || 'Lägger till…';
+
+            if (typeof form.requestSubmit === 'function') {
+              form.requestSubmit();
+            } else {
+              form.submit();
+            }
+            return;
+          }
+
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initStickyAtc);
+    } else {
+      initStickyAtc();
     }
   })();
-{% endjavascript %}
+</script>
 
 {% schema %}
 {
