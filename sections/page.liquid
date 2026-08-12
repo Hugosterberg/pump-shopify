@@ -13,6 +13,7 @@
   "
 >
   <div class="legal-page__inner">
+    {% render 'breadcrumbs' %}
     <header class="legal-page__header">
       {% if section.settings.eyebrow != blank %}
         <p class="legal-page__eyebrow">{{ section.settings.eyebrow }}</p>

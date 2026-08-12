@@ -65,7 +65,7 @@
                     widths: '200, 400, 600',
                     sizes: '(min-width: 750px) 20vw, 50vw',
                     class: 'instagram-feed__image',
-                    alt: 'Instagram'
+                    alt: block.settings.image.alt | default: shop.name
                 }}
               {% else %}
                 <div class="instagram-feed__placeholder">

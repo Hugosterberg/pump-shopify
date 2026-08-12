@@ -24,7 +24,9 @@
       "block_order": ["q-1", "q-2", "q-3", "q-4", "q-5", "q-6", "q-7", "q-8"],
       "settings": {
         "eyebrow": "Vanliga frågor",
-        "heading": "FAQ"
+        "heading": "FAQ",
+        "heading_as_h1": true,
+        "enable_faq_schema": true
       }
     }
   },

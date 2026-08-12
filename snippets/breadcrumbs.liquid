@@ -1,28 +1,40 @@
 {% comment %}
   Breadcrumbs with BreadcrumbList JSON-LD for SEO.
-  Supports product, article and blog page types.
+  Supports product, collection, article, blog and page types.
 
   Usage: {% render 'breadcrumbs' %}
 {% endcomment %}
 
 {%- liquid
   assign show_crumbs = false
+  assign crumb_home = 'seo.home' | t
+  assign crumb_products = 'seo.products' | t
 
   if request.page_type == 'product' and product != blank
     assign show_crumbs = true
-    assign crumb_2_name = 'Produkter'
+    assign crumb_2_name = crumb_products
     assign crumb_2_url = routes.all_products_collection_url
+    if collection != blank and collection.handle != 'all'
+      assign crumb_2_name = collection.title
+      assign crumb_2_url = collection.url
+    endif
     assign crumb_3_name = product.title
     assign crumb_3_url = product.url
     assign crumb_count = 3
   elsif request.page_type == 'collection' and collection != blank
     assign show_crumbs = true
-    assign crumb_2_name = 'Produkter'
-    assign crumb_2_url = routes.all_products_collection_url
-    assign crumb_3_name = collection.title
-    assign crumb_3_url = collection.url
-    assign crumb_count = 3
-  elsif request.page_type == 'article' and blog != blank
+    if collection.handle == 'all'
+      assign crumb_2_name = crumb_products
+      assign crumb_2_url = collection.url
+      assign crumb_count = 2
+    else
+      assign crumb_2_name = crumb_products
+      assign crumb_2_url = routes.all_products_collection_url
+      assign crumb_3_name = collection.title
+      assign crumb_3_url = collection.url
+      assign crumb_count = 3
+    endif
+  elsif request.page_type == 'article' and blog != blank and article != blank
     assign show_crumbs = true
     assign crumb_2_name = blog.title
     assign crumb_2_url = blog.url
@@ -34,14 +46,19 @@
     assign crumb_2_name = blog.title
     assign crumb_2_url = blog.url
     assign crumb_count = 2
+  elsif request.page_type == 'page' and page != blank
+    assign show_crumbs = true
+    assign crumb_2_name = page.title
+    assign crumb_2_url = page.url
+    assign crumb_count = 2
   endif
 -%}
 
 {%- if show_crumbs -%}
-  <nav class="breadcrumbs" aria-label="Brödsmulor">
+  <nav class="breadcrumbs" aria-label="{{ 'accessibility.breadcrumbs' | t }}">
     <ol class="breadcrumbs__list">
       <li class="breadcrumbs__item">
-        <a class="breadcrumbs__link" href="{{ routes.root_url }}">Hem</a>
+        <a class="breadcrumbs__link" href="{{ routes.root_url }}">{{ crumb_home }}</a>
       </li>
       <li class="breadcrumbs__item" aria-hidden="true">
         <span class="breadcrumbs__sep">/</span>
@@ -72,21 +89,21 @@
         {
           "@type": "ListItem",
           "position": 1,
-          "name": "Hem",
-          "item": {{ shop.url | append: routes.root_url | json }}
+          "name": {{ crumb_home | json }},
+          "item": {{ request.origin | append: routes.root_url | json }}
         },
         {
           "@type": "ListItem",
           "position": 2,
           "name": {{ crumb_2_name | json }},
-          "item": {{ shop.url | append: crumb_2_url | json }}
+          "item": {{ request.origin | append: crumb_2_url | json }}
         }
         {%- if crumb_count == 3 -%}
         ,{
           "@type": "ListItem",
           "position": 3,
           "name": {{ crumb_3_name | json }},
-          "item": {{ shop.url | append: crumb_3_url | json }}
+          "item": {{ request.origin | append: crumb_3_url | json }}
         }
         {%- endif -%}
       ]
@@ -96,13 +113,13 @@
 
 {% stylesheet %}
   .breadcrumbs {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     padding: 8px 14px;
     border-radius: var(--pp-radius-pill, 999px);
     width: fit-content;
     max-width: 100%;
     background: color-mix(in srgb, var(--pp-text, #f6f7f2) 4%, transparent);
-    border: 1px solid var(--pp-border);
+    border: 1px solid var(--pp-border, rgba(255, 255, 255, 0.08));
   }
 
   .breadcrumbs__list {
@@ -141,5 +158,13 @@
   .breadcrumbs__current {
     color: var(--pp-text, #f6f7f2);
     font-weight: 500;
+  }
+
+  @media screen and (max-width: 749px) {
+    .breadcrumbs {
+      margin-bottom: 14px;
+      padding: 6px 12px;
+      font-size: 0.74rem;
+    }
   }
 {% endstylesheet %}

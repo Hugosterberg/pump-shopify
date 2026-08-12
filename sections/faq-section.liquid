@@ -1,3 +1,17 @@
+{%- liquid
+  assign faq_heading_tag = 'h2'
+  if template.suffix == 'faq' or section.settings.heading_as_h1
+    assign faq_heading_tag = 'h1'
+  endif
+
+  assign emit_faq_schema = false
+  if section.settings.enable_faq_schema
+    assign emit_faq_schema = true
+  elsif template.suffix == 'faq'
+    assign emit_faq_schema = true
+  endif
+-%}
+
 <div
   class="faq-section full-width"
   style="
@@ -14,7 +28,7 @@
         {% if section.settings.eyebrow != blank %}
           <p class="faq-section__eyebrow">{{ section.settings.eyebrow }}</p>
         {% endif %}
-        <h2 class="faq-section__heading">{{ section.settings.heading }}</h2>
+        <{{ faq_heading_tag }} class="faq-section__heading">{{ section.settings.heading }}</{{ faq_heading_tag }}>
       </header>
     {% endif %}
 
@@ -67,27 +81,41 @@
   </div>
 </div>
 
-{%- if section.blocks.size > 0 -%}
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {%- for block in section.blocks -%}
-          {%- if block.settings.question != blank and block.settings.answer != blank -%}
-            {
-              "@type": "Question",
-              "name": {{ block.settings.question | json }},
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": {{ block.settings.answer | strip_html | json }}
+{%- if emit_faq_schema and section.blocks.size > 0 -%}
+  {%- liquid
+    assign faq_schema_first = true
+    assign faq_schema_has_items = false
+    for block in section.blocks
+      if block.settings.question != blank and block.settings.answer != blank
+        assign faq_schema_has_items = true
+        break
+      endif
+    endfor
+  -%}
+  {%- if faq_schema_has_items -%}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {%- for block in section.blocks -%}
+            {%- if block.settings.question != blank and block.settings.answer != blank -%}
+              {%- unless faq_schema_first -%},{%- endunless -%}
+              {
+                "@type": "Question",
+                "name": {{ block.settings.question | json }},
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": {{ block.settings.answer | strip_html | json }}
+                }
               }
-            }{%- unless forloop.last -%},{%- endunless -%}
-          {%- endif -%}
-        {%- endfor -%}
-      ]
-    }
-  </script>
+              {%- assign faq_schema_first = false -%}
+            {%- endif -%}
+          {%- endfor -%}
+        ]
+      }
+    </script>
+  {%- endif -%}
 {%- endif -%}
 
 {% stylesheet %}
@@ -390,6 +418,20 @@
       "id": "heading",
       "label": "Heading",
       "default": "FAQ"
+    },
+    {
+      "type": "checkbox",
+      "id": "heading_as_h1",
+      "label": "Use H1 for heading",
+      "default": false,
+      "info": "Enable on the dedicated FAQ page. Keep off on homepage/product (H1 already used)."
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_faq_schema",
+      "label": "Force FAQ JSON-LD schema",
+      "default": false,
+      "info": "FAQ page template emits schema automatically. Only force this on if you want schema elsewhere."
     },
     {
       "type": "color",

@@ -11,6 +11,7 @@
 
 <div class="main-collection full-width">
   <div class="main-collection__inner">
+    {% render 'breadcrumbs' %}
     <header class="main-collection__header">
       <p class="main-collection__eyebrow">{{ collection_eyebrow }}</p>
       <h1 class="main-collection__title">{{ collection_heading }}</h1>
@@ -100,35 +101,35 @@
       {% endif %}
 
       {% if paginate.pages > 1 %}
-        <nav class="main-collection__pagination" aria-label="Sidnavigering">
+        <nav class="main-collection__pagination" aria-label="{{ 'accessibility.pagination' | t }}">
           {{ paginate | default_pagination }}
         </nav>
       {% endif %}
+
+      {%- if collection.products.size > 0 -%}
+        <script type="application/ld+json">
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": {{ collection_heading | json }},
+            "url": {{ request.origin | append: collection.url | json }},
+            "numberOfItems": {{ collection.products_count | json }},
+            "itemListElement": [
+              {%- for product in collection.products -%}
+                {
+                  "@type": "ListItem",
+                  "position": {{ paginate.current_offset | plus: forloop.index }},
+                  "url": {{ request.origin | append: product.url | json }},
+                  "name": {{ product.title | json }}
+                }{%- unless forloop.last -%},{%- endunless -%}
+              {%- endfor -%}
+            ]
+          }
+        </script>
+      {%- endif -%}
     {% endpaginate %}
   </div>
 </div>
-
-{%- if collection.products_count > 0 -%}
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      "name": {{ collection_heading | json }},
-      "url": {{ shop.url | append: collection.url | json }},
-      "numberOfItems": {{ collection.products_count | json }},
-      "itemListElement": [
-        {%- for product in collection.products limit: 12 -%}
-          {
-            "@type": "ListItem",
-            "position": {{ forloop.index }},
-            "url": {{ shop.url | append: product.url | json }},
-            "name": {{ product.title | json }}
-          }{%- unless forloop.last -%},{%- endunless -%}
-        {%- endfor -%}
-      ]
-    }
-  </script>
-{%- endif -%}
 
 {% stylesheet %}
   .main-collection {

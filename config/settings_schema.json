@@ -24,7 +24,53 @@
         "type": "image_picker",
         "id": "share_image",
         "label": "Default social share image",
-        "info": "Used when a page has no featured image (Open Graph / Twitter)."
+        "info": "Used when a page has no featured image (Open Graph / Twitter). Ideal size 1200×630."
+      }
+    ]
+  },
+  {
+    "name": "SEO & social",
+    "settings": [
+      {
+        "type": "textarea",
+        "id": "seo_organization_description",
+        "label": "Organization description",
+        "info": "Used in Organization JSON-LD. Falls back to shop description."
+      },
+      {
+        "type": "header",
+        "content": "Social profiles (sameAs)"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram URL"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook URL"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok URL"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube",
+        "label": "YouTube URL"
+      },
+      {
+        "type": "text",
+        "id": "social_linkedin",
+        "label": "LinkedIn URL"
+      },
+      {
+        "type": "text",
+        "id": "social_twitter",
+        "label": "X / Twitter handle or URL",
+        "info": "Example: @pumpportable or https://x.com/pumpportable"
       }
     ]
   },

@@ -110,6 +110,15 @@
     "close": "Close",
     "search": "Search",
     "open_menu": "Open menu",
-    "close_menu": "Close menu"
+    "close_menu": "Close menu",
+    "skip_to_content": "Skip to content",
+    "breadcrumbs": "Breadcrumbs",
+    "pagination": "Pagination"
+  },
+  "seo": {
+    "page": "Page {{ page }}",
+    "tagged": "tagged \"{{ tags }}\"",
+    "home": "Home",
+    "products": "Products"
   }
 }

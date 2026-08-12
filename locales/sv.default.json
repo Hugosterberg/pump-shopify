@@ -110,6 +110,15 @@
     "close": "Stäng",
     "search": "Sök",
     "open_menu": "Öppna meny",
-    "close_menu": "Stäng meny"
+    "close_menu": "Stäng meny",
+    "skip_to_content": "Hoppa till innehåll",
+    "breadcrumbs": "Brödsmulor",
+    "pagination": "Sidnavigering"
+  },
+  "seo": {
+    "page": "Sida {{ page }}",
+    "tagged": "taggad \"{{ tags }}\"",
+    "home": "Hem",
+    "products": "Produkter"
   }
 }
