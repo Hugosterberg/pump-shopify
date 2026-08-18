@@ -1,0 +1,614 @@
+{% liquid
+  assign banner_visible = section.settings.enabled
+  if section.settings.eyebrow == blank and section.settings.heading == blank and section.settings.offer == blank
+    assign banner_visible = false
+  endif
+%}
+
+{% if banner_visible %}
+  {% liquid
+    assign banner_href = section.settings.button_link
+    if banner_href == blank and section.settings.button_label != blank
+      assign banner_href = routes.all_products_collection_url
+    endif
+    assign campaign_handle = section.settings.campaign_id | handleize | default: 'promo'
+  %}
+
+  <div
+    id="PromoBanner-{{ section.id }}"
+    class="promo-banner full-width promo-banner--{{ section.settings.layout }}"
+    style="
+      --pb-bg: {{ section.settings.background_color }};
+      --pb-text: {{ section.settings.text_color }};
+      --pb-muted: {{ section.settings.muted_text_color }};
+      --pb-accent: {{ section.settings.accent_color }};
+      --pb-accent-ink: {{ section.settings.accent_text_color }};
+    "
+    {% if section.settings.dismissible %}
+      data-promo-banner
+      data-promo-id="{{ section.id }}-{{ campaign_handle }}"
+    {% endif %}
+  >
+    <span class="promo-banner__glow" aria-hidden="true"></span>
+    <span class="promo-banner__shine" aria-hidden="true"></span>
+    {% if section.settings.heading != blank or section.settings.offer != blank %}
+      <div class="promo-banner__marquee" aria-hidden="true">
+        <div class="promo-banner__marquee-track">
+          {% for i in (1..2) %}
+            <span class="promo-banner__marquee-group">
+              {% for n in (1..8) %}
+                <span>{{ section.settings.eyebrow }}</span>
+                <span>{{ section.settings.heading }}</span>
+                <span>{{ section.settings.offer }}</span>
+              {% endfor %}
+            </span>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="promo-banner__inner">
+      {% if banner_href != blank %}
+        <a class="promo-banner__link" href="{{ banner_href }}">
+      {% else %}
+        <div class="promo-banner__link promo-banner__link--static">
+      {% endif %}
+        {% if section.settings.eyebrow != blank or section.settings.heading != blank %}
+          <span class="promo-banner__kicker">
+            {% if section.settings.eyebrow != blank %}
+              <span class="promo-banner__eyebrow">{{ section.settings.eyebrow }}</span>
+            {% endif %}
+            {% if section.settings.heading != blank %}
+              <span class="promo-banner__heading">{{ section.settings.heading }}</span>
+            {% endif %}
+          </span>
+        {% endif %}
+
+        {% if section.settings.offer != blank %}
+          <span class="promo-banner__offer">
+            {% if section.settings.offer_prefix != blank %}
+              <span class="promo-banner__offer-label">{{ section.settings.offer_prefix }}</span>
+            {% endif %}
+            <span class="promo-banner__offer-value">{{ section.settings.offer }}</span>
+          </span>
+        {% endif %}
+
+        {% if section.settings.subheading != blank %}
+          <span class="promo-banner__subheading">{{ section.settings.subheading }}</span>
+        {% endif %}
+
+        {% if section.settings.button_label != blank %}
+          <span class="promo-banner__cta">
+            {{ section.settings.button_label }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        {% endif %}
+      {% if banner_href != blank %}
+        </a>
+      {% else %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if section.settings.dismissible %}
+      <button
+        type="button"
+        class="promo-banner__close"
+        data-promo-close
+        aria-label="Stäng banner"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/>
+        </svg>
+      </button>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .promo-banner {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    isolation: isolate;
+    color: var(--pb-text, #fff8e8);
+    background:
+      radial-gradient(70% 160% at 18% 50%, color-mix(in srgb, var(--pb-accent, #f59e0b) 42%, transparent) 0%, transparent 58%),
+      radial-gradient(80% 180% at 88% 40%, color-mix(in srgb, var(--pb-accent, #f59e0b) 26%, transparent) 0%, transparent 55%),
+      linear-gradient(90deg, #2a1704 0%, var(--pb-bg, #1a1208) 38%, #2a1704 100%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--pb-accent, #f59e0b) 55%, transparent),
+      inset 0 -1px 0 color-mix(in srgb, var(--pb-accent, #f59e0b) 28%, transparent);
+  }
+
+  .promo-banner[hidden] {
+    display: none;
+  }
+
+  .promo-banner__glow,
+  .promo-banner__shine,
+  .promo-banner__marquee {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .promo-banner__glow {
+    background: radial-gradient(circle at 50% 120%, color-mix(in srgb, var(--pb-accent, #f59e0b) 22%, transparent), transparent 46%);
+  }
+
+  .promo-banner__shine {
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      color-mix(in srgb, #fff 16%, transparent) 48%,
+      transparent 62%
+    );
+    background-size: 220% 100%;
+    animation: promo-banner-shine 6.5s ease-in-out infinite;
+  }
+
+  .promo-banner__marquee {
+    display: flex;
+    align-items: center;
+    opacity: 0.09;
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+
+  .promo-banner__marquee-track {
+    display: flex;
+    width: max-content;
+    animation: promo-banner-marquee 28s linear infinite;
+  }
+
+  .promo-banner__marquee-group {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    padding-inline: 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--pb-accent, #f59e0b);
+  }
+
+  .promo-banner__inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--page-width, 90rem);
+    margin-inline: auto;
+    padding: 12px var(--page-margin, 20px);
+  }
+
+  .promo-banner--compact .promo-banner__inner {
+    min-height: 72px;
+  }
+
+  .promo-banner--featured .promo-banner__inner {
+    min-height: 88px;
+    padding-block: 16px;
+  }
+
+  .promo-banner:has(.promo-banner__close) .promo-banner__inner {
+    padding-inline-end: 52px;
+  }
+
+  .promo-banner__link {
+    display: grid;
+    width: 100%;
+    align-items: center;
+    justify-items: center;
+    gap: 8px 20px;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .promo-banner__link--static {
+    cursor: default;
+  }
+
+  a.promo-banner__link:hover .promo-banner__cta,
+  a.promo-banner__link:focus-visible .promo-banner__cta {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px -12px color-mix(in srgb, var(--pb-accent, #f59e0b) 85%, #000);
+  }
+
+  .promo-banner__kicker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .promo-banner__eyebrow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    margin-right: -0.18em;
+    text-transform: uppercase;
+    color: var(--pb-accent, #f59e0b);
+  }
+
+  .promo-banner__heading {
+    font-size: clamp(1.2rem, 2.6vw, 1.7rem);
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    margin-right: -0.16em;
+    text-transform: uppercase;
+    line-height: 0.95;
+  }
+
+  .promo-banner--featured .promo-banner__heading {
+    font-size: clamp(1.3rem, 2.8vw, 1.85rem);
+  }
+
+  .promo-banner__offer {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    padding: 6px 12px 7px;
+    border-radius: 14px;
+    color: var(--pb-accent-ink, #1a1208);
+    background: linear-gradient(160deg, #ffe7a3 0%, var(--pb-accent, #f59e0b) 55%, #d97706 100%);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #fff 35%, transparent),
+      0 12px 28px -10px color-mix(in srgb, var(--pb-accent, #f59e0b) 90%, #000),
+      inset 0 1px 0 color-mix(in srgb, #fff 50%, transparent);
+  }
+
+  .promo-banner--featured .promo-banner__offer {
+    min-width: 84px;
+    padding: 7px 14px 8px;
+  }
+
+  .promo-banner__offer-label {
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.72;
+  }
+
+  .promo-banner__offer-value {
+    font-size: clamp(1.25rem, 2.4vw, 1.7rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+  }
+
+  .promo-banner--featured .promo-banner__offer-value {
+    font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  }
+
+  .promo-banner__subheading {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--pb-muted, #e8d7b4);
+  }
+
+  .promo-banner__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--pb-accent-ink, #1a1208);
+    background: var(--pb-text, #fff8e8);
+    box-shadow: 0 10px 24px -14px #000;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .promo-banner--featured .promo-banner__cta {
+    min-height: 46px;
+    padding-inline: 20px;
+  }
+
+  .promo-banner__close {
+    position: absolute;
+    top: 50%;
+    right: max(8px, calc(var(--page-margin, 20px) - 6px));
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    color: var(--pb-text, #fff8e8);
+    background: color-mix(in srgb, var(--pb-text, #fff8e8) 10%, transparent);
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+
+  .promo-banner__close:hover,
+  .promo-banner__close:focus-visible {
+    background: color-mix(in srgb, var(--pb-text, #fff8e8) 18%, transparent);
+  }
+
+  /* Phone */
+  @media screen and (max-width: 749px) {
+    .promo-banner__inner {
+      min-height: 0;
+      padding: 12px 16px;
+    }
+
+    .promo-banner__link {
+      grid-template-columns: 1fr;
+    }
+
+    .promo-banner__eyebrow {
+      letter-spacing: 0.14em;
+      margin-right: -0.14em;
+    }
+
+    .promo-banner__heading {
+      letter-spacing: 0.12em;
+      margin-right: -0.12em;
+    }
+
+    .promo-banner__cta {
+      min-width: min(220px, 100%);
+    }
+  }
+
+  /* iPad / tablet */
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .promo-banner__inner {
+      min-height: 0;
+      padding-block: 14px;
+    }
+
+    .promo-banner__link {
+      grid-template-columns: auto auto auto;
+      justify-content: center;
+    }
+
+    .promo-banner__subheading {
+      grid-column: 1 / -1;
+      order: 4;
+    }
+
+    .promo-banner__cta {
+      order: 3;
+    }
+  }
+
+  /* Desktop */
+  @media screen and (min-width: 990px) {
+    .promo-banner__link {
+      grid-template-columns: auto auto auto auto;
+      justify-content: center;
+      gap: 10px 28px;
+    }
+
+    .promo-banner__eyebrow {
+      letter-spacing: 0.22em;
+      margin-right: -0.22em;
+    }
+
+    .promo-banner__cta {
+      min-height: 48px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .promo-banner__shine,
+    .promo-banner__marquee-track {
+      animation: none;
+    }
+  }
+
+  @keyframes promo-banner-shine {
+    0%,
+    58% {
+      background-position: 130% 0;
+    }
+    100% {
+      background-position: -30% 0;
+    }
+  }
+
+  @keyframes promo-banner-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+{% endstylesheet %}
+
+{% if banner_visible and section.settings.dismissible %}
+  <script>
+    (function () {
+      const root = document.getElementById({{ section.id | prepend: 'PromoBanner-' | json }});
+      if (!root || !root.hasAttribute('data-promo-banner')) return;
+
+      const key = 'pp-promo-' + root.dataset.promoId;
+      try {
+        if (window.localStorage.getItem(key) === '1') {
+          root.hidden = true;
+          return;
+        }
+      } catch (e) {}
+
+      const close = root.querySelector('[data-promo-close]');
+      if (!close) return;
+
+      close.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        root.hidden = true;
+        try {
+          window.localStorage.setItem(key, '1');
+        } catch (e) {}
+      });
+    })();
+  </script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Promo banner",
+  "tag": "section",
+  "class": "promo-banner-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Show banner",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "campaign_id",
+      "label": "Campaign ID",
+      "default": "end-of-summer-40",
+      "info": "Change this when you launch a new campaign so a dismissed banner can show again."
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "compact",
+      "options": [
+        { "value": "compact", "label": "Compact strip" },
+        { "value": "featured", "label": "Featured" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "End of summer"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Sale"
+    },
+    {
+      "type": "text",
+      "id": "offer",
+      "label": "Offer badge",
+      "default": "40%",
+      "info": "Shown as a highlight pill. Examples: 40%, −50%, 2 för 1."
+    },
+    {
+      "type": "text",
+      "id": "offer_prefix",
+      "label": "Offer prefix",
+      "default": "Upp till",
+      "info": "Small label above the offer. Leave empty to hide."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Supporting text",
+      "default": "Begränsad tid"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Handla nu"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "dismissible",
+      "label": "Allow customers to close the banner",
+      "default": false,
+      "info": "Leave off to keep the banner always visible."
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#1A1208"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#FFF8E8"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#E8D7B4"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#F59E0B"
+    },
+    {
+      "type": "color",
+      "id": "accent_text_color",
+      "label": "Accent text",
+      "default": "#1A1208"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Promo banner",
+      "settings": {
+        "enabled": true,
+        "layout": "compact",
+        "eyebrow": "End of summer",
+        "heading": "Sale",
+        "offer": "40%",
+        "offer_prefix": "Upp till",
+        "subheading": "Begränsad tid",
+        "button_label": "Handla nu"
+      }
+    },
+    {
+      "name": "Promo banner featured",
+      "settings": {
+        "enabled": true,
+        "layout": "featured",
+        "eyebrow": "End of summer",
+        "heading": "Sale",
+        "offer": "40%",
+        "offer_prefix": "Upp till",
+        "subheading": "Begränsad tid på utvalda produkter",
+        "button_label": "Handla nu"
+      }
+    }
+  ]
+}
+{% endschema %}

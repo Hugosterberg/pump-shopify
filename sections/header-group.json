@@ -55,10 +55,32 @@
         "show_cta": true,
         "cta_label": "Köp nu"
       }
+    },
+    "promo_banner": {
+      "type": "promo-banner",
+      "settings": {
+        "enabled": true,
+        "campaign_id": "end-of-summer-40",
+        "layout": "featured",
+        "eyebrow": "End of summer",
+        "heading": "Sale",
+        "offer": "40%",
+        "offer_prefix": "Upp till",
+        "subheading": "Begränsad tid",
+        "button_label": "Handla nu",
+        "button_link": "",
+        "dismissible": false,
+        "background_color": "#1A1208",
+        "text_color": "#FFF8E8",
+        "muted_text_color": "#E8D7B4",
+        "accent_color": "#F59E0B",
+        "accent_text_color": "#1A1208"
+      }
     }
   },
   "order": [
     "announcement",
-    "header"
+    "header",
+    "promo_banner"
   ]
 }
