@@ -66,7 +66,8 @@
     {% if render_payment_icons %}
       <div class="pp-trust-atc__divider {{ class_prefix }}__divider" aria-hidden="true"></div>
       {% assign pay_label = 'trust.pay_easily_with' | t %}
-      {% render 'payment-icons', class_prefix: class_prefix | append: '__payment', label: pay_label, inline_row: true %}
+      {% assign payment_class_prefix = class_prefix | append: '__payment' %}
+      {% render 'payment-icons', class_prefix: payment_class_prefix, label: pay_label, inline_row: true %}
     {% endif %}
   </div>
 {% endif %}

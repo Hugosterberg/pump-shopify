@@ -41,14 +41,11 @@
     assign rating_rounded = 5
   endif
 
-  assign product_ids_csv = ''
   assign source_products = ''
   if review_scope == 'all_shop'
     if section.settings.products != blank and section.settings.products.size > 0
       assign source_products = section.settings.products
     endif
-  elsif review_product != blank
-    assign product_ids_csv = review_product.id | append: ''
   endif
 -%}
 
@@ -121,6 +118,10 @@
           Always seed with real product review widgets (DOM). Featured carousel alone
           often won't hydrate cards here, and Judge.me's public API now requires auth.
         {%- endcomment -%}
+        {% comment %}
+          jdgm-* classes are provided by the Judge.me app stylesheet, which Theme Check cannot see.
+        {% endcomment %}
+        {% # theme-check-disable ValidScopedCSSClass %}
         <div
           class="pp-jdgm-carousel__sources"
           data-pp-jdgm-sources
@@ -186,6 +187,7 @@
             </div>
           {% endif %}
         </div>
+        {% # theme-check-enable ValidScopedCSSClass %}
 
         <div
           class="pp-jdgm-carousel__track"

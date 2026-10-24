@@ -183,6 +183,10 @@
             {% endif %}
           {% endfor %}
           {% if judgeme_badge != blank and has_app_review_blocks == false %}
+            {% comment %}
+              jdgm-* classes are provided by the Judge.me app stylesheet, which Theme Check cannot see.
+            {% endcomment %}
+            {% # theme-check-disable-next-line ValidScopedCSSClass %}
             <div
               class="jdgm-widget jdgm-preview-badge"
               data-id="{{ product.id }}"

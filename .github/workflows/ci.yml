@@ -4,6 +4,12 @@ jobs:
   theme-check:
     name: Theme Check
     runs-on: ubuntu-latest
+    # Repo default token is read-only. theme-check-action creates a check run
+    # when `token` is set, and that call 403s without checks:write — which
+    # fails the job before offenses are reported.
+    permissions:
+      contents: read
+      checks: write
     steps:
       - uses: actions/checkout@v4
       - name: Theme Check
